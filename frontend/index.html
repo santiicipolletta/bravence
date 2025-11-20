@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="es" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bravence | Consultoría de Negocios & Performance</title>
+    <meta name="description" content="Unimos inteligencia financiera y estrategia comercial. Transformamos PyMEs en empresas rentables y escalables.">
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;700;800&family=Manrope:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        bravence: {
+                            dark: '#0a594f',
+                            medium: '#248477',
+                            teal: '#4daea1',
+                            line: '#84d9cd',
+                            neon: '#c6fff7',
+                            white: '#ffffff'
+                        }
+                    },
+                    fontFamily: {
+                        heading: ['Outfit', 'sans-serif'],
+                        body: ['Manrope', 'sans-serif'],
+                    },
+                    letterSpacing: {
+                        tightest: '-0.05em',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body { font-family: 'Manrope', sans-serif; background-color: #0a594f; color: white; }
+        h1, h2, h3, h4, .brand-font { font-family: 'Outfit', sans-serif; letter-spacing: -1px; }
+        .bg-gradient-bravence { background: linear-gradient(180deg, #0a594f 0%, #052e29 100%); }
+        .btn-glow:hover { box-shadow: 0 0 20px rgba(198, 255, 247, 0.4); transform: translateY(-2px); }
+        .custom-scroll::-webkit-scrollbar { width: 4px; }
+        .custom-scroll::-webkit-scrollbar-track { background: rgba(255, 255, 255, 0.05); }
+        .custom-scroll::-webkit-scrollbar-thumb { background: #4daea1; border-radius: 2px; }
+        
+        /* Toast notifications */
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 16px 24px;
+            border-radius: 8px;
+            z-index: 9999;
+            animation: slideIn 0.3s ease-out;
+            max-width: 400px;
+        }
+        .toast.success { background: #10b981; color: white; }
+        .toast.error { background: #ef4444; color: white; }
+        @keyframes slideIn {
+            from { transform: translateX(400px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        
+        /* Loading spinner */
+        .spinner {
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-top: 3px solid white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <header class="fixed w-full z-50 bg-bravence-dark/95 backdrop-blur-md border-b border-bravence-line/20 transition-all duration-300" id="navbar">
+        <div class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <a href="#" class="text-2xl font-bold font-heading tracking-tightest text-white flex items-center gap-2">
+                <div class="w-8 h-8 bg-bravence-neon rounded text-bravence-dark flex items-center justify-center font-extrabold text-lg">B</div>
+                bravence
+            </a>
+
+            <nav class="hidden md:flex gap-8 items-center text-sm font-medium text-bravence-line">
+                <a href="#servicios" class="hover:text-bravence-neon transition-colors">Servicios</a>
+                <a href="#metodologia" class="hover:text-bravence-neon transition-colors">Metodología</a>
+                <a href="#nosotros" class="hover:text-bravence-neon transition-colors">Nosotros</a>
+                <a href="#contacto" class="px-5 py-2.5 bg-bravence-neon text-bravence-dark font-bold rounded hover:bg-white transition-colors btn-glow">
+                    Agendar Diagnóstico
+                </a>
+            </nav>
+
+            <button class="md:hidden text-bravence-neon text-2xl" onclick="toggleMenu()">
+                <i class="fa-solid fa-bars"></i>
+            </button>
+        </div>
+        
+        <div id="mobile-menu" class="hidden md:hidden bg-bravence-dark border-b border-bravence-line/20 p-6">
+            <div class="flex flex-col gap-4 text-center">
+                <a href="#servicios" class="text-white py-2">Servicios</a>
+                <a href="#metodologia" class="text-white py-2">Metodología</a>
+                <a href="#contacto" class="bg-bravence-neon text-bravence-dark font-bold py-3 rounded">Agendar Diagnóstico</a>
+            </div>
+        </div>
+    </header>
+
+    <section class="relative min-h-screen flex items-center justify-center pt-20 overflow-hidden">
+        <div class="absolute inset-0 z-0">
+            <div class="absolute inset-0 bg-gradient-to-b from-bravence-dark/80 via-bravence-dark/90 to-bravence-dark"></div>
+        </div>
+
+        <div class="container mx-auto px-6 relative z-10 text-center max-w-4xl">
+            <div class="inline-block px-3 py-1 border border-bravence-teal/50 rounded-full text-bravence-neon text-xs font-bold tracking-widest mb-6 uppercase">
+                Consultoría Estratégica Integral
+            </div>
+            <h1 class="text-5xl md:text-7xl font-bold text-white mb-6 leading-tight">
+                Finanzas Sólidas.<br>
+                <span class="text-transparent bg-clip-text bg-gradient-to-r from-bravence-neon to-bravence-teal">Crecimiento Escalable.</span>
+            </h1>
+            <p class="text-lg md:text-xl text-gray-300 mb-10 max-w-2xl mx-auto font-light">
+                Deje de administrar caos. Unimos la inteligencia financiera (Stress Testing, Pricing) con estrategias comerciales agresivas para transformar su PyME en una máquina de rentabilidad.
+            </p>
+            <div class="flex flex-col md:flex-row gap-4 justify-center">
+                <a href="#contacto" class="px-8 py-4 bg-bravence-neon text-bravence-dark font-bold text-lg rounded hover:bg-white transition-all btn-glow shadow-lg shadow-bravence-neon/20">
+                    Solicitar Auditoría de Viabilidad
+                </a>
+                <a href="#servicios" class="px-8 py-4 border border-bravence-line/30 text-white font-medium text-lg rounded hover:bg-white/5 transition-all flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-arrow-down"></i> Ver Soluciones
+                </a>
+            </div>
+            
+            <div class="mt-16 grid grid-cols-2 md:grid-cols-4 gap-8 border-t border-white/10 pt-8">
+                <div>
+                    <span class="block text-3xl font-bold text-bravence-neon">+25%</span>
+                    <span class="text-xs text-gray-400 uppercase tracking-wide">Rentabilidad Promedio</span>
+                </div>
+                <div>
+                    <span class="block text-3xl font-bold text-bravence-neon">ROAS</span>
+                    <span class="text-xs text-gray-400 uppercase tracking-wide">Enfoque en Performance</span>
+                </div>
+                <div>
+                    <span class="block text-3xl font-bold text-bravence-neon">360°</span>
+                    <span class="text-xs text-gray-400 uppercase tracking-wide">Visión Integral</span>
+                </div>
+                <div>
+                    <span class="block text-3xl font-bold text-bravence-neon">100%</span>
+                    <span class="text-xs text-gray-400 uppercase tracking-wide">Basado en Datos</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="py-20 bg-bravence-dark border-b border-white/5">
+        <div class="container mx-auto px-6">
+            <div class="grid md:grid-cols-2 gap-12 items-center">
+                <div>
+                    <h2 class="text-3xl md:text-4xl font-bold mb-6 text-white">¿Su empresa crece o solo engorda?</h2>
+                    <p class="text-gray-300 mb-4">Muchos dueños de negocio confunden facturación con ganancia. Si vende más pero cada vez tiene menos tiempo y menos caja, tiene un problema estructural.</p>
+                    <ul class="space-y-3 mt-6">
+                        <li class="flex items-start gap-3 text-gray-300">
+                            <i class="fa-solid fa-xmark text-red-400 mt-1"></i>
+                            <span>Precios definidos por "intuición" y no por costo de reposición.</span>
+                        </li>
+                        <li class="flex items-start gap-3 text-gray-300">
+                            <i class="fa-solid fa-xmark text-red-400 mt-1"></i>
+                            <span>Inversión en publicidad (Ads) que no trae ventas reales.</span>
+                        </li>
+                        <li class="flex items-start gap-3 text-gray-300">
+                            <i class="fa-solid fa-xmark text-red-400 mt-1"></i>
+                            <span>Mezcla peligrosa de finanzas personales y empresariales.</span>
+                        </li>
+                    </ul>
+                </div>
+                <div class="relative h-80 bg-bravence-medium/20 rounded-lg border border-bravence-line/20 p-8 flex items-center justify-center">
+                    <div class="text-center">
+                        <i class="fa-solid fa-scale-unbalanced text-6xl text-gray-500 mb-4 block"></i>
+                        <span class="text-gray-400 uppercase text-sm tracking-widest">El Desorden Operativo</span>
+                    </div>
+                    <div class="absolute -right-4 -bottom-4 bg-bravence-neon text-bravence-dark p-6 rounded shadow-xl max-w-xs">
+                        <p class="font-bold text-sm">"Bravence trajo la claridad que necesitábamos para dejar de perder dinero en operaciones."</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="servicios" class="py-24 bg-gradient-bravence">
+        <div class="container mx-auto px-6">
+            <div class="text-center mb-16">
+                <span class="text-bravence-teal font-bold tracking-widest uppercase text-sm">Nuestra Propuesta</span>
+                <h2 class="text-4xl md:text-5xl font-bold mt-2 mb-4 text-white">4 Pilares de Transformación</h2>
+                <p class="text-gray-400 max-w-2xl mx-auto">No somos solo consultores financieros ni solo una agencia de marketing. Somos ambos.</p>
+            </div>
+
+            <div class="grid md:grid-cols-2 gap-8 items-start">
+                
+                <div class="group bg-white/5 border border-white/10 p-8 rounded-lg hover:bg-white/10 hover:border-bravence-neon/50 transition-all duration-300 h-full">
+                    <div class="flex items-center gap-4 mb-6">
+                        <div class="w-12 h-12 bg-bravence-medium rounded-lg flex items-center justify-center text-bravence-neon text-xl group-hover:scale-110 transition-transform shrink-0">
+                            <i class="fa-solid fa-chart-line"></i>
+                        </div>
+                        <h3 class="text-2xl font-bold text-white leading-tight">Inteligencia Estratégica y Financiera</h3>
+                    </div>
+                    <p class="text-bravence-line text-sm italic mb-6 border-l-2 border-bravence-line pl-3">"Donde la macroeconomía se encuentra con la caja de la empresa."</p>
+                    <ul class="space-y-4 custom-scroll max-h-[400px] overflow-y-auto pr-2">
+                        <li class="text-sm">
+                            <strong class="text-bravence-teal block mb-1">Análisis de Escenarios (Stress Testing)</strong>
+                            <span class="text-gray-400 font-light">Modelos de riesgo y pricing basados en dólar futuro (ROFEX), inflación y pass-through.</span>
+                        </li>
+                        <li class="text-sm">
+                            <strong class="text-bravence-teal block mb-1">Gestión de Pricing Estratégico</strong>
+                            <span class="text-gray-400 font-light">Políticas que aseguren margen bruto integrando costos de reposición y sensibilidad del cliente.</span>
+                        </li>
+                        <li class="text-sm">
+                            <strong class="text-bravence-teal block mb-1">Cash Management Activo</strong>
+                            <span class="text-gray-400 font-light">Estrategias para excedentes de liquidez (FCI, Cauciones) para que la caja "no duerma".</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="group bg-white/5 border border-white/10 p-8 rounded-lg hover:bg-white/10 hover:border-bravence-neon/50 transition-all duration-300 h-full">
+                    <div class="flex items-center gap-4 mb-6">
+                        <div class="w-12 h-12 bg-bravence-medium rounded-lg flex items-center justify-center text-bravence-neon text-xl group-hover:scale-110 transition-transform shrink-0">
+                            <i class="fa-solid fa-boxes-stacked"></i>
+                        </div>
+                        <h3 class="text-2xl font-bold text-white leading-tight">Optimización Operativa y Costos</h3>
+                    </div>
+                    <p class="text-bravence-line text-sm italic mb-6 border-l-2 border-bravence-line pl-3">"Transformamos la operación en una máquina relojera."</p>
+                    <ul class="space-y-4 custom-scroll max-h-[400px] overflow-y-auto pr-2">
+                        <li class="text-sm">
+                            <strong class="text-bravence-teal block mb-1">Sistemas de Costos</strong>
+                            <span class="text-gray-400 font-light">Metodologías para determinar rentabilidad real por unidad de negocio y producto.</span>
+                        </li>
+                        <li class="text-sm">
+                            <strong class="text-bravence-teal block mb-1">Gestión de Importaciones (Comex)</strong>
+                            <span class="text-gray-400 font-light">Cálculo de costos de importación (landed cost), proveedores internacionales y normativa cambiaria.</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="group bg-white/5 border border-white/10 p-8 rounded-lg hover:bg-white/10 hover:border-bravence-neon/50 transition-all duration-300 h-full">
+                    <div class="flex items-center gap-4 mb-6">
+                        <div class="w-12 h-12 bg-bravence-medium rounded-lg flex items-center justify-center text-bravence-neon text-xl group-hover:scale-110 transition-transform shrink-0">
+                            <i class="fa-solid fa-bullhorn"></i>
+                        </div>
+                        <h3 class="text-2xl font-bold text-white leading-tight">Estrategia Comercial y Ventas</h3>
+                    </div>
+                    <p class="text-bravence-line text-sm italic mb-6 border-l-2 border-bravence-line pl-3">"No solo traemos leads, construimos un ecosistema de ventas."</p>
+                    <ul class="space-y-4 custom-scroll max-h-[400px] overflow-y-auto pr-2">
+                        <li class="text-sm">
+                            <strong class="text-bravence-teal block mb-1">Marketing de Performance</strong>
+                            <span class="text-gray-400 font-light">Campañas en Meta/Google Ads con foco estricto en métricas de retorno (ROAS, CPA).</span>
+                        </li>
+                        <li class="text-sm">
+                            <strong class="text-bravence-teal block mb-1">E-commerce & Marketplaces</strong>
+                            <span class="text-gray-400 font-light">Estrategia para Tiendanube/Shopify y optimización de reputación en Mercado Libre.</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="group bg-white/5 border border-white/10 p-8 rounded-lg hover:bg-white/10 hover:border-bravence-neon/50 transition-all duration-300 h-full">
+                    <div class="flex items-center gap-4 mb-6">
+                        <div class="w-12 h-12 bg-bravence-medium rounded-lg flex items-center justify-center text-bravence-neon text-xl group-hover:scale-110 transition-transform shrink-0">
+                            <i class="fa-solid fa-gavel"></i>
+                        </div>
+                        <h3 class="text-2xl font-bold text-white leading-tight">Gobierno Corporativo y Talento</h3>
+                    </div>
+                    <p class="text-bravence-line text-sm italic mb-6 border-l-2 border-bravence-line pl-3">"Estructura sólida para sostener el crecimiento."</p>
+                    <ul class="space-y-4 custom-scroll max-h-[400px] overflow-y-auto pr-2">
+                        <li class="text-sm">
+                            <strong class="text-bravence-teal block mb-1">Profesionalización</strong>
+                            <span class="text-gray-400 font-light">Separación de finanzas personales/empresariales y formalización de retiros.</span>
+                        </li>
+                        <li class="text-sm">
+                            <strong class="text-bravence-teal block mb-1">Diseño Organizacional</strong>
+                            <span class="text-gray-400 font-light">Definición de organigramas, descripciones de puesto y esquemas de incentivos.</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="contacto" class="py-20 bg-bravence-dark relative">
+        <div class="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-bravence-neon/50 to-transparent"></div>
+        
+        <div class="container mx-auto px-6">
+            <div class="max-w-4xl mx-auto bg-[#0d443d] rounded-xl border border-bravence-line/20 shadow-2xl overflow-hidden flex flex-col md:flex-row">
+                
+                <div class="p-10 md:w-2/5 bg-bravence-medium/20 flex flex-col justify-between">
+                    <div>
+                        <h3 class="text-2xl font-bold text-white mb-2">Hablemos de Negocios</h3>
+                        <p class="text-gray-300 text-sm mb-8">Complete el formulario para aplicar a un diagnóstico de viabilidad. Analizaremos sus números y su potencial.</p>
+                        
+                        <div class="space-y-4">
+                            <div class="flex items-center gap-3 text-bravence-line">
+                                <i class="fa-brands fa-whatsapp text-xl"></i>
+                                <span>+54 9 11 1234-5678</span>
+                            </div>
+                            <div class="flex items-center gap-3 text-bravence-line">
+                                <i class="fa-regular fa-envelope text-xl"></i>
+                                <span>contacto@bravence.com</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mt-10">
+                        <p class="text-xs text-gray-500">Cupos limitados para consultoría personalizada este mes.</p>
+                    </div>
+                </div>
+
+                <div class="p-10 md:w-3/5 bg-white">
+                    <form id="contactForm" class="space-y-4">
+                        <h4 class="text-bravence-dark font-bold text-lg mb-4">Solicitud de Diagnóstico</h4>
+                        
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Nombre *</label>
+                                <input type="text" name="nombre" required class="w-full bg-gray-100 border border-gray-300 rounded p-2 text-sm focus:outline-none focus:border-bravence-dark" placeholder="Su nombre">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Empresa *</label>
+                                <input type="text" name="empresa" required class="w-full bg-gray-100 border border-gray-300 rounded p-2 text-sm focus:outline-none focus:border-bravence-dark" placeholder="Nombre del negocio">
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Email Corporativo *</label>
+                            <input type="email" name="email" required class="w-full bg-gray-100 border border-gray-300 rounded p-2 text-sm focus:outline-none focus:border-bravence-dark" placeholder="nombre@empresa.com">
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Teléfono</label>
+                            <input type="tel" name="telefono" class="w-full bg-gray-100 border border-gray-300 rounded p-2 text-sm focus:outline-none focus:border-bravence-dark" placeholder="+54 9 11 1234-5678">
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Principal Desafío Actual *</label>
+                            <select name="desafio" required class="w-full bg-gray-100 border border-gray-300 rounded p-2 text-sm focus:outline-none focus:border-bravence-dark">
+                                <option value="">Seleccionar opción...</option>
+                                <option value="rentabilidad">Rentabilidad / Costos Altos</option>
+                                <option value="ventas">Ventas bajas / Marketing ineficiente</option>
+                                <option value="administrativo">Desorden administrativo / Financiero</option>
+                                <option value="rrhh">Cuestiones de Socios / RRHH</option>
+                            </select>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Facturación Aprox. Mensual</label>
+                            <select name="facturacion" class="w-full bg-gray-100 border border-gray-300 rounded p-2 text-sm focus:outline-none focus:border-bravence-dark">
+                                <option value="menos-5k">Menos de 5k USD</option>
+                                <option value="5k-20k">5k - 20k USD</option>
+                                <option value="20k-50k">20k - 50k USD</option>
+                                <option value="mas-50k">+50k USD</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Mensaje Adicional</label>
+                            <textarea name="mensaje" rows="3" class="w-full bg-gray-100 border border-gray-300 rounded p-2 text-sm focus:outline-none focus:border-bravence-dark" placeholder="Cuéntenos más sobre su situación..."></textarea>
+                        </div>
+
+                        <button type="submit" id="submitBtn" class="w-full bg-bravence-dark text-white font-bold py-3 rounded hover:bg-bravence-medium transition-colors mt-4 flex items-center justify-center gap-2">
+                            <span>ENVIAR SOLICITUD</span>
+                            <i class="fa-solid fa-arrow-right"></i>
+                        </button>
+                        <p class="text-center text-xs text-gray-400 mt-2">Sus datos están protegidos. Respuesta en 24hs.</p>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="bg-[#052e29] py-10 text-gray-400 text-sm border-t border-white/5">
+        <div class="container mx-auto px-6 flex flex-col md:flex-row justify-between items-center">
+            <div class="mb-4 md:mb-0">
+                <span class="text-white font-bold font-heading text-xl tracking-tightest">bravence</span>
+                <p class="mt-2 text-xs max-w-xs">Consultora de negocios híbrida: Finanzas + Marketing.</p>
+            </div>
+            <div class="flex gap-6">
+                <a href="#" class="hover:text-white"><i class="fa-brands fa-instagram text-lg"></i></a>
+                <a href="#" class="hover:text-white"><i class="fa-brands fa-linkedin text-lg"></i></a>
+            </div>
+        </div>
+        <div class="text-center mt-8 text-xs text-gray-600">
+            &copy; 2025 Bravence. Todos los derechos reservados.
+        </div>
+    </footer>
+
+    <a href="https://wa.me/5491112345678" target="_blank" class="fixed bottom-6 right-6 bg-[#25D366] text-white w-14 h-14 rounded-full flex items-center justify-center text-3xl shadow-lg hover:scale-110 transition-transform z-50">
+        <i class="fa-brands fa-whatsapp"></i>
+    </a>
+
+    <script>
+        // Mobile Menu Toggle
+        function toggleMenu() {
+            const menu = document.getElementById('mobile-menu');
+            menu.classList.toggle('hidden');
+        }
+
+        // Sticky Header
+        window.addEventListener('scroll', function() {
+            const navbar = document.getElementById('navbar');
+            if (window.scrollY > 50) {
+                navbar.classList.add('shadow-lg', 'bg-bravence-dark');
+                navbar.classList.remove('bg-bravence-dark/95');
+            } else {
+                navbar.classList.remove('shadow-lg', 'bg-bravence-dark');
+                navbar.classList.add('bg-bravence-dark/95');
+            }
+        });
+
+        // Toast Notification Function
+        function showToast(message, type = 'success') {
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.innerHTML = `
+                <div class="flex items-center gap-3">
+                    <i class="fa-solid fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'} text-xl"></i>
+                    <span>${message}</span>
+                </div>
+            `;
+            document.body.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.style.animation = 'slideIn 0.3s ease-out reverse';
+                setTimeout(() => toast.remove(), 300);
+            }, 4000);
+        }
+
+        // Form Submission Handler
+        document.getElementById('contactForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const submitBtn = document.getElementById('submitBtn');
+            const originalContent = submitBtn.innerHTML;
+            
+            // Show loading state
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<div class="spinner"></div><span>Enviando...</span>';
+            
+            // Get form data
+            const formData = new FormData(this);
+            const data = Object.fromEntries(formData.entries());
+            
+            try {
+                // Send to backend API
+                const response = await fetch('/api/contact', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data)
+                });
+                
+                const result = await response.json();
+                
+                if (response.ok) {
+                    showToast('¡Gracias! Hemos recibido tu solicitud. Te contactaremos pronto.', 'success');
+                    this.reset();
+                } else {
+                    showToast(result.message || 'Error al enviar el formulario. Intenta nuevamente.', 'error');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showToast('Error de conexión. Por favor intenta nuevamente.', 'error');
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = originalContent;
+            }
+        });
+    </script>
+</body>
+</html>
