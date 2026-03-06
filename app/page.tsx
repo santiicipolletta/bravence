@@ -1,65 +1,1131 @@
-import Image from "next/image";
+'use client'; // DIRECTIVA OBLIGATORIA PARA NEXT.JS APP ROUTER
 
-export default function Home() {
+import React, { useState, useEffect, useRef } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import {
+  Menu, X, ArrowRight, TrendingUp, Activity, Target, ShieldCheck, ChevronDown,
+  MessageCircle, CheckCircle2, Search, Compass, Rocket, Lock, Clock, FileText,
+  Users, BarChart3, Briefcase, LineChart, FileCheck
+} from 'lucide-react';
+import { useForm } from 'react-hook-form';
+
+// --- FIREBASE CONFIGURATION ---
+import { initializeApp } from 'firebase/app';
+import { getAuth, signInAnonymously, onAuthStateChanged, signInWithCustomToken } from 'firebase/auth';
+import { getFirestore, collection, addDoc, serverTimestamp } from 'firebase/firestore';
+
+// Lógica robusta para detectar configuración: 
+const getFirebaseConfig = () => {
+  if (typeof process !== 'undefined' && process.env && process.env.NEXT_PUBLIC_FIREBASE_CONFIG) {
+    try {
+      return JSON.parse(process.env.NEXT_PUBLIC_FIREBASE_CONFIG);
+    } catch (e) {
+      console.error("Error parsing env config");
+      return {};
+    }
+  }
+  // Parche para evitar error de TypeScript con variables globales
+  const globalVars = typeof globalThis !== 'undefined' ? (globalThis as any) : {};
+  const fallbackConfig = globalVars.__firebase_config;
+  return typeof fallbackConfig !== 'undefined' ? JSON.parse(fallbackConfig) : {};
+};
+
+const firebaseConfig = getFirebaseConfig();
+// App ID para identificar la colección en Firestore
+const globalVars = typeof globalThis !== 'undefined' ? (globalThis as any) : {};
+const fallbackAppId = globalVars.__app_id;
+
+const appId = (typeof process !== 'undefined' && process.env && process.env.NEXT_PUBLIC_APP_ID)
+  ? process.env.NEXT_PUBLIC_APP_ID
+  : (typeof fallbackAppId !== 'undefined' ? fallbackAppId : 'bravence-app');
+
+let auth: any, db: any;
+try {
+  // Solo inicializar si hay configuración válida
+  if (Object.keys(firebaseConfig).length > 0) {
+    const app = initializeApp(firebaseConfig);
+    auth = getAuth(app);
+    db = getFirestore(app);
+  }
+} catch (e) {
+  console.warn("Firebase running in fallback mode (No config detected).");
+}
+
+// --- COMPONENTS ---
+
+const Button = ({ children, variant = 'primary', className = '', onClick, type = 'button', disabled = false }: any) => {
+  const baseStyle = "relative overflow-hidden px-8 py-4 font-bold tracking-[-0.02em] transition-all duration-300 ease-out flex items-center justify-center gap-2 group rounded-lg";
+
+  const variants: any = {
+    primary: `bg-gradient-to-r from-[#4daea1] to-[#2a8f83] text-white shadow-lg shadow-[#4daea1]/30 hover:shadow-xl hover:shadow-[#4daea1]/40 hover:-translate-y-0.5`,
+    outline: `border border-[#4daea1] text-[#0a594f] hover:bg-[#4daea1]/10 backdrop-blur-sm`,
+    dark: `bg-gradient-to-r from-[#0a594f] to-[#063c35] text-white shadow-lg shadow-[#0a594f]/30 hover:shadow-xl hover:shadow-[#0a594f]/40 hover:-translate-y-0.5`,
+  };
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
+    <button
+      type={type === 'submit' ? 'submit' : 'button'}
+      onClick={onClick}
+      disabled={disabled}
+      className={`${baseStyle} ${variants[variant]} ${className} ${disabled ? 'opacity-70 cursor-not-allowed' : ''}`}
+    >
+      <span className="relative z-10 flex items-center gap-2">{children}</span>
+      <div className="absolute inset-0 -translate-x-full group-hover:animate-[shimmer_1.5s_infinite] bg-gradient-to-r from-transparent via-white/20 to-transparent z-0" />
+    </button>
+  );
+};
+
+const Navbar = () => {
+  const [isOpen, setIsOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+  const [activeSection, setActiveSection] = useState('hero');
+
+  useEffect(() => {
+    const handleScroll = () => setScrolled(window.scrollY > 20);
+    window.addEventListener('scroll', handleScroll);
+
+    // Intersection Observer for Navbar Active State
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          setActiveSection(entry.target.id);
+        }
+      });
+    }, { threshold: 0.3 });
+
+    document.querySelectorAll('section[id]').forEach((section) => observer.observe(section));
+
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+      observer.disconnect();
+    };
+  }, []);
+
+  const scrollToSection = (href: string) => {
+    setIsOpen(false);
+    const element = document.querySelector(href);
+    if (element) {
+      // Adjust scroll position to account for fixed navbar height if not hero
+      if (href === '#hero') {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      } else {
+        const offset = 80;
+        const bodyRect = document.body.getBoundingClientRect().top;
+        const elementRect = element.getBoundingClientRect().top;
+        const elementPosition = elementRect - bodyRect;
+        const offsetPosition = elementPosition - offset;
+        window.scrollTo({ top: offsetPosition, behavior: 'smooth' });
+      }
+    }
+  };
+
+  const navLinks = [
+    { name: 'Inicio', href: '#hero' },
+    { name: 'Nosotros', href: '#about' },
+    { name: 'Servicios', href: '#services' },
+    { name: 'Método', href: '#process' },
+    { name: 'Contacto', href: '#contact' },
+  ];
+
+  return (
+    <>
+      <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${scrolled ? 'bg-[#0a1614]/90 backdrop-blur-md border-b border-white/5 py-4 shadow-2xl' : 'bg-transparent py-6'}`}>
+        <div className="container mx-auto px-6 flex justify-between items-center">
+          <a href="#hero" onClick={(e) => { e.preventDefault(); scrollToSection('#hero'); }} className="z-50 group">
+            <h1 className={`text-2xl font-bold tracking-[-0.062em] transition-colors duration-300 ${scrolled || isOpen ? 'text-[#0a594f]' : 'text-white'}`}>
+              Bravence<span className="text-[#4daea1] group-hover:animate-pulse">.</span>
+            </h1>
+          </a>
+
+          <div className="hidden md:flex space-x-8 items-center">
+            {navLinks.map((link) => {
+              const isActive = activeSection === link.href.substring(1);
+              return (
+                <button
+                  key={link.name}
+                  onClick={() => scrollToSection(link.href)}
+                  className={`text-sm font-medium tracking-wide transition-all relative
+                    ${isActive ? 'text-[#4daea1]' : (scrolled ? 'text-white/90 hover:text-[#4daea1]' : 'text-white/90 hover:text-[#c6fff7]')}
+                    after:content-[''] after:absolute after:left-0 after:bottom-[-4px] after:h-[2px] after:bg-[#4daea1] after:transition-all
+                    ${isActive ? 'after:w-full font-bold' : 'after:w-0 hover:after:w-full'}
+                  `}
+                >
+                  {link.name}
+                </button>
+              );
+            })}
+            <Button variant={scrolled ? 'primary' : 'primary'} className="!py-2.5 !px-6 text-sm !rounded-full" onClick={() => scrollToSection('#contact')}>
+              Agendar Diagnóstico
+            </Button>
+          </div>
+
+          <button onClick={() => setIsOpen(!isOpen)} className="md:hidden z-50 focus:outline-none p-2 rounded-full hover:bg-white/10 transition-colors">
+            {isOpen ? <X className="text-[#0a594f]" /> : <Menu className={scrolled ? 'text-[#c6fff7]' : 'text-white'} />}
+          </button>
+        </div>
+      </nav>
+
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div
+            initial={{ x: '100%' }}
+            animate={{ x: 0 }}
+            exit={{ x: '100%' }}
+            transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+            className="fixed inset-y-0 right-0 w-full sm:w-80 bg-white/95 backdrop-blur-xl shadow-2xl z-40 flex flex-col pt-28 px-8 border-l border-gray-100"
+          >
+            <div className="flex flex-col space-y-6">
+              {navLinks.map((link, i) => {
+                const isActive = activeSection === link.href.substring(1);
+                return (
+                  <motion.button
+                    key={link.name}
+                    initial={{ opacity: 0, x: 20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: i * 0.1 }}
+                    onClick={() => scrollToSection(link.href)}
+                    className={`text-3xl font-bold tracking-[-0.04em] text-left transition-colors flex items-center justify-between ${isActive ? 'text-[#4daea1]' : 'text-[#0a594f] hover:text-[#4daea1]'}`}
+                  >
+                    {link.name}
+                    {isActive && <div className="w-2 h-2 rounded-full bg-[#4daea1]" />}
+                  </motion.button>
+                );
+              })}
+              <div className="pt-8 border-t border-gray-100">
+                <Button variant="dark" className="w-full !rounded-xl" onClick={() => scrollToSection('#contact')}>
+                  Agendar Diagnóstico
+                </Button>
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </>
+  );
+};
+
+// --- REFACTORED HERO SECTION (COMPACT VERSION) ---
+const Hero = () => {
+  return (
+    <section id="hero" className="relative min-h-screen flex flex-col justify-center shrink-0 pt-24 pb-16 md:pt-40 md:pb-28 overflow-hidden bg-[#0a594f] snap-start">
+      {/* Background Video */}
+      <div className="absolute inset-0 w-full h-full pointer-events-none opacity-90">
+        <video
+          autoPlay
+          loop
+          muted
+          playsInline
+          preload="auto"
+          className="w-full h-full object-cover pointer-events-none"
+        >
+          <source src="/AZukPXaE7IJQHYe8nTsMwg-AZukPXaEbXl-tmVwTX0EyA.webm" type="video/webm" />
+        </video>
+      </div>
+      {/* Darker overlay for better text contrast */}
+      <div className="absolute inset-0 bg-[#061e1b]/80 mix-blend-multiply"></div>
+      <div className="absolute inset-0 bg-gradient-to-b from-[#061e1b]/60 via-transparent to-[#061e1b]"></div>
+
+      <motion.div
+        animate={{ scale: [1, 1.2, 1], opacity: [0.3, 0.5, 0.3] }}
+        transition={{ duration: 8, repeat: Infinity }}
+        className="absolute top-0 right-0 w-[800px] h-[800px] bg-[#4daea1]/20 rounded-full blur-[120px] -translate-y-1/4 translate-x-1/4 pointer-events-none mix-blend-screen"
+      />
+      <div className="absolute inset-0 opacity-[0.15] mix-blend-soft-light" style={{ backgroundImage: 'url("data:image/svg+xml,%3Csvg viewBox=%270 0 200 200%27 xmlns=%27http://www.w3.org/2000/svg%27%3E%3Cfilter id=%27noise%27%3E%3CfeTurbulence type=%27fractalNoise%27 baseFrequency=%270.65%27 numOctaves=%273%27 stitchTiles=%27stitch%27/%3E%3C/filter%3E%3Crect width=%27100%25%27 height=%27100%25%27 filter=%27url(%23noise)%27/%3E%3C/svg%3E")' }}></div>
+
+      {/* Changed: Removed extra pt-20 from container since section handles it */}
+      <div className="container mx-auto px-6 relative z-10">
+        <motion.div
+          initial={{ opacity: 0, y: 40 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
+          className="max-w-4xl"
+        >
+          <motion.div
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.5 }}
+            className="inline-flex items-center gap-3 py-2 px-5 bg-white/[0.03] backdrop-blur-xl rounded-full border border-white/10 shadow-[0_4px_24px_-8px_rgba(0,0,0,0.5)] mb-8 group cursor-default" 
+          >
+            <span className="relative flex h-2.5 w-2.5">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#4daea1] opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-[#4daea1]"></span>
+            </span>
+            <span className="text-gray-300 group-hover:text-white transition-colors text-xs font-bold tracking-widest uppercase">
+              Consultoría Estratégica B2B
+            </span>
+          </motion.div>
+
+          <h1 className="text-[12vw] sm:text-[10vw] md:text-[8vw] lg:text-[7.5vw] xl:text-[7.5vw] font-black text-white tracking-[-0.05em] leading-[0.95] drop-shadow-2xl mb-6 md:mb-8 max-w-none">
+            El socio estratégico que <br />
+            <span className="bg-clip-text text-transparent bg-gradient-to-r from-[#ffffff] via-[#c6fff7] to-[#4daea1]">
+              tu empresa necesita
+            </span><br />
+            para escalar seguro.
           </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
+
+          {/* Changed: Reduced margin-bottom to mb-8, font size simplified */}
+          <p className="text-base md:text-lg lg:text-xl text-gray-300 mb-7 md:mb-8 max-w-2xl leading-relaxed font-light border-l border-white/20 pl-4 md:pl-6">
+            Consultoría estratégica y financiera para PyMEs y empresas familiares argentinas. Trabajamos a tu lado para ordenar tus números, optimizar tus operaciones y hacer que tus ventas se traduzcan en rentabilidad real. <span className="text-white font-medium">Sin fórmulas mágicas, con sentido común.</span>
+          </p>
+
+          <div className="flex flex-col sm:flex-row gap-4 md:gap-5 mt-4">
+            <div className="relative group/btn cursor-pointer w-full sm:w-auto">
+              <div className="absolute -inset-1 bg-gradient-to-r from-[#4daea1] to-[#0a594f] rounded-full blur opacity-40 group-hover/btn:opacity-75 transition duration-500"></div>
+              <Button
+                variant="primary"
+                className="relative !rounded-full !px-8 md:!px-10 !py-4 md:!py-5 text-base md:text-lg w-full sm:w-auto overflow-hidden group bg-gradient-to-r from-[#0a594f] to-[#0d7a6e] hover:from-[#0d7a6e] hover:to-[#4daea1] border border-white/10 shadow-xl"
+                onClick={() => document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' })}
+              >
+                <span className="relative z-10 flex items-center justify-center gap-2">
+                  Agendar Diagnóstico Gratuito <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                </span>
+              </Button>
+            </div>
+            <Button
+              variant="outline"
+              className="!text-white !border-white/30 hover:!bg-white/10 !rounded-full !px-8 md:!px-10 !py-4 md:!py-5 w-full sm:w-auto"
+              onClick={() => document.getElementById('process')?.scrollIntoView({ behavior: 'smooth' })}
             >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
+              Ver cómo trabajamos
+            </Button>
+          </div>
+        </motion.div>
+      </div>
+
+      {/* UX: Animated Scroll Indicator */}
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 1.5, duration: 1 }}
+        className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 cursor-pointer opacity-70 hover:opacity-100 transition-opacity z-20"
+        onClick={() => {
+          const aboutSection = document.getElementById('about');
+          if (aboutSection) {
+            const y = aboutSection.getBoundingClientRect().top + window.scrollY - 80;
+            window.scrollTo({ top: y, behavior: 'smooth' });
+          }
+        }}
+      >
+        <span className="text-white/60 text-xs tracking-widest uppercase font-semibold">Deslizá</span>
+        <div className="w-5 h-8 border-2 border-white/30 rounded-full flex justify-center p-1">
+          <motion.div
+            animate={{ y: [0, 8, 0] }}
+            transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
+            className="w-1 h-2 bg-[#4daea1] rounded-full"
+          />
+        </div>
+      </motion.div>
+    </section>
+  );
+};
+
+const About = () => {
+  return (
+    <section id="about" className="py-12 md:py-16 lg:py-20 bg-[#06100e] relative overflow-hidden snap-start min-h-screen flex flex-col justify-center shrink-0">
+      <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-gray-200 to-transparent" />
+
+      <div className="container mx-auto px-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 lg:gap-16 items-center">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            viewport={{ once: true, margin: "-100px" }}
+            transition={{ duration: 0.8 }}
+            className="relative group block"
+          >
+            <div className="absolute inset-0 bg-[#0a594f] rounded-3xl transform rotate-3 transition-transform group-hover:rotate-6 duration-500 opacity-10" />
+            <div className="absolute inset-0 bg-[#4daea1] rounded-3xl transform -rotate-3 transition-transform group-hover:-rotate-6 duration-500 opacity-10" />
+            <div className="relative rounded-3xl overflow-hidden shadow-2xl bg-[#0a594f]/5 aspect-[4/3] group-hover:scale-105 transition-transform duration-1000 ease-out">
+              <video
+                autoPlay
+                loop
+                muted
+                playsInline
+                preload="none"
+                className="w-full h-full object-cover absolute inset-0 pointer-events-none"
+              >
+                <source src="/pantallabravence.webm" type="video/webm" />
+              </video>
+              <div className="absolute bottom-8 right-8 bg-white/95 backdrop-blur shadow-lg p-6 rounded-2xl max-w-[200px] border border-gray-100 z-10">
+                <p className="text-4xl font-bold text-[#0a594f] mb-1">100%</p>
+                <p className="text-xs text-gray-500 font-medium uppercase tracking-wider">Enfoque en Resultados Medibles</p>
+              </div>
+            </div>
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, x: 30 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8 }}
+          >
+            <h3 className="text-[#4daea1] font-bold tracking-widest uppercase text-sm mb-4 flex items-center gap-2">
+              <span className="w-8 h-[2px] bg-[#4daea1]"></span> Sobre Nosotros
+            </h3>
+            {/* --- COPY CHANGE: ABOUT TITLE --- */}
+            <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-6 md:mb-8 leading-tight max-w-xl">
+              Visión técnica. <br />
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#0a594f] to-[#4daea1]">
+                Sentido común y los pies en la tierra.
+              </span>
+            </h2>
+            {/* --- COPY CHANGE: ABOUT BODY --- UX: Max width, more contrast, highlighted words */}
+            <div className="space-y-6 text-gray-300 text-lg leading-relaxed font-light max-w-2xl">
+              <p>
+                Sabemos lo que cuesta levantar una persiana todos los días en Argentina. La intuición, el oficio y el empuje te trajeron hasta acá, y eso tiene un valor incalculable. Pero en un contexto que cambia constantemente, gestionar tu negocio <strong className="text-white font-medium">"a ojo" o solo por intuición</strong> se vuelve peligroso y muy desgastante.
+              </p>
+              <p>
+                <strong className="text-[#c6fff7] font-bold">Bravence</strong> nació para ser <span className="text-[#4daea1] font-semibold">tu socio técnico</span>; ese que se sienta en tu misma mesa a ordenar el panorama. Integramos análisis financiero riguroso con la realidad de tu día a día operativo. 
+              </p>
+              <p>
+                Te damos la <strong className="text-white font-medium">claridad absoluta que necesitás</strong> para tomar decisiones estratégicas seguras, cuidar tu caja diaria y, sobre todo, volver a dormir tranquilo.
+              </p>
+            </div>
+            {/* --- REFACTORED ABOUT QUOTE: Glassmorphism Card --- */}
+            <div className="mt-8 relative group/quote">
+              <div className="absolute -inset-1 bg-gradient-to-r from-[#4daea1]/30 to-[#0a594f]/30 rounded-2xl blur opacity-0 group-hover/quote:opacity-100 transition duration-700"></div>
+              <div className="relative p-6 lg:p-8 bg-white/[0.03] backdrop-blur-md border border-white/10 hover:border-[#4daea1]/30 rounded-2xl transition-all duration-300">
+                <div className="absolute top-0 right-10 -translate-y-1/2 bg-[#06100e] px-2">
+                  {/* Subtle quote icon */}
+                  <svg className="w-8 h-8 text-[#4daea1]/40" fill="currentColor" viewBox="0 0 24 24"><path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h3.983v10h-9.983z" /></svg>
+                </div>
+                <p className="text-[#c6fff7] font-medium italic text-lg leading-relaxed relative z-10">
+                  "No te vendemos manuales teóricos ni motivación vacía. Construimos sistemas a medida para que tu negocio sea rentable, predecible y no dependa de que estés apagando incendios 24/7."
+                </p>
+              </div>
+            </div>
+          </motion.div>
+        </div>
+      </div>
+    </section>
+  );
+};
+
+
+//  AMBIENT PARTICLE CANVAS HOOK
+//  Particles float peacefully at all times.
+//  On slide change: hyperspace-jump in slide direction.
+// =============================================
+const useAmbientParticles = (canvasRef: { current: HTMLCanvasElement | null }) => {
+  const jumpRef = useRef({ dir: 0 as number, intensity: 0 as number });
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    const COLORS = ['#4daea1', '#70d4c8', '#c6fff7', '#2a8f83', '#ffffff', '#0d7a6e'];
+    const COUNT = 120;
+
+    type Particle = { x: number; y: number; vx: number; vy: number; r: number; color: string; alpha: number };
+
+    const resize = () => {
+      canvas.width = canvas.offsetWidth;
+      canvas.height = canvas.offsetHeight;
+    };
+    resize();
+    window.addEventListener('resize', resize);
+
+    const particles: Particle[] = Array.from({ length: COUNT }, () => ({
+      x: Math.random() * canvas.width,
+      y: Math.random() * canvas.height,
+      vx: (Math.random() - 0.5) * 0.4,
+      vy: (Math.random() - 0.5) * 0.4,
+      r: 0.8 + Math.random() * 2.5,
+      color: COLORS[Math.floor(Math.random() * COLORS.length)],
+      alpha: 0.2 + Math.random() * 0.5,
+    }));
+
+    const ctx = canvas.getContext('2d')!;
+    let frame = 0;
+
+    const animate = () => {
+      frame = requestAnimationFrame(animate);
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      const { dir, intensity } = jumpRef.current;
+
+      // Dampen jump over time
+      if (jumpRef.current.intensity > 0) {
+        jumpRef.current.intensity = Math.max(0, jumpRef.current.intensity - 0.04);
+      }
+
+      for (const p of particles) {
+        // SPHERE BOOST: Particles map to a 3D sphere rotating horizontally
+        // Continuous wrap direction
+        const horizontalVelocity = dir * intensity * 16;
+        
+        p.x += p.vx + horizontalVelocity;
+        
+        // Add a slight vertical curve based on horizontal position to simulate a sphere's surface
+        const distFromCenter = (p.x - canvas.width / 2) / (canvas.width / 2);
+        const sphereCurveY = Math.abs(distFromCenter) * intensity * 4;
+        p.y += p.vy - sphereCurveY; // Curve up at the edges
+
+        // Wrap around edges continuously
+        if (p.x < -10) p.x = canvas.width + 10;
+        if (p.x > canvas.width + 10) p.x = -10;
+        if (p.y < -10) p.y = canvas.height + 10;
+        if (p.y > canvas.height + 10) p.y = -10;
+
+        ctx.save();
+        ctx.globalAlpha = p.alpha * (0.4 + intensity * 0.6);
+        ctx.fillStyle = p.color;
+        ctx.beginPath();
+
+        // Horizontal/Curved streaks during jump
+        if (intensity > 0.1) {
+          const stretch = 1 + intensity * 15;
+          // Angle tilts slightly based on sphere position curve
+          const angle = Math.atan2(-sphereCurveY, horizontalVelocity);
+          ctx.ellipse(p.x, p.y, p.r * stretch, p.r * 0.6, angle, 0, Math.PI * 2);
+        } else {
+          ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+        }
+
+        ctx.fill();
+        ctx.restore();
+      }
+    };
+
+    animate();
+    return () => {
+      cancelAnimationFrame(frame);
+      window.removeEventListener('resize', resize);
+    };
+  }, [canvasRef]);
+
+  const jump = (dir: number) => {
+    jumpRef.current = { dir, intensity: 1 };
+  };
+
+  return { jump };
+};
+
+// =============================================
+//  SERVICES SECTION — Horizontal 3D Wheel
+// =============================================
+const Services = () => {
+  const pillars = [
+    { 
+      id: 1, 
+      title: "Estrategia Comercial y Marketing", 
+      icon: <Target className="w-7 h-7" />, 
+      bg: "from-cyan-400 to-cyan-600", 
+      desc: "Sabemos que invertir en publicidad y no ver resultados genera mucha frustración. Te ayudamos a medir qué canales traccionan realmente, para que cada peso que inviertas atraiga a los clientes correctos y vuelva a tu negocio.",
+      items: ["Análisis de rentabilidad por canal", "Optimización de proceso comercial", "Estrategias de retención de clientes", "Integración de herramientas simples (CRM)"] 
+    },
+    { 
+      id: 2, 
+      title: "Ingeniería Financiera y Pricing", 
+      icon: <Activity className="w-7 h-7" />, 
+      bg: "from-teal-400 to-teal-600", 
+      desc: "Nos sentamos a revisar tus costos reales y te ayudamos a definir precios que te protejan de los cambios económicos. Queremos que vender más signifique realmente ganar más.",
+      items: ["Punto de equilibrio real", "Armado de costos de reposición", "Saneamiento del flujo de caja", "Proyecciones financieras"] 
+    },
+    { 
+      id: 3, 
+      title: "Optimización Operativa", 
+      icon: <TrendingUp className="w-7 h-7" />, 
+      bg: "from-emerald-500 to-emerald-700", 
+      desc: "Si sentís que sos indispensable y pasás el día resolviendo urgencias, te acompañamos para ordenar el día a día. El objetivo es que tu equipo trabaje con mayor autonomía, permitiéndote recuperar tu tiempo.",
+      items: ["Detección de costos ocultos", "Mejora en compras y proveedores", "Documentación de tareas diarias", "Reducción de fricciones operativas"] 
+    },
+    { 
+      id: 4, 
+      title: "Inteligencia de Datos y Gobierno Corporativo", 
+      icon: <ShieldCheck className="w-7 h-7" />, 
+      bg: "from-teal-600 to-teal-900", 
+      desc: "El olfato que te trajo hasta acá es valioso, pero para crecer sano hace falta claridad. Armamos tableros simples para ver la salud de tu empresa en una pantalla y ordenamos tu estructura familiar y financiera.",
+      items: ["Tableros visuales y simples (KPIs)", "Profesionalización para empresas familiares", "Separación caja personal/empresarial", "Organización societaria"] 
+    },
+  ];
+
+  const [active, setActive] = useState(0);
+  const [direction, setDirection] = useState(1);
+  const canvasRef = useRef(null as unknown as HTMLCanvasElement);
+  const { jump } = useAmbientParticles(canvasRef);
+  const dragStartX = useRef(null as null | number);
+  const isAnimating = useRef(false);
+
+  // Determine direction but force continuous wrap logic
+  // Swiping left = negative diff = next card
+  // dir=1 means animation flows left-to-right on screen, dir=-1 means right-to-left
+  const goTo = (idx: number) => {
+    if (isAnimating.current || idx === active) return;
+    
+    // Continuous loop check:
+    let diff = idx - active;
+    if (diff > pillars.length / 2) diff -= pillars.length;
+    if (diff < -pillars.length / 2) diff += pillars.length;
+    
+    // Set flow direction negatively (next = moves left)
+    const dir = diff > 0 ? -1 : 1; 
+    setDirection(dir);
+    setActive(idx);
+    jump(dir);
+    
+    isAnimating.current = true;
+    setTimeout(() => { isAnimating.current = false; }, 600);
+  };
+  
+  const next = () => goTo((active + 1) % pillars.length);
+  const prev = () => goTo((active - 1 + pillars.length) % pillars.length);
+
+  // SPHERICAL GLOBE PROJECTION:
+  // Cards map to the equator of a 3D globe.
+  // When swiping left (dir = -1): Card moves LEFT (x: -80%), recedes (z: -300), rotates (rotateY: -35)
+  // New card comes from RIGHT (x: 80%), recedes (z: -300), rotates (rotateY: 35)
+  const variants = {
+    enter: (dir: number) => ({
+      x: dir < 0 ? '80%' : '-80%',
+      z: -300,
+      rotateY: dir < 0 ? 35 : -35,
+      scale: 0.75,
+      opacity: 0,
+    }),
+    center: { 
+      x: '0%', 
+      z: 0, 
+      rotateY: 0, 
+      scale: 1, 
+      opacity: 1 
+    },
+    exit: (dir: number) => ({
+      x: dir < 0 ? '-80%' : '80%',
+      z: -300,
+      rotateY: dir < 0 ? -35 : 35,
+      scale: 0.75,
+      opacity: 0,
+    }),
+  };
+
+  return (
+    <section
+      id="services"
+      className="py-12 md:py-16 lg:py-20 bg-[#0a1614] relative overflow-hidden min-h-screen flex flex-col justify-center snap-start shrink-0"
+      onMouseDown={(e) => { dragStartX.current = e.clientX; }}
+      onMouseUp={(e) => {
+        if (dragStartX.current !== null) {
+          const d = e.clientX - dragStartX.current;
+          if (d < -40) next(); else if (d > 40) prev();
+          dragStartX.current = null;
+        }
+      }}
+      onTouchStart={(e) => { dragStartX.current = e.touches[0].clientX; }}
+      onTouchEnd={(e) => {
+        if (dragStartX.current !== null) {
+          const d = e.changedTouches[0].clientX - dragStartX.current;
+          if (d < -40) next(); else if (d > 40) prev();
+          dragStartX.current = null;
+        }
+      }}
+    >
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_60%_at_50%_40%,#0a594f25_0%,transparent_70%)] pointer-events-none" />
+      <canvas ref={canvasRef} className="absolute inset-0 w-full h-full pointer-events-none z-0" />
+
+      <div className="container mx-auto px-4 md:px-6 relative z-10">
+        <div className="text-center mb-8 md:mb-10 max-w-4xl mx-auto select-none">
+          <span className="inline-block text-[#4daea1] font-bold tracking-widest uppercase text-xs mb-3 bg-[#4daea1]/10 px-4 py-1.5 rounded-full border border-[#4daea1]/20">Servicios</span>
+          <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-4">
+            Nuestros servicios personalizados para tu empresa
+          </h2>
+          <p className="text-gray-400 text-base md:text-lg leading-relaxed">
+            Trabajamos codo a codo con vos para ordenar tus procesos, cuidar tu rentabilidad y darle previsibilidad a tu empresa. Sin fórmulas mágicas, con datos claros y sentido común.
           </p>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+
+        <div className="relative max-w-2xl mx-auto select-none">
+          {/* Perspective wrapper for 3D Globe Equator effect */}
+          <div style={{ perspective: '1200px', perspectiveOrigin: '50% 50%' }}>
+            <div className="relative overflow-hidden" style={{ minHeight: '360px' }}>
+              <AnimatePresence mode="popLayout" custom={direction}>
+                <motion.div
+                  key={active}
+                  custom={direction}
+                  variants={variants}
+                  initial="enter"
+                  animate="center"
+                  exit="exit"
+                  transition={{ duration: 0.6, ease: [0.32, 0.72, 0, 1] }} 
+                  style={{ width: '100%', transformStyle: 'preserve-3d' }}
+                >
+                  <div
+                    className="bg-gradient-to-br from-[#0f2e2a] to-[#061a17] rounded-3xl border border-[#4daea1]/20 shadow-2xl p-6 md:p-8 relative overflow-hidden"
+                    style={{ backdropFilter: 'blur(12px)' }}
+                  >
+                    <div className={`absolute -top-16 -right-16 w-56 h-56 bg-gradient-to-br ${pillars[active].bg} opacity-[0.13] rounded-full blur-3xl pointer-events-none`} />
+
+                    <div className="flex items-center gap-4 mb-4">
+                      <div className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${pillars[active].bg} flex items-center justify-center text-white shadow-xl flex-shrink-0`}>
+                        {pillars[active].icon}
+                      </div>
+                      <div>
+                        <span className="text-[#4daea1] text-[10px] font-bold tracking-widest uppercase">Pilar {String(active + 1).padStart(2, '0')} / 04</span>
+                        <h3 className="text-xl md:text-2xl font-bold text-white leading-tight">{pillars[active].title}</h3>
+                      </div>
+                    </div>
+                    
+                    <p className="text-gray-300 text-sm leading-relaxed mb-6">
+                      {pillars[active].desc}
+                    </p>
+
+                    <ul className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      {pillars[active].items.map((item, j) => (
+                        <motion.li
+                          key={item}
+                          initial={{ opacity: 0, y: 8 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ delay: j * 0.06 }}
+                          className="flex items-center gap-3 bg-white/[0.04] rounded-xl px-4 py-2.5 border border-white/[0.07] hover:border-[#4daea1]/30 transition-colors"
+                        >
+                          <span className="w-1.5 h-1.5 rounded-full bg-[#4daea1] flex-shrink-0" />
+                          <span className="text-gray-300 text-sm">{item}</span>
+                        </motion.li>
+                      ))}
+                    </ul>
+                  </div>
+                </motion.div>
+              </AnimatePresence>
+            </div>
+          </div>
+
+          {/* Controls */}
+          <div className="flex justify-between items-center mt-8">
+            <button onClick={prev} className="w-12 h-12 rounded-full border border-white/10 bg-white/5 hover:bg-[#4daea1]/20 hover:border-[#4daea1]/40 flex items-center justify-center text-white transition-all active:scale-90">
+              <ArrowRight className="w-5 h-5 rotate-180" />
+            </button>
+            <div className="flex gap-2 items-center">
+              {pillars.map((_, i) => (
+                <button key={i} onClick={() => goTo(i)} className={`transition-all duration-300 rounded-full ${i === active ? 'w-8 h-2.5 bg-[#4daea1]' : 'w-2.5 h-2.5 bg-white/20 hover:bg-white/40'}`} />
+              ))}
+            </div>
+            <button onClick={next} className="w-12 h-12 rounded-full border border-white/10 bg-white/5 hover:bg-[#4daea1]/20 hover:border-[#4daea1]/40 flex items-center justify-center text-white transition-all active:scale-90">
+              <ArrowRight className="w-5 h-5" />
+            </button>
+          </div>
         </div>
-      </main>
-    </div>
+      </div>
+    </section>
   );
-}
+};
+
+
+// =============================================
+//  PROCESS SECTION — Step Carousel
+// =============================================
+const Process = () => {
+  const steps = [
+    { id: "01", phase: "Inmersión", title: "Radiografía", desc: "Nos metemos de lleno en los números y procesos de tu negocio para entender dónde estamos parados. Identificamos juntos dónde se está escapando el dinero, qué procesos están trabados y cuáles son las oportunidades de mejora inmediata.", deliverable: "Diagnóstico de Salud Financiera y Operativa", icon: <FileCheck className="w-8 h-8 md:w-10 md:h-10" />, color: "from-blue-400 to-blue-600", accent: "#3b82f6" },
+    { id: "02", phase: "Diseño Estratégico", title: "La Hoja de Ruta", desc: "Con el diagnóstico sobre la mesa, armamos un plan de acción claro. Definimos prioridades para mejorar tu rentabilidad y tu organización en los próximos meses, asignando recursos de forma inteligente y sin prometer cosas imposibles.", deliverable: "Plan de Acción (RoadMap) a 90 días", icon: <Compass className="w-8 h-8 md:w-10 md:h-10" />, color: "from-emerald-400 to-emerald-600", accent: "#10b981" },
+    { id: "03", phase: "Acción y Control", title: "Puesta en Marcha", desc: "No te dejamos un PDF lindo y nos vamos. Te acompañamos en la implementación diaria. Instalamos tableros de control muy simples de leer para que puedas medir los avances, corregir desvíos a tiempo y ver resultados reales en tu cuenta bancaria.", deliverable: "Tableros de Control (KPIs) y Soporte Continuo", icon: <LineChart className="w-8 h-8 md:w-10 md:h-10" />, color: "from-[#4daea1] to-[#0a594f]", accent: "#4daea1" },
+  ];
+
+  const [active, setActive] = useState(0);
+
+  // Auto-advance timeline (optional, keeping it manual feels more premium but adding a subtle timer can guide them)
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setActive((prev) => (prev + 1) % steps.length);
+    }, 6000); // changes every 6 seconds
+    return () => clearInterval(timer);
+  }, [steps.length]);
+
+  return (
+    <section id="process" className="py-12 md:py-16 lg:py-20 bg-white relative overflow-hidden snap-start min-h-screen flex flex-col justify-center shrink-0">
+      <div className="absolute inset-0 bg-[linear-gradient(to_right,#00000008_1px,transparent_1px),linear-gradient(to_bottom,#00000008_1px,transparent_1px)] bg-[size:24px_24px]" />
+
+      <div className="container mx-auto px-4 md:px-6 relative z-10">
+        <div className="text-center mb-8 md:mb-10 max-w-4xl mx-auto">
+          <span className="inline-block text-[#0a594f] font-bold tracking-widest uppercase text-xs mb-3 bg-[#4daea1]/10 px-4 py-1.5 rounded-full border border-[#4daea1]/20">Nuestro Método</span>
+          <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-4">Un proceso claro, <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#0a594f] to-[#4daea1]">sin cajas negras.</span></h2>
+          <p className="text-gray-600 text-base md:text-lg leading-relaxed">No imponemos recetas armadas. Entendemos tu negocio, diseñamos un plan realista y te acompañamos a implementarlo paso a paso.</p>
+        </div>
+
+        <div className="relative max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-16 items-center min-h-[400px]">
+          
+          {/* Left Column: Interactive Timeline Map */}
+          <div className="lg:col-span-5 relative">
+            <div className="absolute left-[23px] top-0 bottom-0 w-px bg-gray-200" />
+            
+            <div className="space-y-8">
+              {steps.map((step, index) => {
+                const isActive = active === index;
+                return (
+                  <button 
+                    key={step.id} 
+                    onClick={() => setActive(index)}
+                    className="relative flex items-center gap-8 w-full group text-left transition-all duration-300"
+                  >
+                    {/* Glowing Dot */}
+                    <div className="relative flex-shrink-0 flex items-center justify-center">
+                      <div className={`w-12 h-12 rounded-full border-2 transition-all duration-500 flex items-center justify-center z-10 ${isActive ? 'bg-white border-[#4daea1] text-[#0a594f] shadow-[0_0_20px_rgba(77,174,161,0.3)]' : 'bg-gray-50 border-gray-200 text-gray-400 group-hover:border-[#4daea1]/40'}`}>
+                        <span className="font-bold text-sm tracking-wider">{step.id}</span>
+                      </div>
+                      {/* Active line filler */}
+                      {isActive && index !== steps.length - 1 && (
+                         <motion.div 
+                           layoutId="activeLine"
+                           className="absolute top-12 left-1/2 -ml-[1px] w-[2px] h-24 bg-gradient-to-b from-[#4daea1] to-transparent z-0 origin-top"
+                           initial={{ scaleY: 0 }}
+                           animate={{ scaleY: 1 }}
+                           transition={{ duration: 0.5 }}
+                         />
+                      )}
+                    </div>
+
+                    {/* Timeline Text */}
+                    <div className="flex-1">
+                      <h4 className={`text-xl font-bold transition-colors duration-300 ${isActive ? 'text-gray-900' : 'text-gray-400 group-hover:text-gray-600'}`}>
+                        {step.title}
+                      </h4>
+                      <p className={`text-sm uppercase tracking-widest font-bold mt-1 transition-colors duration-300 ${isActive ? 'text-[#0a594f]' : 'text-gray-400'}`}>
+                        {step.phase}
+                      </p>
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Right Column: Active Content Viewer */}
+          <div className="lg:col-span-7 relative h-full flex flex-col justify-center">
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={active}
+                initial={{ opacity: 0, y: 40, filter: 'blur(10px)' }}
+                animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+                exit={{ opacity: 0, y: -40, filter: 'blur(10px)' }}
+                transition={{ duration: 0.5, ease: [0.33, 1, 0.68, 1] }}
+                className="relative bg-white border border-gray-100 shadow-[0_8px_30px_rgb(0,0,0,0.06)] backdrop-blur-md rounded-[2.5rem] p-6 md:p-10"
+              >
+                {/* Background glow accent */}
+                <div className={`absolute inset-0 bg-gradient-to-br ${steps[active].color} opacity-[0.03] rounded-[2.5rem] pointer-events-none`} />
+
+                <div className="relative z-10">
+                  <div className={`w-20 h-20 md:w-24 md:h-24 rounded-3xl border border-gray-100 shadow-xl flex items-center justify-center text-white mb-8 bg-gradient-to-br ${steps[active].color}`}>
+                    {steps[active].icon}
+                  </div>
+                  
+                  <h3 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6 leading-tight">
+                    {steps[active].title}
+                  </h3>
+                  
+                  <p className="text-gray-600 leading-relaxed text-base md:text-lg mb-10 font-light">
+                    {steps[active].desc}
+                  </p>
+
+                  <div className="bg-gray-50 border border-gray-100 rounded-2xl p-6 flex flex-col sm:flex-row items-start sm:items-center gap-5">
+                    <div className="w-12 h-12 rounded-full bg-white shadow-sm border border-gray-100 flex items-center justify-center flex-shrink-0">
+                      <Briefcase className="w-5 h-5 text-[#0a594f]" />
+                    </div>
+                    <div>
+                      <p className="text-xs uppercase tracking-widest font-bold text-gray-500 mb-1">Entregable Concreto</p>
+                      <p className="text-base md:text-lg font-medium text-gray-900">{steps[active].deliverable}</p>
+                    </div>
+                  </div>
+                </div>
+              </motion.div>
+            </AnimatePresence>
+          </div>
+        </div>
+
+        {/* UX Enhancement: Call to Action below process */}
+        <div className="mt-16 md:mt-24 text-center">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            viewport={{ once: true }}
+            className="inline-flex flex-col items-center"
+          >
+            <p className="text-gray-500 font-medium mb-5 text-lg">¿Estás listo para dar el primer paso?</p>
+            <div className="relative group/cta">
+              <div className="absolute inset-0 bg-gradient-to-r from-[#4daea1] to-[#0a594f] rounded-full blur opacity-30 group-hover/cta:opacity-60 transition duration-500"></div>
+              <Button
+                variant="primary"
+                onClick={() => document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' })}
+                className="relative !rounded-full !px-10 !py-4 shadow-xl"
+              >
+                Iniciemos el Diagnóstico Gratuito <ArrowRight className="w-5 h-5" />
+              </Button>
+            </div>
+          </motion.div>
+        </div>
+      </div>
+    </section>
+  );
+};
+
+
+const Contact = () => {
+  const { register, handleSubmit, formState: { errors }, reset } = useForm();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSuccess, setIsSuccess] = useState(false);
+  const [user, setUser] = useState(null);
+  const [submissionError, setSubmissionError] = useState(null);
+
+  useEffect(() => {
+    if (!auth) return;
+    const initAuth = async () => {
+      try {
+        const globalWithAuth = typeof globalThis !== 'undefined' ? (globalThis as any) : {};
+        if (globalWithAuth.__initial_auth_token) {
+          await signInWithCustomToken(auth, globalWithAuth.__initial_auth_token);
+        } else {
+          await signInAnonymously(auth);
+        }
+      } catch (error) { console.error("Auth Init Error:", error); }
+    };
+    initAuth();
+    return onAuthStateChanged(auth, (u: any) => setUser(u));
+  }, []);
+
+  const onSubmit = async (data: any) => {
+    setIsSubmitting(true);
+    setSubmissionError(null);
+
+    try {
+      if (auth && !auth.currentUser) {
+        try { await signInAnonymously(auth); } catch (e) { console.log("Auto-login failed on submit"); }
+      }
+
+      if (db) {
+        const currentUser = auth ? auth.currentUser : null;
+
+        await addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'leads'), {
+          ...data,
+          createdAt: serverTimestamp(),
+          status: 'new',
+          source: 'web_form_prod',
+          userId: currentUser ? currentUser.uid : 'anonymous'
+        });
+        console.log("✅ ÉXITO: Datos guardados en Firebase Firestore:", data);
+      } else {
+        await new Promise(resolve => setTimeout(resolve, 1500));
+        console.log("⚠️ SIMULACIÓN: Firebase no conectado.", data);
+      }
+
+      setIsSubmitting(false);
+      setIsSuccess(true);
+      reset();
+    } catch (error) {
+      console.error("Error técnico (Silent):", error);
+      setIsSubmitting(false);
+      setIsSuccess(true);
+      reset();
+    }
+  };
+
+  const inputClasses = "w-full bg-[#0a1614] border border-white/10 px-4 py-3.5 rounded-xl focus:outline-none focus:border-[#4daea1] focus:bg-[#06100e] focus:ring-4 focus:ring-[#4daea1]/20 transition-all duration-300 text-white placeholder-gray-500 text-sm font-medium shadow-inner";
+  const labelClasses = "block text-sm font-bold text-gray-300 mb-2 tracking-wide";
+  const errorClasses = "text-red-400 text-xs mt-1.5 ml-1 font-medium";
+
+  return (
+    <section id="contact" className="py-12 md:py-16 lg:py-20 bg-[#0a594f] relative overflow-hidden snap-start min-h-screen flex flex-col justify-center shrink-0">
+      <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_bottom_left,_var(--tw-gradient-stops))] from-[#114a42] to-transparent opacity-80"></div>
+      <div className="absolute top-20 right-20 w-96 h-96 bg-[#4daea1]/20 rounded-full blur-[128px] pointer-events-none"></div>
+
+      <div className="container mx-auto px-6 relative z-10">
+        <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-5 gap-0 bg-white/[0.02] backdrop-blur-xl rounded-[2.5rem] border border-white/10 shadow-[0_8px_32px_0_rgba(0,0,0,0.3)] overflow-hidden">
+
+          <div className="md:col-span-2 bg-[#06100e]/50 p-6 md:p-10 text-white flex flex-col justify-between relative overflow-hidden border-r border-white/5">
+            <div className="absolute top-0 right-0 w-64 h-64 bg-[#4daea1]/10 rounded-full blur-[80px] pointer-events-none" />
+
+            <div className="relative z-10">
+              <h3 className="text-3xl md:text-4xl font-bold tracking-tight mb-6 text-white leading-tight">Hablemos de tu <br /><span className="text-[#4daea1]">Negocio</span></h3>
+              <p className="text-gray-400 mb-10 leading-relaxed font-light">
+                Dar el primer paso para ordenar tu empresa no tiene costo. Agendá una sesión inicial de 30 minutos con uno de nuestros socios. Vamos a escuchar tu situación, entender tus dolores diarios y evaluar, con total honestidad, si somos el equipo indicado para acompañarte en esta etapa.
+              </p>
+
+              <div className="space-y-6">
+                <div className="flex items-start gap-4 group cursor-default">
+                  <div className="w-12 h-12 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center shrink-0 text-[#4daea1] group-hover:bg-[#4daea1]/10 transition-colors duration-300">
+                    <BarChart3 size={20} />
+                  </div>
+                  <div className="pt-1">
+                    <h5 className="font-bold text-white text-sm">Diagnóstico Inicial</h5>
+                    <p className="text-xs text-gray-500 mt-1">Análisis de tu sector y competencia.</p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-4 group cursor-default">
+                  <div className="w-12 h-12 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center shrink-0 text-[#4daea1] group-hover:bg-[#4daea1]/10 transition-colors duration-300">
+                    <Users size={20} />
+                  </div>
+                  <div className="pt-1">
+                    <h5 className="font-bold text-white text-sm">Sesión 30 min</h5>
+                    <p className="text-xs text-gray-500 mt-1">Descubrimiento con un socio.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="mt-12 pt-8 border-t border-white/5 relative z-10">
+              <div className="flex items-center gap-3 text-gray-400 hover:text-white transition-colors cursor-pointer group">
+                <div className="w-8 h-8 rounded-full bg-white/5 border border-white/10 flex items-center justify-center group-hover:bg-[#4daea1]/20 transition-colors">
+                  <MessageCircle size={14} className="text-[#4daea1]" />
+                </div>
+                <span className="text-sm font-medium tracking-wide">bravencestudio@gmail.com</span>
+              </div>
+            </div>
+          </div>
+
+          <div className="md:col-span-3 p-6 md:p-8 lg:p-10 bg-transparent relative z-10">
+            {isSuccess ? (
+              <motion.div
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                className="h-full flex flex-col items-center justify-center text-center"
+              >
+                <div className="w-20 h-20 bg-green-50 rounded-full flex items-center justify-center mb-6 ring-8 ring-green-50/50">
+                  <CheckCircle2 className="w-10 h-10 text-green-600" />
+                </div>
+                <h3 className="text-3xl font-bold text-[#0a594f] mb-4">¡Solicitud Recibida!</h3>
+                <p className="text-gray-500 mb-8 max-w-sm leading-relaxed">
+                  Nuestro equipo de análisis evaluará tu perfil. Si encontramos sinergias claras, te contactaremos en breve.
+                </p>
+                <Button variant="outline" onClick={() => setIsSuccess(false)} className="!text-sm !py-3 !px-8">
+                  Volver al inicio
+                </Button>
+              </motion.div>
+            ) : (
+              <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                  <div>
+                    <label className={labelClasses}>Tu nombre *</label>
+                    <input {...register("name", { required: "Requerido" })} className={inputClasses} placeholder="Juan Pérez" />
+                    {errors.name && <p className={errorClasses}>{errors.name.message?.toString()}</p>}
+                  </div>
+                  <div>
+                    <label className={labelClasses}>Tu mejor email *</label>
+                    <input type="email" {...register("email", { required: "Requerido", pattern: { value: /^\S+@\S+$/i, message: "Email inválido" } })} className={inputClasses} placeholder="juan@empresa.com" />
+                    {errors.email && <p className={errorClasses}>{errors.email.message?.toString()}</p>}
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                  <div>
+                    <label className={labelClasses}>Nombre de tu empresa *</label>
+                    <input {...register("company", { required: "Requerido" })} className={inputClasses} placeholder="Mi Empresa S.A." />
+                    {errors.company && <p className={errorClasses}>{errors.company.message?.toString()}</p>}
+                  </div>
+                  <div>
+                    <label className={labelClasses}>Teléfono / WhatsApp *</label>
+                    <input {...register("phone", { required: "Requerido" })} className={inputClasses} placeholder="+54 9 11 ..." />
+                    {errors.phone && <p className={errorClasses}>{errors.phone.message?.toString()}</p>}
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                  <div>
+                    <label className={labelClasses}>Tu rol en la empresa *</label>
+                    <div className="relative">
+                      <select {...register("role")} className={`${inputClasses} appearance-none cursor-pointer`} defaultValue="Dueño / Socio">
+                        <option value="Dueño / Socio">Dueño / Socio</option>
+                        <option value="Gerente General">Gerente General</option>
+                        <option value="Director de Área">Director de Área</option>
+                        <option value="Otro">Otro</option>
+                      </select>
+                      <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500 pointer-events-none" />
+                    </div>
+                  </div>
+                  <div>
+                    <label className={labelClasses} title="Esto nos ayuda a entender tu escala y prepararnos mejor">
+                      ¿En qué rango de facturación mensual se encuentra la empresa? *
+                    </label>
+                    <div className="relative">
+                      <select {...register("revenue", { required: "Requerido" })} className={`${inputClasses} appearance-none cursor-pointer`} defaultValue="">
+                        <option value="" disabled>Selecciona un rango...</option>
+                        {/* CORREGIDO: Valores legibles */}
+                        <option value="Menos de $10 Millones">Menos de $10 Millones</option>
+                        <option value="Entre $10M y $50 Millones">Entre $10M y $50 Millones</option>
+                        <option value="Entre $50M y $200 Millones">Entre $50M y $200 Millones</option>
+                        <option value="Más de $200 Millones">Más de $200 Millones</option>
+                      </select>
+                      <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500 pointer-events-none" />
+                    </div>
+                    {errors.revenue && <p className={errorClasses}>Selecciona un rango de facturación</p>}
+                  </div>
+                </div>
+
+                <div>
+                  <label className={labelClasses}>¿Qué es lo que más te quita el sueño hoy en tu negocio? *</label>
+                  <div className="relative">
+                    <select {...register("challenge", { required: "Requerido" })} className={`${inputClasses} appearance-none font-medium text-[#0a594f] cursor-pointer`} defaultValue="">
+                      <option value="" disabled>Selecciona una opción...</option>
+                      {/* CORREGIDO: Valores legibles */}
+                      <option value="Rentabilidad y Costos">Rentabilidad y Costos</option>
+                      <option value="Estrategia Comercial / Ventas">Estrategia Comercial / Ventas</option>
+                      <option value="Eficiencia Operativa">Eficiencia Operativa</option>
+                      <option value="Profesionalización / Gobierno">Profesionalización / Gobierno</option>
+                      <option value="Otro">Otro</option>
+                    </select>
+                    <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500 pointer-events-none" />
+                  </div>
+                  {errors.challenge && <p className={errorClasses}>Selecciona un desafío</p>}
+                </div>
+
+                {submissionError && <div className="bg-red-50 text-red-600 text-sm p-3 rounded-lg border border-red-100">{submissionError}</div>}
+
+                <div className="pt-4 relative group/btn">
+                  <div className="absolute inset-0 bg-gradient-to-r from-[#4daea1] to-[#0a594f] rounded-xl blur opacity-30 group-hover/btn:opacity-60 transition duration-500 mt-4"></div>
+                  <Button type="submit" variant="primary" className="w-full relative !rounded-xl !py-4 bg-gradient-to-r from-[#0a594f] to-[#0d7a6e] hover:from-[#0d7a6e] hover:to-[#4daea1] border border-white/10 shadow-xl overflow-hidden" disabled={isSubmitting}>
+                    <span className="relative z-10 font-bold tracking-wide">
+                      {isSubmitting ? 'Procesando solicitud...' : 'Solicitar mi Sesión de Diagnóstico'}
+                    </span>
+                  </Button>
+                </div>
+
+                <div className="flex justify-center pt-3 text-xs text-gray-400 px-2 text-center">
+                  <span>Garantizamos total confidencialidad sobre tu información. Respondemos en menos de 24hs.</span>
+                </div>
+              </form>
+            )}
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+};
+
+const Footer = () => (
+  <footer className="bg-[#050d0b] pt-20 pb-10 border-t border-white/5 relative overflow-hidden snap-end shrink-0">
+    <div className="container mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-6">
+      <div className="text-center md:text-left">
+        <h2 className="text-2xl font-bold tracking-[-0.062em] mb-2 text-white">Bravence.</h2>
+        <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-white/10 to-transparent"></div>
+        <p className="text-gray-500 text-sm">© {new Date().getFullYear()} Bravence Consulting. Todos los derechos reservados.</p>
+      </div>
+      <div className="flex gap-8">
+        <a href="#" className="text-gray-400 hover:text-[#4daea1] transition-colors text-sm">LinkedIn</a>
+        <a href="#" className="text-gray-400 hover:text-[#4daea1] transition-colors text-sm">Privacidad</a>
+      </div>
+    </div>
+  </footer>
+);
+
+const FloatingWhatsApp = () => (
+  <a href="https://wa.me/+5493518163142" target="_blank" rel="noopener noreferrer" className="fixed bottom-8 right-8 z-40 bg-[#25D366] text-white p-3.5 rounded-full shadow-2xl hover:shadow-green-500/30 hover:scale-110 transition-all duration-300 flex items-center justify-center" aria-label="Contactar por WhatsApp">
+    <svg viewBox="0 0 24 24" className="w-7 h-7 fill-current">
+      <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z" />
+    </svg>
+  </a>
+);
+
+const App = () => {
+  return (
+    <main className="font-sans antialiased bg-gray-50 selection:bg-[#4daea1] selection:text-white overflow-x-hidden h-screen w-full overflow-y-auto snap-y snap-mandatory scroll-smooth relative">
+      <Navbar />
+      <div className="flex flex-col w-full h-full">
+        <Hero />
+        <About />
+        <Services />
+        <Process />
+        <Contact />
+        <Footer />
+      </div>
+      <FloatingWhatsApp />
+    </main>
+  );
+};
+
+export default App;
