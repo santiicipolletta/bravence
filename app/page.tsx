@@ -347,7 +347,7 @@ const About = () => {
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.8 }}
-            className="order-1 md:order-2"
+            className="order-2 md:order-1"
           >
             <h3 className="text-[#4daea1] font-bold tracking-widest uppercase text-sm mb-3 flex items-center gap-2">
               <span className="w-8 h-[2px] bg-[#4daea1]"></span> Sobre Nosotros
@@ -382,7 +382,7 @@ const About = () => {
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: true, margin: "-100px" }}
             transition={{ duration: 0.8 }}
-            className="relative group block order-2 md:order-1"
+            className="relative group block order-1 md:order-2"
           >
             <div className="absolute inset-0 bg-[#0a594f] rounded-3xl transform rotate-3 transition-transform group-hover:rotate-6 duration-500 opacity-10" />
             <div className="absolute inset-0 bg-[#4daea1] rounded-3xl transform -rotate-3 transition-transform group-hover:-rotate-6 duration-500 opacity-10" />
@@ -1215,7 +1215,7 @@ const FloatingWhatsApp = () => (
 
 const App = () => {
   return (
-    <main className="font-sans antialiased bg-gray-50 selection:bg-[#4daea1] selection:text-white overflow-x-hidden h-screen w-full overflow-y-auto snap-y snap-mandatory scroll-smooth relative pb-[72px] md:pb-0">
+    <main className="font-sans antialiased bg-gray-50 selection:bg-[#4daea1] selection:text-white overflow-x-hidden h-screen w-full overflow-y-auto snap-y snap-proximity scroll-smooth relative pb-[72px] md:pb-0">
       <Navbar />
       <div className="flex flex-col w-full h-full">
         <Hero />
