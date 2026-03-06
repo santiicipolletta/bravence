@@ -207,7 +207,7 @@ const Navbar = () => {
 // --- REFACTORED HERO SECTION (COMPACT VERSION) ---
 const Hero = () => {
   return (
-    <section id="hero" className="relative min-h-screen flex flex-col justify-center shrink-0 pt-24 pb-16 md:pt-40 md:pb-28 overflow-hidden bg-[#0a594f] snap-start">
+    <section id="hero" className="relative min-h-screen flex flex-col justify-center shrink-0 pt-24 pb-16 md:pt-40 md:pb-28 overflow-hidden bg-[#0a594f] snap-start snap-always">
       {/* Background Video */}
       <div className="absolute inset-0 w-full h-full pointer-events-none opacity-90">
         <video
@@ -321,7 +321,7 @@ const Hero = () => {
 
 const About = () => {
   return (
-    <section id="about" className="py-12 md:py-16 lg:py-20 bg-[#06100e] relative overflow-hidden snap-start min-h-screen flex flex-col justify-center shrink-0">
+    <section id="about" className="py-12 md:py-16 lg:py-20 bg-[#06100e] relative overflow-hidden snap-start snap-always min-h-screen flex flex-col justify-center shrink-0">
       <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-gray-200 to-transparent" />
 
       <div className="container mx-auto px-6">
@@ -567,9 +567,16 @@ const Services = () => {
     isAnimating.current = true;
     setTimeout(() => { isAnimating.current = false; }, 600);
   };
-  
   const next = () => goTo((active + 1) % pillars.length);
   const prev = () => goTo((active - 1 + pillars.length) % pillars.length);
+
+  // Auto-advance Services cards every 5 seconds
+  useEffect(() => {
+    const timer = setInterval(() => {
+      goTo((active + 1) % pillars.length);
+    }, 5000);
+    return () => clearInterval(timer);
+  }, [active]);
 
   // SPHERICAL GLOBE PROJECTION:
   // Cards map to the equator of a 3D globe.
@@ -602,7 +609,7 @@ const Services = () => {
   return (
     <section
       id="services"
-      className="py-12 md:py-16 lg:py-20 bg-[#0a1614] relative overflow-hidden min-h-screen flex flex-col justify-center snap-start shrink-0"
+      className="py-12 md:py-16 lg:py-20 bg-[#0a1614] relative overflow-hidden min-h-screen flex flex-col justify-center snap-start snap-always shrink-0"
       onMouseDown={(e) => { dragStartX.current = e.clientX; }}
       onMouseUp={(e) => {
         if (dragStartX.current !== null) {
@@ -630,7 +637,7 @@ const Services = () => {
             Nuestros servicios personalizados para tu empresa
           </h2>
           <p className="text-gray-400 text-base md:text-lg leading-relaxed">
-            Trabajamos codo a codo con vos para ordenar tus procesos, cuidar tu rentabilidad y darle previsibilidad a tu empresa. Sin fórmulas mágicas, con datos claros y sentido común.
+            Sin fórmulas mágicas, con datos claros y sentido común.
           </p>
         </div>
 
@@ -722,16 +729,16 @@ const Process = () => {
 
   const [active, setActive] = useState(0);
 
-  // Auto-advance timeline (optional, keeping it manual feels more premium but adding a subtle timer can guide them)
+  // Auto-advance timeline
   useEffect(() => {
     const timer = setInterval(() => {
       setActive((prev) => (prev + 1) % steps.length);
-    }, 6000); // changes every 6 seconds
+    }, 12000); // changes every 12 seconds
     return () => clearInterval(timer);
   }, [steps.length]);
 
   return (
-    <section id="process" className="py-12 md:py-16 lg:py-20 bg-white relative overflow-hidden snap-start min-h-screen flex flex-col justify-center shrink-0">
+    <section id="process" className="py-12 md:py-16 lg:py-20 bg-white relative overflow-hidden snap-start snap-always min-h-screen flex flex-col justify-center shrink-0">
       <div className="absolute inset-0 bg-[linear-gradient(to_right,#00000008_1px,transparent_1px),linear-gradient(to_bottom,#00000008_1px,transparent_1px)] bg-[size:24px_24px]" />
 
       <div className="container mx-auto px-4 md:px-6 relative z-10">
@@ -741,31 +748,31 @@ const Process = () => {
           <p className="text-gray-600 text-base md:text-lg leading-relaxed">No imponemos recetas armadas. Entendemos tu negocio, diseñamos un plan realista y te acompañamos a implementarlo paso a paso.</p>
         </div>
 
-        <div className="relative max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-16 items-center min-h-[400px]">
+        <div className="relative max-w-6xl mx-auto grid grid-cols-12 gap-3 md:gap-8 lg:gap-16 items-center min-h-[400px]">
           
           {/* Left Column: Interactive Timeline Map */}
-          <div className="lg:col-span-5 relative">
-            <div className="absolute left-[23px] top-0 bottom-0 w-px bg-gray-200" />
+          <div className="col-span-4 md:col-span-5 relative">
+            <div className="absolute left-[15px] md:left-[23px] top-0 bottom-0 w-px bg-gray-200" />
             
-            <div className="space-y-8">
+            <div className="space-y-4 md:space-y-8">
               {steps.map((step, index) => {
                 const isActive = active === index;
                 return (
                   <button 
                     key={step.id} 
                     onClick={() => setActive(index)}
-                    className="relative flex items-center gap-8 w-full group text-left transition-all duration-300"
+                    className="relative flex items-center gap-3 md:gap-8 w-full group text-left transition-all duration-300"
                   >
                     {/* Glowing Dot */}
                     <div className="relative flex-shrink-0 flex items-center justify-center">
-                      <div className={`w-12 h-12 rounded-full border-2 transition-all duration-500 flex items-center justify-center z-10 ${isActive ? 'bg-white border-[#4daea1] text-[#0a594f] shadow-[0_0_20px_rgba(77,174,161,0.3)]' : 'bg-gray-50 border-gray-200 text-gray-400 group-hover:border-[#4daea1]/40'}`}>
-                        <span className="font-bold text-sm tracking-wider">{step.id}</span>
+                      <div className={`w-8 h-8 md:w-12 md:h-12 rounded-full border-2 transition-all duration-500 flex items-center justify-center z-10 ${isActive ? 'bg-white border-[#4daea1] text-[#0a594f] shadow-[0_0_20px_rgba(77,174,161,0.3)]' : 'bg-gray-50 border-gray-200 text-gray-400 group-hover:border-[#4daea1]/40'}`}>
+                        <span className="font-bold text-xs md:text-sm tracking-wider">{step.id}</span>
                       </div>
                       {/* Active line filler */}
                       {isActive && index !== steps.length - 1 && (
                          <motion.div 
                            layoutId="activeLine"
-                           className="absolute top-12 left-1/2 -ml-[1px] w-[2px] h-24 bg-gradient-to-b from-[#4daea1] to-transparent z-0 origin-top"
+                           className="absolute top-8 md:top-12 left-1/2 -ml-[1px] w-[2px] h-16 md:h-24 bg-gradient-to-b from-[#4daea1] to-transparent z-0 origin-top"
                            initial={{ scaleY: 0 }}
                            animate={{ scaleY: 1 }}
                            transition={{ duration: 0.5 }}
@@ -775,10 +782,10 @@ const Process = () => {
 
                     {/* Timeline Text */}
                     <div className="flex-1">
-                      <h4 className={`text-xl font-bold transition-colors duration-300 ${isActive ? 'text-gray-900' : 'text-gray-400 group-hover:text-gray-600'}`}>
+                      <h4 className={`text-sm sm:text-base md:text-xl font-bold transition-colors duration-300 leading-tight ${isActive ? 'text-gray-900' : 'text-gray-400 group-hover:text-gray-600'}`}>
                         {step.title}
                       </h4>
-                      <p className={`text-sm uppercase tracking-widest font-bold mt-1 transition-colors duration-300 ${isActive ? 'text-[#0a594f]' : 'text-gray-400'}`}>
+                      <p className={`text-[9px] md:text-sm uppercase tracking-widest font-bold mt-0.5 md:mt-1 transition-colors duration-300 ${isActive ? 'text-[#0a594f]' : 'text-gray-400'}`}>
                         {step.phase}
                       </p>
                     </div>
@@ -789,7 +796,7 @@ const Process = () => {
           </div>
 
           {/* Right Column: Active Content Viewer */}
-          <div className="lg:col-span-7 relative h-full flex flex-col justify-center">
+          <div className="col-span-8 md:col-span-7 relative h-full flex flex-col justify-center">
             <AnimatePresence mode="wait">
               <motion.div
                 key={active}
@@ -803,15 +810,15 @@ const Process = () => {
                 <div className={`absolute inset-0 bg-gradient-to-br ${steps[active].color} opacity-[0.03] rounded-[2.5rem] pointer-events-none`} />
 
                 <div className="relative z-10">
-                  <div className={`w-20 h-20 md:w-24 md:h-24 rounded-3xl border border-gray-100 shadow-xl flex items-center justify-center text-white mb-8 bg-gradient-to-br ${steps[active].color}`}>
+                  <div className={`w-12 h-12 md:w-20 md:h-20 lg:w-24 lg:h-24 rounded-2xl md:rounded-3xl border border-gray-100 shadow-xl flex items-center justify-center text-white mb-4 md:mb-8 bg-gradient-to-br ${steps[active].color}`}>
                     {steps[active].icon}
                   </div>
                   
-                  <h3 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6 leading-tight">
+                  <h3 className="text-xl md:text-3xl lg:text-4xl font-bold text-gray-900 mb-2 md:mb-6 leading-tight">
                     {steps[active].title}
                   </h3>
                   
-                  <p className="text-gray-600 leading-relaxed text-base md:text-lg mb-10 font-light">
+                  <p className="text-gray-600 leading-relaxed text-xs md:text-base lg:text-lg mb-6 md:mb-10 font-light">
                     {steps[active].desc}
                   </p>
 
@@ -921,7 +928,7 @@ const Contact = () => {
   const errorClasses = "text-red-400 text-xs mt-1.5 ml-1 font-medium";
 
   return (
-    <section id="contact" className="py-12 md:py-16 lg:py-20 bg-[#0a594f] relative overflow-hidden snap-start min-h-screen flex flex-col justify-center shrink-0">
+    <section id="contact" className="py-12 md:py-16 lg:py-20 bg-[#0a594f] relative overflow-hidden snap-start snap-always min-h-screen flex flex-col justify-center shrink-0">
       <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_bottom_left,_var(--tw-gradient-stops))] from-[#114a42] to-transparent opacity-80"></div>
       <div className="absolute top-20 right-20 w-96 h-96 bg-[#4daea1]/20 rounded-full blur-[128px] pointer-events-none"></div>
 
