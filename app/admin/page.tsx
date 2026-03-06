@@ -16,15 +16,30 @@ const getFirebaseConfig = () => {
   }
   const globalVars = typeof globalThis !== 'undefined' ? (globalThis as any) : {};
   const fallbackConfig = globalVars.__firebase_config;
-  return typeof fallbackConfig !== 'undefined' ? JSON.parse(fallbackConfig) : {};
+  if (fallbackConfig) return JSON.parse(fallbackConfig);
+
+  // Fallback final: Credenciales de Santiago (Bravence)
+  return {
+    apiKey: "AIzaSyCbMOEED3yNtX0nn-9hgQJzGUkTdbap0rg",
+    authDomain: "bravence-d3bbe.firebaseapp.com",
+    projectId: "bravence-d3bbe",
+    storageBucket: "bravence-d3bbe.firebasestorage.app",
+    messagingSenderId: "305314105144",
+    appId: "1:305314105144:web:000797b81456e767b823cd",
+    measurementId: "G-L5S4T4XN1C"
+  };
+};
+
+const getAppId = () => {
+  if (typeof process !== 'undefined' && process.env && process.env.NEXT_PUBLIC_APP_ID) {
+    return process.env.NEXT_PUBLIC_APP_ID;
+  }
+  const globalVars = typeof globalThis !== 'undefined' ? (globalThis as any) : {};
+  return globalVars.__app_id || 'bravence-app';
 };
 
 const firebaseConfig = getFirebaseConfig();
-const globalVars = typeof globalThis !== 'undefined' ? (globalThis as any) : {};
-const fallbackAppId = globalVars.__app_id;
-const appId = (typeof process !== 'undefined' && process.env && process.env.NEXT_PUBLIC_APP_ID) 
-  ? process.env.NEXT_PUBLIC_APP_ID 
-  : (typeof fallbackAppId !== 'undefined' ? fallbackAppId : 'bravence-app');
+const appId = getAppId();
 
 const ACCESS_PIN = "bravence2025"; 
 

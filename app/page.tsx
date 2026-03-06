@@ -27,28 +27,45 @@ const getFirebaseConfig = () => {
   // Parche para evitar error de TypeScript con variables globales
   const globalVars = typeof globalThis !== 'undefined' ? (globalThis as any) : {};
   const fallbackConfig = globalVars.__firebase_config;
-  return typeof fallbackConfig !== 'undefined' ? JSON.parse(fallbackConfig) : {};
+  if (fallbackConfig) return JSON.parse(fallbackConfig);
+
+  // Fallback final: Credenciales de Santiago (Bravence)
+  return {
+    apiKey: "AIzaSyCbMOEED3yNtX0nn-9hgQJzGUkTdbap0rg",
+    authDomain: "bravence-d3bbe.firebaseapp.com",
+    projectId: "bravence-d3bbe",
+    storageBucket: "bravence-d3bbe.firebasestorage.app",
+    messagingSenderId: "305314105144",
+    appId: "1:305314105144:web:000797b81456e767b823cd",
+    measurementId: "G-L5S4T4XN1C"
+  };
 };
 
 const firebaseConfig = getFirebaseConfig();
-// App ID para identificar la colección en Firestore
-const globalVars = typeof globalThis !== 'undefined' ? (globalThis as any) : {};
-const fallbackAppId = globalVars.__app_id;
 
-const appId = (typeof process !== 'undefined' && process.env && process.env.NEXT_PUBLIC_APP_ID)
-  ? process.env.NEXT_PUBLIC_APP_ID
-  : (typeof fallbackAppId !== 'undefined' ? fallbackAppId : 'bravence-app');
+// Detect application ID for Firestore paths (must match CRM)
+const getAppId = () => {
+  if (typeof process !== 'undefined' && process.env && process.env.NEXT_PUBLIC_APP_ID) {
+    return process.env.NEXT_PUBLIC_APP_ID;
+  }
+  const globalVars = typeof globalThis !== 'undefined' ? (globalThis as any) : {};
+  return globalVars.__app_id || 'bravence-app';
+};
+
+const appId = getAppId();
 
 let auth: any, db: any;
 try {
-  // Solo inicializar si hay configuración válida
-  if (Object.keys(firebaseConfig).length > 0) {
+  if (firebaseConfig && Object.keys(firebaseConfig).length > 0 && firebaseConfig.apiKey) {
     const app = initializeApp(firebaseConfig);
     auth = getAuth(app);
     db = getFirestore(app);
+    console.log("🔥 Firebase initialized successfully.");
+  } else {
+    console.warn("⚠️ Firebase config missing. Running in simulation mode.");
   }
 } catch (e) {
-  console.warn("Firebase running in fallback mode (No config detected).");
+  console.error("❌ Firebase init error:", e);
 }
 
 // --- COMPONENTS ---
@@ -232,8 +249,7 @@ const Hero = () => {
       />
       <div className="absolute inset-0 opacity-[0.15] mix-blend-soft-light" style={{ backgroundImage: 'url("data:image/svg+xml,%3Csvg viewBox=%270 0 200 200%27 xmlns=%27http://www.w3.org/2000/svg%27%3E%3Cfilter id=%27noise%27%3E%3CfeTurbulence type=%27fractalNoise%27 baseFrequency=%270.65%27 numOctaves=%273%27 stitchTiles=%27stitch%27/%3E%3C/filter%3E%3Crect width=%27100%25%27 height=%27100%25%27 filter=%27url(%23noise)%27/%3E%3C/svg%3E")' }}></div>
 
-      {/* Changed: Removed extra pt-20 from container since section handles it */}
-      <div className="container mx-auto px-6 relative z-10">
+      <div className="container mx-auto px-5 relative z-10">
         <motion.div
           initial={{ opacity: 0, y: 40 }}
           animate={{ opacity: 1, y: 0 }}
@@ -244,18 +260,18 @@ const Hero = () => {
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.5 }}
-            className="inline-flex items-center gap-3 py-2 px-5 bg-white/[0.03] backdrop-blur-xl rounded-full border border-white/10 shadow-[0_4px_24px_-8px_rgba(0,0,0,0.5)] mb-8 group cursor-default" 
+            className="inline-flex items-center gap-3 py-1.5 px-4 bg-white/[0.03] backdrop-blur-xl rounded-full border border-white/10 shadow-[0_4px_24px_-8px_rgba(0,0,0,0.5)] mb-5 group cursor-default" 
           >
-            <span className="relative flex h-2.5 w-2.5">
+            <span className="relative flex h-2 w-2">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#4daea1] opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-[#4daea1]"></span>
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-[#4daea1]"></span>
             </span>
-            <span className="text-gray-300 group-hover:text-white transition-colors text-xs font-bold tracking-widest uppercase">
-              Consultoría Estratégica B2B
+            <span className="text-gray-300 group-hover:text-white transition-colors text-[10px] font-bold tracking-widest uppercase">
+              Consultoría Estratégica
             </span>
           </motion.div>
 
-          <h1 className="text-[12vw] sm:text-[10vw] md:text-[8vw] lg:text-[7.5vw] xl:text-[7.5vw] font-black text-white tracking-[-0.05em] leading-[0.95] drop-shadow-2xl mb-6 md:mb-8 max-w-none">
+          <h1 className="text-[10vw] sm:text-[8vw] md:text-[8vw] lg:text-[7.5vw] font-black text-white tracking-[-0.05em] leading-[0.95] drop-shadow-2xl mb-4 md:mb-8 max-w-none">
             El socio estratégico que <br />
             <span className="bg-clip-text text-transparent bg-gradient-to-r from-[#ffffff] via-[#c6fff7] to-[#4daea1]">
               tu empresa necesita
@@ -263,27 +279,26 @@ const Hero = () => {
             para escalar seguro.
           </h1>
 
-          {/* Changed: Reduced margin-bottom to mb-8, font size simplified */}
-          <p className="text-base md:text-lg lg:text-xl text-gray-300 mb-7 md:mb-8 max-w-2xl leading-relaxed font-light border-l border-white/20 pl-4 md:pl-6">
-            Consultoría estratégica y financiera para PyMEs y empresas familiares argentinas. Trabajamos a tu lado para ordenar tus números, optimizar tus operaciones y hacer que tus ventas se traduzcan en rentabilidad real. <span className="text-white font-medium">Sin fórmulas mágicas, con sentido común.</span>
+          <p className="text-sm md:text-lg lg:text-xl text-gray-300 mb-6 md:mb-8 max-w-xl leading-relaxed font-light border-l border-white/20 pl-4">
+            Ordenamos tus números, optimizamos tus operaciones y convertimos tus ventas en rentabilidad real. <span className="text-white font-medium">Sin fórmulas mágicas, con sentido común.</span>
           </p>
 
-          <div className="flex flex-col sm:flex-row gap-4 md:gap-5 mt-4">
+          <div className="flex flex-col sm:flex-row gap-3 md:gap-5">
             <div className="relative group/btn cursor-pointer w-full sm:w-auto">
               <div className="absolute -inset-1 bg-gradient-to-r from-[#4daea1] to-[#0a594f] rounded-full blur opacity-40 group-hover/btn:opacity-75 transition duration-500"></div>
               <Button
                 variant="primary"
-                className="relative !rounded-full !px-8 md:!px-10 !py-4 md:!py-5 text-base md:text-lg w-full sm:w-auto overflow-hidden group bg-gradient-to-r from-[#0a594f] to-[#0d7a6e] hover:from-[#0d7a6e] hover:to-[#4daea1] border border-white/10 shadow-xl"
+                className="relative !rounded-full !px-8 md:!px-10 !py-3.5 md:!py-5 text-sm md:text-lg w-full sm:w-auto overflow-hidden group bg-gradient-to-r from-[#0a594f] to-[#0d7a6e] hover:from-[#0d7a6e] hover:to-[#4daea1] border border-white/10 shadow-xl"
                 onClick={() => document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' })}
               >
                 <span className="relative z-10 flex items-center justify-center gap-2">
-                  Agendar Diagnóstico Gratuito <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                  Agendar Diagnóstico Gratuito <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                 </span>
               </Button>
             </div>
             <Button
               variant="outline"
-              className="!text-white !border-white/30 hover:!bg-white/10 !rounded-full !px-8 md:!px-10 !py-4 md:!py-5 w-full sm:w-auto"
+              className="!text-white !border-white/30 hover:!bg-white/10 !rounded-full !px-8 md:!px-10 !py-3.5 md:!py-5 w-full sm:w-auto text-sm md:text-base"
               onClick={() => document.getElementById('process')?.scrollIntoView({ behavior: 'smooth' })}
             >
               Ver cómo trabajamos
@@ -324,14 +339,50 @@ const About = () => {
     <section id="about" className="py-12 md:py-16 lg:py-20 bg-[#06100e] relative overflow-hidden snap-start snap-always min-h-screen flex flex-col justify-center shrink-0">
       <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-gray-200 to-transparent" />
 
-      <div className="container mx-auto px-6">
+      <div className="container mx-auto px-5 md:px-6">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 lg:gap-16 items-center">
+          {/* TEXT — FIRST on mobile, left on desktop */}
+          <motion.div
+            initial={{ opacity: 0, x: 30 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8 }}
+            className="order-1 md:order-2"
+          >
+            <h3 className="text-[#4daea1] font-bold tracking-widest uppercase text-sm mb-3 flex items-center gap-2">
+              <span className="w-8 h-[2px] bg-[#4daea1]"></span> Sobre Nosotros
+            </h3>
+            <h2 className="text-2xl md:text-4xl lg:text-5xl font-bold text-white mb-4 md:mb-8 leading-tight max-w-xl">
+              Visión técnica. <br />
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#0a594f] to-[#4daea1]">
+                Sentido común y los pies en la tierra.
+              </span>
+            </h2>
+            <div className="space-y-4 text-gray-300 text-base leading-relaxed font-light max-w-2xl">
+              <p>
+                Sabemos lo que cuesta levantar una persiana todos los días en Argentina. Gestionar tu negocio <strong className="text-white font-medium">"a ojo" o solo por intuición</strong> se vuelve peligroso en un contexto que cambia constantemente.
+              </p>
+              <p>
+                <strong className="text-[#c6fff7] font-bold">Bravence</strong> nació para ser <span className="text-[#4daea1] font-semibold">tu socio técnico</span>; ese que se sienta a tu lado con datos reales. Te damos la <strong className="text-white font-medium">claridad absoluta que necesitás</strong> para tomar decisiones seguras y volver a dormir tranquilo.
+              </p>
+            </div>
+            <div className="mt-6 relative group/quote">
+              <div className="absolute -inset-1 bg-gradient-to-r from-[#4daea1]/30 to-[#0a594f]/30 rounded-2xl blur opacity-0 group-hover/quote:opacity-100 transition duration-700"></div>
+              <div className="relative p-5 bg-white/[0.03] backdrop-blur-md border border-white/10 hover:border-[#4daea1]/30 rounded-2xl transition-all duration-300">
+                <p className="text-[#c6fff7] font-medium italic text-sm md:text-base leading-relaxed relative z-10">
+                  &quot;No te vendemos manuales teóricos ni motivación vacía. Construimos sistemas a medida para que tu negocio sea rentable, predecible y no dependa de que estés apagando incendios 24/7.&quot;
+                </p>
+              </div>
+            </div>
+          </motion.div>
+
+          {/* VIDEO — SECOND on mobile, right on desktop */}
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: true, margin: "-100px" }}
             transition={{ duration: 0.8 }}
-            className="relative group block"
+            className="relative group block order-2 md:order-1"
           >
             <div className="absolute inset-0 bg-[#0a594f] rounded-3xl transform rotate-3 transition-transform group-hover:rotate-6 duration-500 opacity-10" />
             <div className="absolute inset-0 bg-[#4daea1] rounded-3xl transform -rotate-3 transition-transform group-hover:-rotate-6 duration-500 opacity-10" />
@@ -346,52 +397,9 @@ const About = () => {
               >
                 <source src="/pantallabravence.webm" type="video/webm" />
               </video>
-              <div className="absolute bottom-8 right-8 bg-white/95 backdrop-blur shadow-lg p-6 rounded-2xl max-w-[200px] border border-gray-100 z-10">
-                <p className="text-4xl font-bold text-[#0a594f] mb-1">100%</p>
-                <p className="text-xs text-gray-500 font-medium uppercase tracking-wider">Enfoque en Resultados Medibles</p>
-              </div>
-            </div>
-          </motion.div>
-
-          <motion.div
-            initial={{ opacity: 0, x: 30 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.8 }}
-          >
-            <h3 className="text-[#4daea1] font-bold tracking-widest uppercase text-sm mb-4 flex items-center gap-2">
-              <span className="w-8 h-[2px] bg-[#4daea1]"></span> Sobre Nosotros
-            </h3>
-            {/* --- COPY CHANGE: ABOUT TITLE --- */}
-            <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-6 md:mb-8 leading-tight max-w-xl">
-              Visión técnica. <br />
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#0a594f] to-[#4daea1]">
-                Sentido común y los pies en la tierra.
-              </span>
-            </h2>
-            {/* --- COPY CHANGE: ABOUT BODY --- UX: Max width, more contrast, highlighted words */}
-            <div className="space-y-6 text-gray-300 text-lg leading-relaxed font-light max-w-2xl">
-              <p>
-                Sabemos lo que cuesta levantar una persiana todos los días en Argentina. La intuición, el oficio y el empuje te trajeron hasta acá, y eso tiene un valor incalculable. Pero en un contexto que cambia constantemente, gestionar tu negocio <strong className="text-white font-medium">"a ojo" o solo por intuición</strong> se vuelve peligroso y muy desgastante.
-              </p>
-              <p>
-                <strong className="text-[#c6fff7] font-bold">Bravence</strong> nació para ser <span className="text-[#4daea1] font-semibold">tu socio técnico</span>; ese que se sienta en tu misma mesa a ordenar el panorama. Integramos análisis financiero riguroso con la realidad de tu día a día operativo. 
-              </p>
-              <p>
-                Te damos la <strong className="text-white font-medium">claridad absoluta que necesitás</strong> para tomar decisiones estratégicas seguras, cuidar tu caja diaria y, sobre todo, volver a dormir tranquilo.
-              </p>
-            </div>
-            {/* --- REFACTORED ABOUT QUOTE: Glassmorphism Card --- */}
-            <div className="mt-8 relative group/quote">
-              <div className="absolute -inset-1 bg-gradient-to-r from-[#4daea1]/30 to-[#0a594f]/30 rounded-2xl blur opacity-0 group-hover/quote:opacity-100 transition duration-700"></div>
-              <div className="relative p-6 lg:p-8 bg-white/[0.03] backdrop-blur-md border border-white/10 hover:border-[#4daea1]/30 rounded-2xl transition-all duration-300">
-                <div className="absolute top-0 right-10 -translate-y-1/2 bg-[#06100e] px-2">
-                  {/* Subtle quote icon */}
-                  <svg className="w-8 h-8 text-[#4daea1]/40" fill="currentColor" viewBox="0 0 24 24"><path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h3.983v10h-9.983z" /></svg>
-                </div>
-                <p className="text-[#c6fff7] font-medium italic text-lg leading-relaxed relative z-10">
-                  "No te vendemos manuales teóricos ni motivación vacía. Construimos sistemas a medida para que tu negocio sea rentable, predecible y no dependa de que estés apagando incendios 24/7."
-                </p>
+              <div className="absolute bottom-4 right-4 md:bottom-8 md:right-8 bg-white/95 backdrop-blur shadow-lg p-4 md:p-6 rounded-xl md:rounded-2xl max-w-[160px] border border-gray-100 z-10">
+                <p className="text-3xl md:text-4xl font-bold text-[#0a594f] mb-1">100%</p>
+                <p className="text-[10px] md:text-xs text-gray-500 font-medium uppercase tracking-wider">Enfoque en Resultados Medibles</p>
               </div>
             </div>
           </motion.div>
@@ -570,11 +578,11 @@ const Services = () => {
   const next = () => goTo((active + 1) % pillars.length);
   const prev = () => goTo((active - 1 + pillars.length) % pillars.length);
 
-  // Auto-advance Services cards every 5 seconds
+  // Auto-advance Services cards every 8 seconds
   useEffect(() => {
     const timer = setInterval(() => {
       goTo((active + 1) % pillars.length);
-    }, 5000);
+    }, 8000);
     return () => clearInterval(timer);
   }, [active]);
 
@@ -609,7 +617,7 @@ const Services = () => {
   return (
     <section
       id="services"
-      className="py-12 md:py-16 lg:py-20 bg-[#0a1614] relative overflow-hidden min-h-screen flex flex-col justify-center snap-start snap-always shrink-0"
+      className="py-8 md:py-16 lg:py-20 bg-[#0a1614] relative overflow-hidden min-h-screen flex flex-col justify-center snap-start snap-always shrink-0"
       onMouseDown={(e) => { dragStartX.current = e.clientX; }}
       onMouseUp={(e) => {
         if (dragStartX.current !== null) {
@@ -622,7 +630,7 @@ const Services = () => {
       onTouchEnd={(e) => {
         if (dragStartX.current !== null) {
           const d = e.changedTouches[0].clientX - dragStartX.current;
-          if (d < -40) next(); else if (d > 40) prev();
+          if (d < -30) next(); else if (d > 30) prev();
           dragStartX.current = null;
         }
       }}
@@ -636,9 +644,21 @@ const Services = () => {
           <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-4">
             Nuestros servicios personalizados para tu empresa
           </h2>
-          <p className="text-gray-400 text-base md:text-lg leading-relaxed">
+          <p className="text-gray-400 text-sm md:text-lg leading-relaxed mb-4 md:mb-0">
             Sin fórmulas mágicas, con datos claros y sentido común.
           </p>
+          
+          {/* Swipe Hint */}
+          <motion.div 
+            initial={{ opacity: 0, y: 10 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="flex items-center justify-center gap-2 text-[#4daea1]/60 text-[10px] font-bold uppercase tracking-[0.2em] md:hidden"
+          >
+            <span className="w-4 h-px bg-[#4daea1]/30" />
+            Deslizá hacia los costados
+            <span className="w-4 h-px bg-[#4daea1]/30" />
+          </motion.div>
         </div>
 
         <div className="relative max-w-2xl mx-auto select-none">
@@ -657,18 +677,18 @@ const Services = () => {
                   style={{ width: '100%', transformStyle: 'preserve-3d' }}
                 >
                   <div
-                    className="bg-gradient-to-br from-[#0f2e2a] to-[#061a17] rounded-3xl border border-[#4daea1]/20 shadow-2xl p-6 md:p-8 relative overflow-hidden"
+                    className="bg-gradient-to-br from-[#0f2e2a] to-[#061a17] rounded-3xl border border-[#4daea1]/20 shadow-2xl p-5 md:p-8 relative overflow-hidden"
                     style={{ backdropFilter: 'blur(12px)' }}
                   >
                     <div className={`absolute -top-16 -right-16 w-56 h-56 bg-gradient-to-br ${pillars[active].bg} opacity-[0.13] rounded-full blur-3xl pointer-events-none`} />
 
-                    <div className="flex items-center gap-4 mb-4">
-                      <div className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${pillars[active].bg} flex items-center justify-center text-white shadow-xl flex-shrink-0`}>
+                    <div className="flex items-center gap-3 mb-3">
+                      <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${pillars[active].bg} flex items-center justify-center text-white shadow-xl flex-shrink-0`}>
                         {pillars[active].icon}
                       </div>
                       <div>
-                        <span className="text-[#4daea1] text-[10px] font-bold tracking-widest uppercase">Pilar {String(active + 1).padStart(2, '0')} / 04</span>
-                        <h3 className="text-xl md:text-2xl font-bold text-white leading-tight">{pillars[active].title}</h3>
+                        <span className="text-[#4daea1] text-[9px] font-bold tracking-widest uppercase">Pilar {String(active + 1).padStart(2, '0')} / 04</span>
+                        <h3 className="text-lg md:text-2xl font-bold text-white leading-tight">{pillars[active].title}</h3>
                       </div>
                     </div>
                     
@@ -729,26 +749,29 @@ const Process = () => {
 
   const [active, setActive] = useState(0);
 
-  // Auto-advance timeline
+  // Auto-advance timeline — resets every time 'active' changes
   useEffect(() => {
     const timer = setInterval(() => {
       setActive((prev) => (prev + 1) % steps.length);
     }, 12000); // changes every 12 seconds
     return () => clearInterval(timer);
-  }, [steps.length]);
+  }, [active, steps.length]);
 
   return (
     <section id="process" className="py-12 md:py-16 lg:py-20 bg-white relative overflow-hidden snap-start snap-always min-h-screen flex flex-col justify-center shrink-0">
       <div className="absolute inset-0 bg-[linear-gradient(to_right,#00000008_1px,transparent_1px),linear-gradient(to_bottom,#00000008_1px,transparent_1px)] bg-[size:24px_24px]" />
 
       <div className="container mx-auto px-4 md:px-6 relative z-10">
-        <div className="text-center mb-8 md:mb-10 max-w-4xl mx-auto">
+        <div className="text-center mb-6 md:mb-10 max-w-4xl mx-auto">
           <span className="inline-block text-[#0a594f] font-bold tracking-widest uppercase text-xs mb-3 bg-[#4daea1]/10 px-4 py-1.5 rounded-full border border-[#4daea1]/20">Nuestro Método</span>
-          <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-4">Un proceso claro, <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#0a594f] to-[#4daea1]">sin cajas negras.</span></h2>
-          <p className="text-gray-600 text-base md:text-lg leading-relaxed">No imponemos recetas armadas. Entendemos tu negocio, diseñamos un plan realista y te acompañamos a implementarlo paso a paso.</p>
+          <h2 className="text-2xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-2 md:mb-4">Un proceso claro, <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#0a594f] to-[#4daea1]">sin cajas negras.</span></h2>
+          <p className="hidden md:block text-gray-600 text-base md:text-lg leading-relaxed">No imponemos recetas armadas. Entendemos tu negocio, diseñamos un plan realista y te acompañamos a implementarlo paso a paso.</p>
         </div>
 
-        <div className="relative max-w-6xl mx-auto grid grid-cols-12 gap-3 md:gap-8 lg:gap-16 items-center min-h-[400px]">
+
+        <div className="relative max-w-6xl mx-auto">
+          {/* Desktop: 2-col grid timeline */}
+          <div className="hidden md:grid md:grid-cols-12 gap-8 md:gap-16 items-center min-h-[400px]">
           
           {/* Left Column: Interactive Timeline Map */}
           <div className="col-span-4 md:col-span-5 relative">
@@ -835,28 +858,80 @@ const Process = () => {
               </motion.div>
             </AnimatePresence>
           </div>
-        </div>
+          </div>{/* End hidden md:grid -- Desktop layout */}
 
-        {/* UX Enhancement: Call to Action below process */}
-        <div className="mt-16 md:mt-24 text-center">
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            viewport={{ once: true }}
-            className="inline-flex flex-col items-center"
-          >
-            <p className="text-gray-500 font-medium mb-5 text-lg">¿Estás listo para dar el primer paso?</p>
-            <div className="relative group/cta">
-              <div className="absolute inset-0 bg-gradient-to-r from-[#4daea1] to-[#0a594f] rounded-full blur opacity-30 group-hover/cta:opacity-60 transition duration-500"></div>
-              <Button
-                variant="primary"
-                onClick={() => document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' })}
-                className="relative !rounded-full !px-10 !py-4 shadow-xl"
-              >
-                Iniciemos el Diagnóstico Gratuito <ArrowRight className="w-5 h-5" />
-              </Button>
+          {/* Mobile: circular numbered timeline + card — same look as desktop */}
+          <div className="md:hidden">
+            <div className="relative mb-4">
+              <div className="absolute left-[15px] top-0 bottom-0 w-px bg-gray-200" />
+              <div className="space-y-4">
+                {steps.map((step, index) => {
+                  const isActive = active === index;
+                  return (
+                    <button
+                      key={step.id}
+                      onClick={() => setActive(index)}
+                      className="relative flex items-center gap-4 w-full group text-left transition-all duration-300"
+                    >
+                      <div className="relative flex-shrink-0 flex items-center justify-center">
+                        <div className={`w-8 h-8 rounded-full border-2 transition-all duration-500 flex items-center justify-center z-10 ${
+                          isActive ? 'bg-white border-[#4daea1] text-[#0a594f] shadow-[0_0_16px_rgba(77,174,161,0.3)]' : 'bg-gray-50 border-gray-200 text-gray-400'
+                        }`}>
+                          <span className="font-bold text-xs">{step.id}</span>
+                        </div>
+                        {isActive && index !== steps.length - 1 && (
+                          <motion.div
+                            layoutId="activeLine-mobile"
+                            className="absolute top-8 left-1/2 -ml-[1px] w-[2px] h-10 bg-gradient-to-b from-[#4daea1] to-transparent z-0 origin-top"
+                            initial={{ scaleY: 0 }}
+                            animate={{ scaleY: 1 }}
+                            transition={{ duration: 0.4 }}
+                          />
+                        )}
+                      </div>
+                      <div className="flex-1">
+                        <h4 className={`text-sm font-bold leading-tight transition-colors ${
+                          isActive ? 'text-gray-900' : 'text-gray-400'
+                        }`}>{step.title}</h4>
+                        <p className={`text-[9px] uppercase tracking-widest font-bold mt-0.5 transition-colors ${
+                          isActive ? 'text-[#0a594f]' : 'text-gray-400'
+                        }`}>{step.phase}</p>
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
             </div>
-          </motion.div>
+
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={active}
+                initial={{ opacity: 0, y: 16 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -16 }}
+                transition={{ duration: 0.35 }}
+                className="relative bg-white border border-gray-100 shadow-[0_4px_20px_rgb(0,0,0,0.06)] rounded-2xl p-5"
+              >
+                <div className={`absolute inset-0 bg-gradient-to-br ${steps[active].color} opacity-[0.03] rounded-2xl pointer-events-none`} />
+                <div className="relative z-10">
+                  <div className={`w-10 h-10 rounded-xl flex items-center justify-center text-white mb-3 bg-gradient-to-br ${steps[active].color}`}>
+                    {steps[active].icon}
+                  </div>
+                  <h3 className="text-lg font-bold text-gray-900 mb-2">{steps[active].title}</h3>
+                  <p className="text-gray-600 leading-relaxed text-sm mb-4">{steps[active].desc}</p>
+                  <div className="bg-gray-50 border border-gray-100 rounded-xl p-3 flex items-center gap-3">
+                    <div className="w-8 h-8 rounded-full bg-white shadow-sm border border-gray-100 flex items-center justify-center flex-shrink-0">
+                      <Briefcase className="w-3.5 h-3.5 text-[#0a594f]" />
+                    </div>
+                    <div>
+                      <p className="text-[9px] uppercase tracking-widest font-bold text-gray-500">Entregable</p>
+                      <p className="text-xs font-semibold text-gray-900">{steps[active].deliverable}</p>
+                    </div>
+                  </div>
+                </div>
+              </motion.div>
+            </AnimatePresence>
+          </div>
         </div>
       </div>
     </section>
@@ -932,16 +1007,17 @@ const Contact = () => {
       <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_bottom_left,_var(--tw-gradient-stops))] from-[#114a42] to-transparent opacity-80"></div>
       <div className="absolute top-20 right-20 w-96 h-96 bg-[#4daea1]/20 rounded-full blur-[128px] pointer-events-none"></div>
 
-      <div className="container mx-auto px-6 relative z-10">
-        <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-5 gap-0 bg-white/[0.02] backdrop-blur-xl rounded-[2.5rem] border border-white/10 shadow-[0_8px_32px_0_rgba(0,0,0,0.3)] overflow-hidden">
+      <div className="container mx-auto px-5 md:px-6 relative z-10">
+        <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-5 gap-0 bg-white/[0.02] backdrop-blur-xl rounded-2xl md:rounded-[2.5rem] border border-white/10 shadow-[0_8px_32px_0_rgba(0,0,0,0.3)] overflow-hidden">
 
-          <div className="md:col-span-2 bg-[#06100e]/50 p-6 md:p-10 text-white flex flex-col justify-between relative overflow-hidden border-r border-white/5">
+          {/* LEFT PANEL — shown FIRST on mobile for context before the form */}
+          <div className="md:col-span-2 bg-[#06100e]/50 p-5 md:p-10 text-white flex flex-col justify-between relative overflow-hidden border-b md:border-b-0 md:border-r border-white/5">
             <div className="absolute top-0 right-0 w-64 h-64 bg-[#4daea1]/10 rounded-full blur-[80px] pointer-events-none" />
 
             <div className="relative z-10">
-              <h3 className="text-3xl md:text-4xl font-bold tracking-tight mb-6 text-white leading-tight">Hablemos de tu <br /><span className="text-[#4daea1]">Negocio</span></h3>
-              <p className="text-gray-400 mb-10 leading-relaxed font-light">
-                Dar el primer paso para ordenar tu empresa no tiene costo. Agendá una sesión inicial de 30 minutos con uno de nuestros socios. Vamos a escuchar tu situación, entender tus dolores diarios y evaluar, con total honestidad, si somos el equipo indicado para acompañarte en esta etapa.
+              <h3 className="text-2xl md:text-4xl font-bold tracking-tight mb-3 md:mb-6 text-white leading-tight">Hablemos de tu <br /><span className="text-[#4daea1]">Negocio</span></h3>
+              <p className="text-gray-400 mb-6 md:mb-10 leading-relaxed font-light text-sm md:text-base">
+                Dar el primer paso para ordenar tu empresa no tiene costo. Agendá una sesión inicial de 30 minutos con uno de nuestros socios.
               </p>
 
               <div className="space-y-6">
@@ -981,17 +1057,17 @@ const Contact = () => {
               <motion.div
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
-                className="h-full flex flex-col items-center justify-center text-center"
+                className="h-full flex flex-col items-center justify-center text-center p-4"
               >
-                <div className="w-20 h-20 bg-green-50 rounded-full flex items-center justify-center mb-6 ring-8 ring-green-50/50">
-                  <CheckCircle2 className="w-10 h-10 text-green-600" />
+                <div className="w-20 h-20 bg-[#4daea1]/10 rounded-full flex items-center justify-center mb-6 ring-8 ring-[#4daea1]/5">
+                  <CheckCircle2 className="w-10 h-10 text-[#4daea1]" />
                 </div>
-                <h3 className="text-3xl font-bold text-[#0a594f] mb-4">¡Solicitud Recibida!</h3>
-                <p className="text-gray-500 mb-8 max-w-sm leading-relaxed">
+                <h3 className="text-3xl font-bold text-white mb-4">¡Solicitud Recibida!</h3>
+                <p className="text-gray-400 mb-8 max-w-sm leading-relaxed text-sm md:text-base">
                   Nuestro equipo de análisis evaluará tu perfil. Si encontramos sinergias claras, te contactaremos en breve.
                 </p>
-                <Button variant="outline" onClick={() => setIsSuccess(false)} className="!text-sm !py-3 !px-8">
-                  Volver al inicio
+                <Button variant="primary" onClick={() => setIsSuccess(false)} className="!text-sm !py-3 !px-8">
+                  Volver al formulario
                 </Button>
               </motion.div>
             ) : (
@@ -1094,6 +1170,25 @@ const Contact = () => {
   );
 };
 
+// Sticky CTA bar for mobile — always visible, max conversion
+const StickyMobileCTA = () => (
+  <div className="fixed bottom-0 left-0 right-0 z-40 md:hidden px-4 pb-4 pt-2 bg-gradient-to-t from-[#050d0b]/95 to-transparent backdrop-blur-sm">
+    <button
+      onClick={() => {
+        const mainEl = document.querySelector('main');
+        const contactSection = document.getElementById('contact');
+        if (mainEl && contactSection) {
+          const top = contactSection.offsetTop;
+          mainEl.scrollTo({ top, behavior: 'smooth' });
+        }
+      }}
+      className="w-full bg-gradient-to-r from-[#4daea1] to-[#0a594f] text-white font-bold py-4 px-6 rounded-2xl shadow-2xl shadow-[#4daea1]/30 flex items-center justify-center gap-2 text-sm tracking-wide active:scale-95 transition-transform"
+    >
+      Agendar Diagnóstico Gratuito <ArrowRight className="w-4 h-4" />
+    </button>
+  </div>
+);
+
 const Footer = () => (
   <footer className="bg-[#050d0b] pt-20 pb-10 border-t border-white/5 relative overflow-hidden snap-end shrink-0">
     <div className="container mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-6">
@@ -1111,7 +1206,7 @@ const Footer = () => (
 );
 
 const FloatingWhatsApp = () => (
-  <a href="https://wa.me/+5493518163142" target="_blank" rel="noopener noreferrer" className="fixed bottom-8 right-8 z-40 bg-[#25D366] text-white p-3.5 rounded-full shadow-2xl hover:shadow-green-500/30 hover:scale-110 transition-all duration-300 flex items-center justify-center" aria-label="Contactar por WhatsApp">
+  <a href="https://wa.me/+5493518163142" target="_blank" rel="noopener noreferrer" className="fixed bottom-24 md:bottom-8 right-4 md:right-8 z-50 bg-[#25D366] text-white p-3.5 rounded-full shadow-2xl hover:shadow-green-500/30 hover:scale-110 transition-all duration-300 flex items-center justify-center" aria-label="Contactar por WhatsApp">
     <svg viewBox="0 0 24 24" className="w-7 h-7 fill-current">
       <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z" />
     </svg>
@@ -1120,7 +1215,7 @@ const FloatingWhatsApp = () => (
 
 const App = () => {
   return (
-    <main className="font-sans antialiased bg-gray-50 selection:bg-[#4daea1] selection:text-white overflow-x-hidden h-screen w-full overflow-y-auto snap-y snap-mandatory scroll-smooth relative">
+    <main className="font-sans antialiased bg-gray-50 selection:bg-[#4daea1] selection:text-white overflow-x-hidden h-screen w-full overflow-y-auto snap-y snap-mandatory scroll-smooth relative pb-[72px] md:pb-0">
       <Navbar />
       <div className="flex flex-col w-full h-full">
         <Hero />
@@ -1131,6 +1226,7 @@ const App = () => {
         <Footer />
       </div>
       <FloatingWhatsApp />
+      <StickyMobileCTA />
     </main>
   );
 };
