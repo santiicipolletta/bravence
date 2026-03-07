@@ -578,41 +578,12 @@ const Services = () => {
   const next = () => goTo((active + 1) % pillars.length);
   const prev = () => goTo((active - 1 + pillars.length) % pillars.length);
 
-  // Auto-advance Services cards every 8 seconds
+  // Auto-advance Services cards every 15 seconds para dar más tiempo de lectura
   useEffect(() => {
     const timer = setInterval(() => {
-      goTo((active + 1) % pillars.length);
-    }, 8000);
+    }, 15000);
     return () => clearInterval(timer);
   }, [active]);
-
-  // SPHERICAL GLOBE PROJECTION:
-  // Cards map to the equator of a 3D globe.
-  // When swiping left (dir = -1): Card moves LEFT (x: -80%), recedes (z: -300), rotates (rotateY: -35)
-  // New card comes from RIGHT (x: 80%), recedes (z: -300), rotates (rotateY: 35)
-  const variants = {
-    enter: (dir: number) => ({
-      x: dir < 0 ? '80%' : '-80%',
-      z: -300,
-      rotateY: dir < 0 ? 35 : -35,
-      scale: 0.75,
-      opacity: 0,
-    }),
-    center: { 
-      x: '0%', 
-      z: 0, 
-      rotateY: 0, 
-      scale: 1, 
-      opacity: 1 
-    },
-    exit: (dir: number) => ({
-      x: dir < 0 ? '-80%' : '80%',
-      z: -300,
-      rotateY: dir < 0 ? -35 : 35,
-      scale: 0.75,
-      opacity: 0,
-    }),
-  };
 
   return (
     <section
@@ -665,54 +636,83 @@ const Services = () => {
           {/* Perspective wrapper for 3D Globe Equator effect */}
           <div style={{ perspective: '1200px', perspectiveOrigin: '50% 50%' }}>
             <div className="relative overflow-hidden" style={{ minHeight: '360px' }}>
-              <AnimatePresence mode="popLayout" custom={direction}>
-                <motion.div
-                  key={active}
-                  custom={direction}
-                  variants={variants}
-                  initial="enter"
-                  animate="center"
-                  exit="exit"
-                  transition={{ duration: 0.6, ease: [0.32, 0.72, 0, 1] }} 
-                  style={{ width: '100%', transformStyle: 'preserve-3d' }}
-                >
-                  <div
-                    className="bg-gradient-to-br from-[#0f2e2a] to-[#061a17] rounded-3xl border border-[#4daea1]/20 shadow-2xl p-5 md:p-8 relative overflow-hidden"
-                    style={{ backdropFilter: 'blur(12px)' }}
+              {pillars.map((pillar, idx) => {
+                // Cálculo de distancia circular para efecto 3D infinito
+                let diff = (idx - active) % pillars.length;
+                if (diff < -pillars.length / 2) diff += pillars.length;
+                if (diff > pillars.length / 2) diff -= pillars.length;
+
+                // Solo renderizamos las 3 tarjetas más cercanas para optimizar rendimiento (centro, izquierda, derecha)
+                if (Math.abs(diff) > 1) return null;
+
+                const isCenter = diff === 0;
+                const isLeft = diff === -1;
+                const isRight = diff === 1;
+
+                // Propiedades de animación basadas en la posición relativa
+                const currentScale = isCenter ? 1 : 0.85;
+                const currentOpacity = isCenter ? 1 : 0.4;
+                const currentX = isCenter ? '0%' : isLeft ? '-65%' : '65%';
+                const currentZ = isCenter ? 0 : -150;
+                const currentRotateY = isCenter ? 0 : isLeft ? 30 : -30;
+                const zIndex = isCenter ? 30 : 10;
+
+                return (
+                  <motion.div
+                    key={pillar.id}
+                    animate={{
+                      x: currentX,
+                      z: currentZ,
+                      rotateY: currentRotateY,
+                      scale: currentScale,
+                      opacity: currentOpacity,
+                    }}
+                    transition={{ duration: 0.6, ease: [0.32, 0.72, 0, 1] }} 
+                    style={{ 
+                      width: '100%', 
+                      transformStyle: 'preserve-3d',
+                      position: isCenter ? 'relative' : 'absolute',
+                      top: 0,
+                      left: 0,
+                      zIndex: zIndex,
+                      pointerEvents: isCenter ? 'auto' : 'none'
+                    }}
                   >
-                    <div className={`absolute -top-16 -right-16 w-56 h-56 bg-gradient-to-br ${pillars[active].bg} opacity-[0.13] rounded-full blur-3xl pointer-events-none`} />
+                    <div
+                      className="bg-gradient-to-br from-[#0f2e2a] to-[#061a17] rounded-3xl border border-[#4daea1]/20 shadow-2xl p-5 md:p-8 relative overflow-hidden"
+                      style={{ backdropFilter: 'blur(12px)' }}
+                    >
+                      <div className={`absolute -top-16 -right-16 w-56 h-56 bg-gradient-to-br ${pillar.bg} opacity-[0.13] rounded-full blur-3xl pointer-events-none`} />
 
-                    <div className="flex items-center gap-3 mb-3">
-                      <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${pillars[active].bg} flex items-center justify-center text-white shadow-xl flex-shrink-0`}>
-                        {pillars[active].icon}
+                      <div className="flex items-center gap-3 mb-3">
+                        <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${pillar.bg} flex items-center justify-center text-white shadow-xl flex-shrink-0`}>
+                          {pillar.icon}
+                        </div>
+                        <div>
+                          <span className="text-[#4daea1] text-[9px] font-bold tracking-widest uppercase">Pilar {String(idx + 1).padStart(2, '0')} / 04</span>
+                          <h3 className="text-lg md:text-2xl font-bold text-white leading-tight">{pillar.title}</h3>
+                        </div>
                       </div>
-                      <div>
-                        <span className="text-[#4daea1] text-[9px] font-bold tracking-widest uppercase">Pilar {String(active + 1).padStart(2, '0')} / 04</span>
-                        <h3 className="text-lg md:text-2xl font-bold text-white leading-tight">{pillars[active].title}</h3>
-                      </div>
+                      
+                      <p className="text-gray-300 text-sm leading-relaxed mb-6">
+                        {pillar.desc}
+                      </p>
+
+                      <ul className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        {pillar.items.map((item, j) => (
+                          <li
+                            key={item}
+                            className="flex items-center gap-3 bg-white/[0.04] rounded-xl px-4 py-2.5 border border-white/[0.07] hover:border-[#4daea1]/30 transition-colors"
+                          >
+                            <span className="w-1.5 h-1.5 rounded-full bg-[#4daea1] flex-shrink-0" />
+                            <span className="text-gray-300 text-sm">{item}</span>
+                          </li>
+                        ))}
+                      </ul>
                     </div>
-                    
-                    <p className="text-gray-300 text-sm leading-relaxed mb-6">
-                      {pillars[active].desc}
-                    </p>
-
-                    <ul className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                      {pillars[active].items.map((item, j) => (
-                        <motion.li
-                          key={item}
-                          initial={{ opacity: 0, y: 8 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          transition={{ delay: j * 0.06 }}
-                          className="flex items-center gap-3 bg-white/[0.04] rounded-xl px-4 py-2.5 border border-white/[0.07] hover:border-[#4daea1]/30 transition-colors"
-                        >
-                          <span className="w-1.5 h-1.5 rounded-full bg-[#4daea1] flex-shrink-0" />
-                          <span className="text-gray-300 text-sm">{item}</span>
-                        </motion.li>
-                      ))}
-                    </ul>
-                  </div>
-                </motion.div>
-              </AnimatePresence>
+                  </motion.div>
+                );
+              })}
             </div>
           </div>
 
