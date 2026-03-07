@@ -280,7 +280,7 @@ const Hero = () => {
           </h1>
 
           <p className="text-sm md:text-lg lg:text-xl text-gray-300 mb-6 md:mb-8 max-w-xl leading-relaxed font-light border-l border-white/20 pl-4">
-            Ordenamos tus números, optimizamos tus operaciones y convertimos tus ventas en rentabilidad real. <span className="text-white font-medium">Sin fórmulas mágicas, con sentido común.</span>
+            Ordenamos tus números, optimizamos tus operaciones y convertimos tus ventas en rentabilidad real. <span className="text-white font-medium">Sin fórmulas mágicas, con trabajo profesional.</span>
           </p>
 
           <div className="flex flex-col sm:flex-row gap-3 md:gap-5">
