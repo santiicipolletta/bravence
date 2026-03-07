@@ -620,7 +620,7 @@ const Services = () => {
           initial={{ opacity: 0, y: 10 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          className="flex items-center justify-center gap-2 text-[#4daea1]/60 text-[10px] font-bold uppercase tracking-[0.2em] mb-8 md:hidden"
+          className="flex items-center justify-center gap-3 text-[#4daea1] text-xs font-bold uppercase tracking-[0.3em] mb-12 md:hidden"
         >
           <span className="w-4 h-px bg-[#4daea1]/30" />
           Nuestros Servicios - Deslizá
