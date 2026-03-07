@@ -224,8 +224,7 @@ const Navbar = () => {
 // --- REFACTORED HERO SECTION (COMPACT VERSION) ---
 const Hero = () => {
   return (
-    <section id="hero" className="relative min-h-screen flex flex-col justify-center shrink-0 pt-24 pb-16 md:pt-40 md:pb-28 overflow-hidden bg-[#0a594f] snap-start snap-always">
-      {/* Background Video */}
+    <section id="hero" className="relative h-[90vh] md:min-h-screen flex flex-col justify-center shrink-0 pt-16 pb-12 md:pt-40 md:pb-28 overflow-hidden bg-[#0a594f] snap-start snap-always">
       <div className="absolute inset-0 w-full h-full pointer-events-none opacity-90">
         <video
           autoPlay
@@ -336,11 +335,11 @@ const Hero = () => {
 
 const About = () => {
   return (
-    <section id="about" className="py-12 md:py-16 lg:py-20 bg-[#06100e] relative overflow-hidden snap-start snap-always min-h-screen flex flex-col justify-center shrink-0">
+    <section id="about" className="py-8 md:py-16 lg:py-20 bg-[#06100e] relative overflow-hidden snap-start snap-always min-h-screen flex flex-col justify-center shrink-0">
       <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-gray-200 to-transparent" />
 
       <div className="container mx-auto px-5 md:px-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 lg:gap-16 items-center">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-12 lg:gap-16 items-center">
           {/* TEXT — FIRST on mobile, left on desktop */}
           <motion.div
             initial={{ opacity: 0, x: 30 }}
@@ -358,19 +357,19 @@ const About = () => {
                 Sentido común y los pies en la tierra.
               </span>
             </h2>
-            <div className="space-y-4 text-gray-300 text-base leading-relaxed font-light max-w-2xl">
+            <div className="space-y-3 text-gray-300 text-sm md:text-base leading-relaxed font-light max-w-2xl">
               <p>
-                Sabemos lo que cuesta levantar una persiana todos los días en Argentina. Gestionar tu negocio <strong className="text-white font-medium">"a ojo" o solo por intuición</strong> se vuelve peligroso en un contexto que cambia constantemente.
+                Sabemos lo que cuesta levantar una persiana en Argentina. Gestionar <strong className="text-white font-medium">"a ojo"</strong> es peligroso hoy.
               </p>
               <p>
-                <strong className="text-[#c6fff7] font-bold">Bravence</strong> nació para ser <span className="text-[#4daea1] font-semibold">tu socio técnico</span>; ese que se sienta a tu lado con datos reales. Te damos la <strong className="text-white font-medium">claridad absoluta que necesitás</strong> para tomar decisiones seguras y volver a dormir tranquilo.
+                <strong className="text-[#c6fff7] font-bold">Bravence</strong> es tu socio técnico: datos reales para que tomes <strong className="text-white font-medium">decisiones seguras</strong> y vuelvas a dormir tranquilo.
               </p>
             </div>
-            <div className="mt-6 relative group/quote">
-              <div className="absolute -inset-1 bg-gradient-to-r from-[#4daea1]/30 to-[#0a594f]/30 rounded-2xl blur opacity-0 group-hover/quote:opacity-100 transition duration-700"></div>
-              <div className="relative p-5 bg-white/[0.03] backdrop-blur-md border border-white/10 hover:border-[#4daea1]/30 rounded-2xl transition-all duration-300">
-                <p className="text-[#c6fff7] font-medium italic text-sm md:text-base leading-relaxed relative z-10">
-                  &quot;No te vendemos manuales teóricos ni motivación vacía. Construimos sistemas a medida para que tu negocio sea rentable, predecible y no dependa de que estés apagando incendios 24/7.&quot;
+            <div className="mt-4 relative group/quote">
+              <div className="absolute -inset-1 bg-gradient-to-r from-[#4daea1]/30 to-[#0a594f]/30 rounded-xl blur opacity-0 group-hover/quote:opacity-100 transition duration-700"></div>
+              <div className="relative p-4 bg-white/[0.03] backdrop-blur-md border border-white/10 rounded-xl transition-all duration-300">
+                <p className="text-[#c6fff7] font-medium italic text-xs md:text-base leading-snug relative z-10">
+                  &quot;No te vendemos manuales. Construimos sistemas a medida para que tu negocio sea rentable y no dependa de apagar incendios.&quot;
                 </p>
               </div>
             </div>
@@ -386,7 +385,7 @@ const About = () => {
           >
             <div className="absolute inset-0 bg-[#0a594f] rounded-3xl transform rotate-3 transition-transform group-hover:rotate-6 duration-500 opacity-10" />
             <div className="absolute inset-0 bg-[#4daea1] rounded-3xl transform -rotate-3 transition-transform group-hover:-rotate-6 duration-500 opacity-10" />
-            <div className="relative rounded-3xl overflow-hidden shadow-2xl bg-[#0a594f]/5 aspect-[4/3] group-hover:scale-105 transition-transform duration-1000 ease-out">
+            <div className="relative rounded-3xl overflow-hidden shadow-2xl bg-[#0a594f]/5 aspect-video md:aspect-[4/3] group-hover:scale-105 transition-transform duration-1000 ease-out">
               <video
                 autoPlay
                 loop
@@ -397,9 +396,9 @@ const About = () => {
               >
                 <source src="/pantallabravence.webm" type="video/webm" />
               </video>
-              <div className="absolute bottom-4 right-4 md:bottom-8 md:right-8 bg-white/95 backdrop-blur shadow-lg p-4 md:p-6 rounded-xl md:rounded-2xl max-w-[160px] border border-gray-100 z-10">
-                <p className="text-3xl md:text-4xl font-bold text-[#0a594f] mb-1">100%</p>
-                <p className="text-[10px] md:text-xs text-gray-500 font-medium uppercase tracking-wider">Enfoque en Resultados Medibles</p>
+              <div className="absolute bottom-3 right-3 md:bottom-8 md:right-8 bg-white/95 backdrop-blur shadow-lg p-3 md:p-6 rounded-xl md:rounded-2xl max-w-[140px] border border-gray-100 z-10">
+                <p className="text-2xl md:text-4xl font-bold text-[#0a594f] mb-0.5">100%</p>
+                <p className="text-[9px] md:text-xs text-gray-500 font-medium uppercase tracking-wider">Resultados Medibles</p>
               </div>
             </div>
           </motion.div>
@@ -509,227 +508,76 @@ const useAmbientParticles = (canvasRef: { current: HTMLCanvasElement | null }) =
   return { jump };
 };
 
+
 // =============================================
-//  SERVICES SECTION — Horizontal 3D Wheel
+//  SERVICES SECTION — Compressed Grid
 // =============================================
 const Services = () => {
-  const pillars = [
+  const [active, setActive] = useState(0);
+
+  const services = [
     { 
-      id: 1, 
-      title: "Estrategia Comercial y Marketing", 
-      icon: <Target className="w-7 h-7" />, 
-      bg: "from-cyan-400 to-cyan-600", 
-      desc: "Sabemos que invertir en publicidad y no ver resultados genera mucha frustración. Te ayudamos a medir qué canales traccionan realmente, para que cada peso que inviertas atraiga a los clientes correctos y vuelva a tu negocio.",
-      items: ["Análisis de rentabilidad por canal", "Optimización de proceso comercial", "Estrategias de retención de clientes", "Integración de herramientas simples (CRM)"] 
+      title: "Arquitectura Financiera", 
+      desc: "Transformamos números en tableros de control para que sepas qué rentabilidad tenés hoy.", 
+      icon: <TrendingUp className="w-5 h-5 md:w-6 md:h-6" />,
+      color: "from-blue-500 to-cyan-500" 
     },
     { 
-      id: 2, 
-      title: "Ingeniería Financiera y Pricing", 
-      icon: <Activity className="w-7 h-7" />, 
-      bg: "from-teal-400 to-teal-600", 
-      desc: "Nos sentamos a revisar tus costos reales y te ayudamos a definir precios que te protejan de los cambios económicos. Queremos que vender más signifique realmente ganar más.",
-      items: ["Punto de equilibrio real", "Armado de costos de reposición", "Saneamiento del flujo de caja", "Proyecciones financieras"] 
-    },
-    { 
-      id: 3, 
       title: "Optimización Operativa", 
-      icon: <TrendingUp className="w-7 h-7" />, 
-      bg: "from-emerald-500 to-emerald-700", 
-      desc: "Si sentís que sos indispensable y pasás el día resolviendo urgencias, te acompañamos para ordenar el día a día. El objetivo es que tu equipo trabaje con mayor autonomía, permitiéndote recuperar tu tiempo.",
-      items: ["Detección de costos ocultos", "Mejora en compras y proveedores", "Documentación de tareas diarias", "Reducción de fricciones operativas"] 
+      desc: "Sistemas para que el negocio no dependa de vos. Procesos claros y equipos autónomos.", 
+      icon: <Activity className="w-5 h-5 md:w-6 md:h-6" />,
+      color: "from-[#0a594f] to-[#4daea1]" 
     },
     { 
-      id: 4, 
-      title: "Inteligencia de Datos y Gobierno Corporativo", 
-      icon: <ShieldCheck className="w-7 h-7" />, 
-      bg: "from-teal-600 to-teal-900", 
-      desc: "El olfato que te trajo hasta acá es valioso, pero para crecer sano hace falta claridad. Armamos tableros simples para ver la salud de tu empresa en una pantalla y ordenamos tu estructura familiar y financiera.",
-      items: ["Tableros visuales y simples (KPIs)", "Profesionalización para empresas familiares", "Separación caja personal/empresarial", "Organización societaria"] 
-    },
+      title: "Estrategia de Ventas", 
+      desc: "Escalamos tu facturación con un motor comercial predecible y enfoque en el margen.", 
+      icon: <Target className="w-5 h-5 md:w-6 md:h-6" />,
+      color: "from-[#22c55e] to-emerald-700" 
+    }
   ];
 
-  const [active, setActive] = useState(0);
-  const [direction, setDirection] = useState(1);
-  const canvasRef = useRef(null as unknown as HTMLCanvasElement);
-  const { jump } = useAmbientParticles(canvasRef);
-  const dragStartX = useRef(null as null | number);
-  const isAnimating = useRef(false);
-
-  // Determine direction but force continuous wrap logic
-  // Swiping left = negative diff = next card
-  // dir=1 means animation flows left-to-right on screen, dir=-1 means right-to-left
-  const goTo = (idx: number) => {
-    if (isAnimating.current || idx === active) return;
-    
-    // Continuous loop check:
-    let diff = idx - active;
-    if (diff > pillars.length / 2) diff -= pillars.length;
-    if (diff < -pillars.length / 2) diff += pillars.length;
-    
-    // Set flow direction negatively (next = moves left)
-    const dir = diff > 0 ? -1 : 1; 
-    setDirection(dir);
-    setActive(idx);
-    jump(dir);
-    
-    isAnimating.current = true;
-    setTimeout(() => { isAnimating.current = false; }, 600);
-  };
-  const next = () => goTo((active + 1) % pillars.length);
-  const prev = () => goTo((active - 1 + pillars.length) % pillars.length);
-
-  // Auto-advance Services cards every 8 seconds
-  useEffect(() => {
-    const timer = setInterval(() => {
-      goTo((active + 1) % pillars.length);
-    }, 8000);
-    return () => clearInterval(timer);
-  }, [active]);
-
-  // SPHERICAL GLOBE PROJECTION:
-  // Cards map to the equator of a 3D globe.
-  // When swiping left (dir = -1): Card moves LEFT (x: -80%), recedes (z: -300), rotates (rotateY: -35)
-  // New card comes from RIGHT (x: 80%), recedes (z: -300), rotates (rotateY: 35)
-  const variants = {
-    enter: (dir: number) => ({
-      x: dir < 0 ? '80%' : '-80%',
-      z: -300,
-      rotateY: dir < 0 ? 35 : -35,
-      scale: 0.75,
-      opacity: 0,
-    }),
-    center: { 
-      x: '0%', 
-      z: 0, 
-      rotateY: 0, 
-      scale: 1, 
-      opacity: 1 
-    },
-    exit: (dir: number) => ({
-      x: dir < 0 ? '-80%' : '80%',
-      z: -300,
-      rotateY: dir < 0 ? -35 : 35,
-      scale: 0.75,
-      opacity: 0,
-    }),
-  };
-
   return (
-    <section
-      id="services"
-      className="py-8 md:py-16 lg:py-20 bg-[#0a1614] relative overflow-hidden min-h-screen flex flex-col justify-center snap-start snap-always shrink-0"
-      onMouseDown={(e) => { dragStartX.current = e.clientX; }}
-      onMouseUp={(e) => {
-        if (dragStartX.current !== null) {
-          const d = e.clientX - dragStartX.current;
-          if (d < -40) next(); else if (d > 40) prev();
-          dragStartX.current = null;
-        }
-      }}
-      onTouchStart={(e) => { dragStartX.current = e.touches[0].clientX; }}
-      onTouchEnd={(e) => {
-        if (dragStartX.current !== null) {
-          const d = e.changedTouches[0].clientX - dragStartX.current;
-          if (d < -30) next(); else if (d > 30) prev();
-          dragStartX.current = null;
-        }
-      }}
-    >
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_60%_at_50%_40%,#0a594f25_0%,transparent_70%)] pointer-events-none" />
-      <canvas ref={canvasRef} className="absolute inset-0 w-full h-full pointer-events-none z-0" />
-
-      <div className="container mx-auto px-4 md:px-6 relative z-10">
-        <div className="text-center mb-8 md:mb-10 max-w-4xl mx-auto select-none">
-          <span className="inline-block text-[#4daea1] font-bold tracking-widest uppercase text-xs mb-3 bg-[#4daea1]/10 px-4 py-1.5 rounded-full border border-[#4daea1]/20">Servicios</span>
-          <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-4">
-            Nuestros servicios personalizados para tu empresa
-          </h2>
-          <p className="text-gray-400 text-sm md:text-lg leading-relaxed mb-4 md:mb-0">
-            Sin fórmulas mágicas, con datos claros y sentido común.
-          </p>
-          
-          {/* Swipe Hint */}
-          <motion.div 
-            initial={{ opacity: 0, y: 10 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="flex items-center justify-center gap-2 text-[#4daea1]/60 text-[10px] font-bold uppercase tracking-[0.2em] md:hidden"
+    <section id="services" className="py-8 md:py-16 lg:py-20 bg-white relative overflow-hidden snap-start snap-always min-h-screen flex flex-col justify-center shrink-0">
+      <div className="container mx-auto px-5 md:px-6 relative z-10 flex flex-col">
+        <div className="text-center mb-6 md:mb-10">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#0a594f]/5 border border-[#0a594f]/10 mb-3"
           >
-            <span className="w-4 h-px bg-[#4daea1]/30" />
-            Deslizá hacia los costados
-            <span className="w-4 h-px bg-[#4daea1]/30" />
+            <ShieldCheck className="w-3 h-3 md:w-4 md:h-4 text-[#0a594f]" />
+            <span className="text-[10px] md:text-xs font-bold text-[#0a594f] tracking-widest uppercase">Nuestras Soluciones</span>
           </motion.div>
+          <h2 className="text-2xl md:text-5xl font-black text-gray-900 tracking-tight leading-tight">
+            Impacto Real, <span className="text-[#0a594f]">Sin Vueltas.</span>
+          </h2>
         </div>
 
-        <div className="relative max-w-2xl mx-auto select-none">
-          {/* Perspective wrapper for 3D Globe Equator effect */}
-          <div style={{ perspective: '1200px', perspectiveOrigin: '50% 50%' }}>
-            <div className="relative overflow-hidden" style={{ minHeight: '360px' }}>
-              <AnimatePresence mode="popLayout" custom={direction}>
-                <motion.div
-                  key={active}
-                  custom={direction}
-                  variants={variants}
-                  initial="enter"
-                  animate="center"
-                  exit="exit"
-                  transition={{ duration: 0.6, ease: [0.32, 0.72, 0, 1] }} 
-                  style={{ width: '100%', transformStyle: 'preserve-3d' }}
-                >
-                  <div
-                    className="bg-gradient-to-br from-[#0f2e2a] to-[#061a17] rounded-3xl border border-[#4daea1]/20 shadow-2xl p-5 md:p-8 relative overflow-hidden"
-                    style={{ backdropFilter: 'blur(12px)' }}
-                  >
-                    <div className={`absolute -top-16 -right-16 w-56 h-56 bg-gradient-to-br ${pillars[active].bg} opacity-[0.13] rounded-full blur-3xl pointer-events-none`} />
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-8 max-w-5xl mx-auto w-full">
+          {services.map((item, idx) => (
+            <motion.div 
+              key={idx}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ delay: idx * 0.1 }}
+              className={`p-5 md:p-8 rounded-3xl border transition-all duration-300 flex flex-col items-center text-center cursor-pointer
+                ${active === idx ? 'bg-white border-[#4daea1]/30 shadow-xl' : 'bg-gray-50 border-gray-100'}
+              `}
+              onClick={() => setActive(idx)}
+            >
+              <div className={`w-12 h-12 md:w-16 md:h-16 rounded-2xl flex items-center justify-center text-white mb-4 bg-gradient-to-br ${item.color}`}>
+                {item.icon}
+              </div>
+              <h3 className="text-lg md:text-xl font-bold text-gray-900 mb-2">{item.title}</h3>
+              <p className="text-gray-500 text-sm md:text-base leading-relaxed">{item.desc}</p>
+            </motion.div>
+          ))}
+        </div>
 
-                    <div className="flex items-center gap-3 mb-3">
-                      <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${pillars[active].bg} flex items-center justify-center text-white shadow-xl flex-shrink-0`}>
-                        {pillars[active].icon}
-                      </div>
-                      <div>
-                        <span className="text-[#4daea1] text-[9px] font-bold tracking-widest uppercase">Pilar {String(active + 1).padStart(2, '0')} / 04</span>
-                        <h3 className="text-lg md:text-2xl font-bold text-white leading-tight">{pillars[active].title}</h3>
-                      </div>
-                    </div>
-                    
-                    <p className="text-gray-300 text-sm leading-relaxed mb-6">
-                      {pillars[active].desc}
-                    </p>
-
-                    <ul className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                      {pillars[active].items.map((item, j) => (
-                        <motion.li
-                          key={item}
-                          initial={{ opacity: 0, y: 8 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          transition={{ delay: j * 0.06 }}
-                          className="flex items-center gap-3 bg-white/[0.04] rounded-xl px-4 py-2.5 border border-white/[0.07] hover:border-[#4daea1]/30 transition-colors"
-                        >
-                          <span className="w-1.5 h-1.5 rounded-full bg-[#4daea1] flex-shrink-0" />
-                          <span className="text-gray-300 text-sm">{item}</span>
-                        </motion.li>
-                      ))}
-                    </ul>
-                  </div>
-                </motion.div>
-              </AnimatePresence>
-            </div>
-          </div>
-
-          {/* Controls */}
-          <div className="flex justify-between items-center mt-8">
-            <button onClick={prev} className="w-12 h-12 rounded-full border border-white/10 bg-white/5 hover:bg-[#4daea1]/20 hover:border-[#4daea1]/40 flex items-center justify-center text-white transition-all active:scale-90">
-              <ArrowRight className="w-5 h-5 rotate-180" />
-            </button>
-            <div className="flex gap-2 items-center">
-              {pillars.map((_, i) => (
-                <button key={i} onClick={() => goTo(i)} className={`transition-all duration-300 rounded-full ${i === active ? 'w-8 h-2.5 bg-[#4daea1]' : 'w-2.5 h-2.5 bg-white/20 hover:bg-white/40'}`} />
-              ))}
-            </div>
-            <button onClick={next} className="w-12 h-12 rounded-full border border-white/10 bg-white/5 hover:bg-[#4daea1]/20 hover:border-[#4daea1]/40 flex items-center justify-center text-white transition-all active:scale-90">
-              <ArrowRight className="w-5 h-5" />
-            </button>
-          </div>
+        <div className="flex justify-center mt-8">
+          <Button variant="primary" onClick={() => document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' })}>
+            Agendar Diagnóstico
+          </Button>
         </div>
       </div>
     </section>
@@ -741,191 +589,103 @@ const Services = () => {
 //  PROCESS SECTION — Step Carousel
 // =============================================
 const Process = () => {
-  const steps = [
-    { id: "01", phase: "Inmersión", title: "Radiografía", desc: "Nos metemos de lleno en los números y procesos de tu negocio para entender dónde estamos parados. Identificamos juntos dónde se está escapando el dinero, qué procesos están trabados y cuáles son las oportunidades de mejora inmediata.", deliverable: "Diagnóstico de Salud Financiera y Operativa", icon: <FileCheck className="w-8 h-8 md:w-10 md:h-10" />, color: "from-blue-400 to-blue-600", accent: "#3b82f6" },
-    { id: "02", phase: "Diseño Estratégico", title: "La Hoja de Ruta", desc: "Con el diagnóstico sobre la mesa, armamos un plan de acción claro. Definimos prioridades para mejorar tu rentabilidad y tu organización en los próximos meses, asignando recursos de forma inteligente y sin prometer cosas imposibles.", deliverable: "Plan de Acción (RoadMap) a 90 días", icon: <Compass className="w-8 h-8 md:w-10 md:h-10" />, color: "from-emerald-400 to-emerald-600", accent: "#10b981" },
-    { id: "03", phase: "Acción y Control", title: "Puesta en Marcha", desc: "No te dejamos un PDF lindo y nos vamos. Te acompañamos en la implementación diaria. Instalamos tableros de control muy simples de leer para que puedas medir los avances, corregir desvíos a tiempo y ver resultados reales en tu cuenta bancaria.", deliverable: "Tableros de Control (KPIs) y Soporte Continuo", icon: <LineChart className="w-8 h-8 md:w-10 md:h-10" />, color: "from-[#4daea1] to-[#0a594f]", accent: "#4daea1" },
-  ];
-
   const [active, setActive] = useState(0);
 
-  // Auto-advance timeline — resets every time 'active' changes
+  const steps = [
+    { 
+      title: "Diagnóstico", 
+      desc: "Análisis 360° de finanzas y procesos.", 
+      deliverable: "Mapa de Riesgos",
+      icon: <Search className="w-5 h-5 md:w-6 md:h-6" />, 
+      color: "from-blue-500 to-blue-600" 
+    },
+    { 
+      title: "Plan de Acción", 
+      desc: "Roadmap de 90 días con foco en KPIs.", 
+      deliverable: "Tablero de Control",
+      icon: <Target className="w-5 h-5 md:w-6 md:h-6" />, 
+      color: "from-[#4daea1] to-[#0a594f]" 
+    },
+    { 
+      title: "Ejecución", 
+      desc: "Implementación técnica y acompañamiento.", 
+      deliverable: "Sistemas CRM",
+      icon: <Rocket className="w-5 h-5 md:w-6 md:h-6" />, 
+      color: "from-emerald-500 to-emerald-700" 
+    }
+  ];
+
   useEffect(() => {
     const timer = setInterval(() => {
       setActive((prev) => (prev + 1) % steps.length);
-    }, 12000); // changes every 12 seconds
+    }, 12000);
     return () => clearInterval(timer);
   }, [active, steps.length]);
 
   return (
-    <section id="process" className="py-12 md:py-16 lg:py-20 bg-white relative overflow-hidden snap-start snap-always min-h-screen flex flex-col justify-center shrink-0">
-      <div className="absolute inset-0 bg-[linear-gradient(to_right,#00000008_1px,transparent_1px),linear-gradient(to_bottom,#00000008_1px,transparent_1px)] bg-[size:24px_24px]" />
-
-      <div className="container mx-auto px-4 md:px-6 relative z-10">
-        <div className="text-center mb-6 md:mb-10 max-w-4xl mx-auto">
-          <span className="inline-block text-[#0a594f] font-bold tracking-widest uppercase text-xs mb-3 bg-[#4daea1]/10 px-4 py-1.5 rounded-full border border-[#4daea1]/20">Nuestro Método</span>
-          <h2 className="text-2xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-2 md:mb-4">Un proceso claro, <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#0a594f] to-[#4daea1]">sin cajas negras.</span></h2>
-          <p className="hidden md:block text-gray-600 text-base md:text-lg leading-relaxed">No imponemos recetas armadas. Entendemos tu negocio, diseñamos un plan realista y te acompañamos a implementarlo paso a paso.</p>
-        </div>
-
-
-        <div className="relative max-w-6xl mx-auto">
-          {/* Desktop: 2-col grid timeline */}
-          <div className="hidden md:grid md:grid-cols-12 gap-8 md:gap-16 items-center min-h-[400px]">
-          
-          {/* Left Column: Interactive Timeline Map */}
-          <div className="col-span-4 md:col-span-5 relative">
-            <div className="absolute left-[15px] md:left-[23px] top-0 bottom-0 w-px bg-gray-200" />
-            
-            <div className="space-y-4 md:space-y-8">
-              {steps.map((step, index) => {
-                const isActive = active === index;
-                return (
-                  <button 
-                    key={step.id} 
-                    onClick={() => setActive(index)}
-                    className="relative flex items-center gap-3 md:gap-8 w-full group text-left transition-all duration-300"
-                  >
-                    {/* Glowing Dot */}
-                    <div className="relative flex-shrink-0 flex items-center justify-center">
-                      <div className={`w-8 h-8 md:w-12 md:h-12 rounded-full border-2 transition-all duration-500 flex items-center justify-center z-10 ${isActive ? 'bg-white border-[#4daea1] text-[#0a594f] shadow-[0_0_20px_rgba(77,174,161,0.3)]' : 'bg-gray-50 border-gray-200 text-gray-400 group-hover:border-[#4daea1]/40'}`}>
-                        <span className="font-bold text-xs md:text-sm tracking-wider">{step.id}</span>
-                      </div>
-                      {/* Active line filler */}
-                      {isActive && index !== steps.length - 1 && (
-                         <motion.div 
-                           layoutId="activeLine"
-                           className="absolute top-8 md:top-12 left-1/2 -ml-[1px] w-[2px] h-16 md:h-24 bg-gradient-to-b from-[#4daea1] to-transparent z-0 origin-top"
-                           initial={{ scaleY: 0 }}
-                           animate={{ scaleY: 1 }}
-                           transition={{ duration: 0.5 }}
-                         />
-                      )}
-                    </div>
-
-                    {/* Timeline Text */}
-                    <div className="flex-1">
-                      <h4 className={`text-sm sm:text-base md:text-xl font-bold transition-colors duration-300 leading-tight ${isActive ? 'text-gray-900' : 'text-gray-400 group-hover:text-gray-600'}`}>
-                        {step.title}
-                      </h4>
-                      <p className={`text-[9px] md:text-sm uppercase tracking-widest font-bold mt-0.5 md:mt-1 transition-colors duration-300 ${isActive ? 'text-[#0a594f]' : 'text-gray-400'}`}>
-                        {step.phase}
-                      </p>
-                    </div>
-                  </button>
-                );
-              })}
-            </div>
+    <section id="process" className="py-8 md:py-16 lg:py-20 bg-gray-50 relative overflow-hidden snap-start snap-always min-h-screen flex flex-col justify-center shrink-0">
+      <div className="container mx-auto px-5 md:px-6 relative z-10">
+        <div className="max-w-4xl mx-auto">
+          <div className="text-center mb-6 md:mb-10">
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              className="inline-flex items-center gap-2 px-3 py-1 rounded-xl bg-[#0a594f]/5 border border-[#4daea1]/20 mb-3"
+            >
+              <Compass className="w-3 h-3 md:w-4 md:h-4 text-[#0a594f]" />
+              <span className="text-[10px] md:text-sm font-bold text-[#0a594f] tracking-widest uppercase">Nuestro Método</span>
+            </motion.div>
+            <h2 className="text-2xl md:text-5xl font-black text-gray-900 tracking-tight leading-tight">
+              Del Caos al <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#0a594f] to-[#4daea1]">Control Total.</span>
+            </h2>
           </div>
 
-          {/* Right Column: Active Content Viewer */}
-          <div className="col-span-8 md:col-span-7 relative h-full flex flex-col justify-center">
-            <AnimatePresence mode="wait">
+          <div className="relative flex flex-col items-center gap-6">
+            <div className="w-full flex justify-between items-center relative mb-8">
+              <div className="absolute top-1/2 left-0 w-full h-px bg-gray-200 -translate-y-1/2" />
               <motion.div
-                key={active}
-                initial={{ opacity: 0, y: 40, filter: 'blur(10px)' }}
-                animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
-                exit={{ opacity: 0, y: -40, filter: 'blur(10px)' }}
-                transition={{ duration: 0.5, ease: [0.33, 1, 0.68, 1] }}
-                className="relative bg-white border border-gray-100 shadow-[0_8px_30px_rgb(0,0,0,0.06)] backdrop-blur-md rounded-[2.5rem] p-6 md:p-10"
-              >
-                {/* Background glow accent */}
-                <div className={`absolute inset-0 bg-gradient-to-br ${steps[active].color} opacity-[0.03] rounded-[2.5rem] pointer-events-none`} />
+                className="absolute top-1/2 left-0 h-px bg-[#4daea1] -translate-y-1/2 origin-left"
+                initial={{ width: 0 }}
+                animate={{ width: `${(active / (steps.length - 1)) * 100}%` }}
+                transition={{ duration: 0.5 }}
+              />
 
-                <div className="relative z-10">
-                  <div className={`w-12 h-12 md:w-20 md:h-20 lg:w-24 lg:h-24 rounded-2xl md:rounded-3xl border border-gray-100 shadow-xl flex items-center justify-center text-white mb-4 md:mb-8 bg-gradient-to-br ${steps[active].color}`}>
-                    {steps[active].icon}
+              {steps.map((_, idx) => (
+                <button
+                  key={idx}
+                  onClick={() => setActive(idx)}
+                  className="relative z-10 flex flex-col items-center group"
+                >
+                  <div className={`w-10 h-10 md:w-16 md:h-16 rounded-full border-2 flex items-center justify-center transition-all duration-300 ${active === idx ? 'bg-[#0a594f] border-[#4daea1] text-white scale-110' : 'bg-white border-gray-100 text-gray-400 hover:border-[#4daea1]/30'}`}>
+                    <span className="text-lg md:text-2xl font-bold">{idx + 1}</span>
                   </div>
-                  
-                  <h3 className="text-xl md:text-3xl lg:text-4xl font-bold text-gray-900 mb-2 md:mb-6 leading-tight">
-                    {steps[active].title}
-                  </h3>
-                  
-                  <p className="text-gray-600 leading-relaxed text-xs md:text-base lg:text-lg mb-6 md:mb-10 font-light">
-                    {steps[active].desc}
-                  </p>
-
-                  <div className="bg-gray-50 border border-gray-100 rounded-2xl p-6 flex flex-col sm:flex-row items-start sm:items-center gap-5">
-                    <div className="w-12 h-12 rounded-full bg-white shadow-sm border border-gray-100 flex items-center justify-center flex-shrink-0">
-                      <Briefcase className="w-5 h-5 text-[#0a594f]" />
-                    </div>
-                    <div>
-                      <p className="text-xs uppercase tracking-widest font-bold text-gray-500 mb-1">Entregable Concreto</p>
-                      <p className="text-base md:text-lg font-medium text-gray-900">{steps[active].deliverable}</p>
-                    </div>
-                  </div>
-                </div>
-              </motion.div>
-            </AnimatePresence>
-          </div>
-          </div>{/* End hidden md:grid -- Desktop layout */}
-
-          {/* Mobile: circular numbered timeline + card — same look as desktop */}
-          <div className="md:hidden">
-            <div className="relative mb-4">
-              <div className="absolute left-[15px] top-0 bottom-0 w-px bg-gray-200" />
-              <div className="space-y-4">
-                {steps.map((step, index) => {
-                  const isActive = active === index;
-                  return (
-                    <button
-                      key={step.id}
-                      onClick={() => setActive(index)}
-                      className="relative flex items-center gap-4 w-full group text-left transition-all duration-300"
-                    >
-                      <div className="relative flex-shrink-0 flex items-center justify-center">
-                        <div className={`w-8 h-8 rounded-full border-2 transition-all duration-500 flex items-center justify-center z-10 ${
-                          isActive ? 'bg-white border-[#4daea1] text-[#0a594f] shadow-[0_0_16px_rgba(77,174,161,0.3)]' : 'bg-gray-50 border-gray-200 text-gray-400'
-                        }`}>
-                          <span className="font-bold text-xs">{step.id}</span>
-                        </div>
-                        {isActive && index !== steps.length - 1 && (
-                          <motion.div
-                            layoutId="activeLine-mobile"
-                            className="absolute top-8 left-1/2 -ml-[1px] w-[2px] h-10 bg-gradient-to-b from-[#4daea1] to-transparent z-0 origin-top"
-                            initial={{ scaleY: 0 }}
-                            animate={{ scaleY: 1 }}
-                            transition={{ duration: 0.4 }}
-                          />
-                        )}
-                      </div>
-                      <div className="flex-1">
-                        <h4 className={`text-sm font-bold leading-tight transition-colors ${
-                          isActive ? 'text-gray-900' : 'text-gray-400'
-                        }`}>{step.title}</h4>
-                        <p className={`text-[9px] uppercase tracking-widest font-bold mt-0.5 transition-colors ${
-                          isActive ? 'text-[#0a594f]' : 'text-gray-400'
-                        }`}>{step.phase}</p>
-                      </div>
-                    </button>
-                  );
-                })}
-              </div>
+                  <span className={`absolute -bottom-6 text-[9px] md:text-xs font-bold uppercase tracking-widest whitespace-nowrap transition-colors ${active === idx ? 'text-[#0a594f]' : 'text-gray-400'}`}>
+                    {steps[idx].title}
+                  </span>
+                </button>
+              ))}
             </div>
 
             <AnimatePresence mode="wait">
               <motion.div
                 key={active}
-                initial={{ opacity: 0, y: 16 }}
+                initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -16 }}
-                transition={{ duration: 0.35 }}
-                className="relative bg-white border border-gray-100 shadow-[0_4px_20px_rgb(0,0,0,0.06)] rounded-2xl p-5"
+                exit={{ opacity: 0, y: -20 }}
+                className="w-full bg-white rounded-3xl p-6 md:p-10 border border-gray-100 shadow-xl relative overflow-hidden"
               >
-                <div className={`absolute inset-0 bg-gradient-to-br ${steps[active].color} opacity-[0.03] rounded-2xl pointer-events-none`} />
+                <div className={`absolute inset-0 bg-gradient-to-br ${steps[active].color} opacity-[0.03] pointer-events-none`} />
                 <div className="relative z-10">
-                  <div className={`w-10 h-10 rounded-xl flex items-center justify-center text-white mb-3 bg-gradient-to-br ${steps[active].color}`}>
+                  <div className={`w-12 h-12 md:w-16 md:h-16 rounded-2xl flex items-center justify-center text-white mb-6 bg-gradient-to-br ${steps[active].color}`}>
                     {steps[active].icon}
                   </div>
-                  <h3 className="text-lg font-bold text-gray-900 mb-2">{steps[active].title}</h3>
-                  <p className="text-gray-600 leading-relaxed text-sm mb-4">{steps[active].desc}</p>
-                  <div className="bg-gray-50 border border-gray-100 rounded-xl p-3 flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-full bg-white shadow-sm border border-gray-100 flex items-center justify-center flex-shrink-0">
-                      <Briefcase className="w-3.5 h-3.5 text-[#0a594f]" />
-                    </div>
+                  <h3 className="text-xl md:text-3xl font-bold text-gray-900 mb-3">{steps[active].title}</h3>
+                  <p className="text-gray-600 mb-6 text-sm md:text-base leading-relaxed">{steps[active].desc}</p>
+                  <div className="bg-gray-50 p-4 rounded-xl flex items-center gap-4">
+                    <Briefcase className="w-5 h-5 text-[#0a594f]" />
                     <div>
-                      <p className="text-[9px] uppercase tracking-widest font-bold text-gray-500">Entregable</p>
-                      <p className="text-xs font-semibold text-gray-900">{steps[active].deliverable}</p>
+                      <p className="text-[10px] uppercase font-bold text-gray-400">Entregable</p>
+                      <p className="text-sm font-semibold">{steps[active].deliverable}</p>
                     </div>
                   </div>
                 </div>
@@ -1003,7 +763,7 @@ const Contact = () => {
   const errorClasses = "text-red-400 text-xs mt-1.5 ml-1 font-medium";
 
   return (
-    <section id="contact" className="py-12 md:py-16 lg:py-20 bg-[#0a594f] relative overflow-hidden snap-start snap-always min-h-screen flex flex-col justify-center shrink-0">
+    <section id="contact" className="py-8 md:py-16 lg:py-20 bg-[#0a594f] relative overflow-hidden snap-start snap-always min-h-screen flex flex-col justify-center shrink-0">
       <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_bottom_left,_var(--tw-gradient-stops))] from-[#114a42] to-transparent opacity-80"></div>
       <div className="absolute top-20 right-20 w-96 h-96 bg-[#4daea1]/20 rounded-full blur-[128px] pointer-events-none"></div>
 
