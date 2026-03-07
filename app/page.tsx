@@ -1082,7 +1082,7 @@ const Contact = () => {
                     {errors.name && <p className={errorClasses}>{errors.name.message?.toString()}</p>}
                   </div>
                   <div>
-                    <label className={labelClasses}>Tu mejor email *</label>
+                    <label className={labelClasses}>Tu email empresarial *</label>
                     <input type="email" {...register("email", { required: "Requerido", pattern: { value: /^\S+@\S+$/i, message: "Email inválido" } })} className={inputClasses} placeholder="juan@empresa.com" />
                     {errors.email && <p className={errorClasses}>{errors.email.message?.toString()}</p>}
                   </div>
