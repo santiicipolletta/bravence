@@ -223,7 +223,7 @@ const Navbar = () => {
 // --- REFACTORED HERO SECTION (COMPACT VERSION) ---
 const Hero = () => {
   return (
-    <section id="hero" className="relative flex flex-col justify-center pt-24 pb-16 md:pt-40 md:pb-28 overflow-hidden bg-[#0a594f] min-h-[100svh] snap-start snap-always">
+    <section id="hero" className="relative flex flex-col justify-center pt-24 pb-16 md:pt-40 md:pb-28 overflow-hidden bg-[#0a594f] min-h-[100svh] snap-start">
       {/* Background Video */}
       <div className="absolute inset-0 w-full h-full pointer-events-none opacity-90">
         <video
@@ -335,7 +335,7 @@ const Hero = () => {
 
 const About = () => {
   return (
-    <section id="about" className="py-12 md:py-16 lg:py-20 bg-[#06100e] relative overflow-hidden flex flex-col justify-center min-h-[100svh] snap-start snap-always">
+    <section id="about" className="py-12 md:py-16 lg:py-20 bg-[#06100e] relative overflow-hidden flex flex-col justify-center min-h-[100svh] snap-start">
       <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-gray-200 to-transparent" />
 
       <div className="container mx-auto px-5 md:px-6">
@@ -599,7 +599,7 @@ const Services = () => {
     <section
       id="services"
       ref={sectionRef}
-      className="py-8 md:py-16 lg:py-20 bg-[#0a1614] relative overflow-hidden min-h-[100svh] flex flex-col justify-center snap-start snap-always"
+      className="py-8 md:py-16 lg:py-20 bg-[#0a1614] relative overflow-hidden min-h-[100svh] flex flex-col justify-center snap-start"
       onMouseDown={(e) => { 
         dragStartX.current = e.clientX; 
       }}
@@ -816,7 +816,7 @@ const Process = () => {
   }, [active, steps.length, isAutoPlay, isInView]);
 
   return (
-    <section id="process" ref={sectionRef} className="py-12 md:py-16 lg:py-20 bg-white relative overflow-hidden flex flex-col justify-center min-h-[100svh] snap-start snap-always">
+    <section id="process" ref={sectionRef} className="py-12 md:py-16 lg:py-20 bg-white relative overflow-hidden flex flex-col justify-center min-h-[100svh] snap-start">
       <div className="absolute inset-0 bg-[linear-gradient(to_right,#00000008_1px,transparent_1px),linear-gradient(to_bottom,#00000008_1px,transparent_1px)] bg-[size:24px_24px]" />
 
       <div className="container mx-auto px-4 md:px-6 relative z-10">
