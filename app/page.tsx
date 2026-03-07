@@ -1294,8 +1294,8 @@ const FloatingWhatsApp = () => (
 );
 
 // =============================================
-// JavaScript-based Scroll Snap (replaces CSS snap-mandatory)
-// Allows free scrolling within sections, snaps only at boundaries
+// JavaScript-based Scroll Snap — ONLY between Hero and About
+// All other module transitions are free scroll
 // =============================================
 const useScrollSnap = (containerId: string) => {
   useEffect(() => {
@@ -1308,34 +1308,29 @@ const useScrollSnap = (containerId: string) => {
     const handleScrollEnd = () => {
       if (isSnapping) return;
       
+      const hero = document.getElementById('hero');
+      const about = document.getElementById('about');
+      if (!hero || !about) return;
+
       const scrollTop = container.scrollTop;
       const viewportH = container.clientHeight;
-      const threshold = viewportH * 0.15; // 15% del viewport
+      const threshold = viewportH * 0.15;
+      const aboutTop = about.offsetTop;
 
-      // Buscar todas las secciones
-      const sections = container.querySelectorAll('section[id]');
-      let closestSection: HTMLElement | null = null;
-      let closestDistance = Infinity;
+      // Solo actuamos en la zona entre Hero y About
+      // Si el scroll está lejos de esta frontera, no hacemos nada
+      const distanceToAbout = Math.abs(scrollTop - aboutTop);
+      const distanceToHero = scrollTop; // Hero está en top=0
 
-      sections.forEach((section) => {
-        const el = section as HTMLElement;
-        const sectionTop = el.offsetTop;
-        const distance = Math.abs(scrollTop - sectionTop);
-        
-        if (distance < closestDistance) {
-          closestDistance = distance;
-          closestSection = el;
-        }
-      });
-
-      // Solo snapear si estamos cerca de un borde de sección (dentro del umbral)
-      if (closestSection && closestDistance > 5 && closestDistance < threshold) {
+      if (distanceToAbout < threshold && distanceToAbout > 5) {
+        // Cerca del borde de About → snap a About
         isSnapping = true;
-        container.scrollTo({
-          top: (closestSection as HTMLElement).offsetTop,
-          behavior: 'smooth'
-        });
-        // Liberar el flag después de la animación
+        container.scrollTo({ top: aboutTop, behavior: 'smooth' });
+        setTimeout(() => { isSnapping = false; }, 600);
+      } else if (scrollTop > 0 && scrollTop < aboutTop && distanceToHero < threshold && distanceToHero > 5) {
+        // Cerca del borde de Hero → snap a Hero
+        isSnapping = true;
+        container.scrollTo({ top: 0, behavior: 'smooth' });
         setTimeout(() => { isSnapping = false; }, 600);
       }
     };
