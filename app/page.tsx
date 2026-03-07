@@ -98,7 +98,9 @@ const Navbar = () => {
   const [activeSection, setActiveSection] = useState('hero');
 
   useEffect(() => {
-    const handleScroll = () => setScrolled(window.scrollY > 20);
+    const container = document.getElementById('scroll-container');
+    const handleScroll = () => setScrolled((container?.scrollTop ?? 0) > 20);
+    container?.addEventListener('scroll', handleScroll);
     window.addEventListener('scroll', handleScroll);
 
     // Intersection Observer for Navbar Active State
@@ -108,11 +110,12 @@ const Navbar = () => {
           setActiveSection(entry.target.id);
         }
       });
-    }, { threshold: 0.3 });
+    }, { threshold: 0.3, root: container });
 
     document.querySelectorAll('section[id]').forEach((section) => observer.observe(section));
 
     return () => {
+      container?.removeEventListener('scroll', handleScroll);
       window.removeEventListener('scroll', handleScroll);
       observer.disconnect();
     };
@@ -120,18 +123,14 @@ const Navbar = () => {
 
   const scrollToSection = (href: string) => {
     setIsOpen(false);
+    const container = document.getElementById('scroll-container');
     const element = document.querySelector(href);
-    if (element) {
-      // Adjust scroll position to account for fixed navbar height if not hero
+    if (container && element) {
       if (href === '#hero') {
-        window.scrollTo({ top: 0, behavior: 'smooth' });
+        container.scrollTo({ top: 0, behavior: 'smooth' });
       } else {
-        const offset = 80;
-        const bodyRect = document.body.getBoundingClientRect().top;
-        const elementRect = element.getBoundingClientRect().top;
-        const elementPosition = elementRect - bodyRect;
-        const offsetPosition = elementPosition - offset;
-        window.scrollTo({ top: offsetPosition, behavior: 'smooth' });
+        const top = (element as HTMLElement).offsetTop;
+        container.scrollTo({ top, behavior: 'smooth' });
       }
     }
   };
@@ -224,7 +223,7 @@ const Navbar = () => {
 // --- REFACTORED HERO SECTION (COMPACT VERSION) ---
 const Hero = () => {
   return (
-    <section id="hero" className="relative flex flex-col justify-center pt-24 pb-16 md:pt-40 md:pb-28 overflow-hidden bg-[#0a594f] min-h-[100svh]">
+    <section id="hero" className="relative flex flex-col justify-center pt-24 pb-16 md:pt-40 md:pb-28 overflow-hidden bg-[#0a594f] min-h-[100svh] snap-start snap-always">
       {/* Background Video */}
       <div className="absolute inset-0 w-full h-full pointer-events-none opacity-90">
         <video
@@ -336,7 +335,7 @@ const Hero = () => {
 
 const About = () => {
   return (
-    <section id="about" className="py-12 md:py-16 lg:py-20 bg-[#06100e] relative overflow-hidden flex flex-col justify-center min-h-[100svh]">
+    <section id="about" className="py-12 md:py-16 lg:py-20 bg-[#06100e] relative overflow-hidden flex flex-col justify-center min-h-[100svh] snap-start snap-always">
       <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-gray-200 to-transparent" />
 
       <div className="container mx-auto px-5 md:px-6">
@@ -548,7 +547,7 @@ const Services = () => {
     },
   ];
 
-  const [active, setActive] = useState(0);
+  const [active, setActive] = useState(pillars.length - 1);
   const [direction, setDirection] = useState(1);
   const [isAutoPlay, setIsAutoPlay] = useState(true);
   const [showSwipeHint, setShowSwipeHint] = useState(true);
@@ -600,25 +599,25 @@ const Services = () => {
     <section
       id="services"
       ref={sectionRef}
-      className="py-8 md:py-16 lg:py-20 bg-[#0a1614] relative overflow-hidden min-h-[100svh] flex flex-col justify-center"
+      className="py-8 md:py-16 lg:py-20 bg-[#0a1614] relative overflow-hidden min-h-[100svh] flex flex-col justify-center snap-start snap-always"
       onMouseDown={(e) => { 
         dragStartX.current = e.clientX; 
-        setShowSwipeHint(false);
       }}
       onMouseUp={(e) => {
         if (dragStartX.current !== null) {
           const d = e.clientX - dragStartX.current;
+          if (Math.abs(d) > 30) setShowSwipeHint(false);
           if (d < -40) next(); else if (d > 40) prev();
           dragStartX.current = null;
         }
       }}
       onTouchStart={(e) => { 
         dragStartX.current = e.touches[0].clientX; 
-        setShowSwipeHint(false);
       }}
       onTouchEnd={(e) => {
         if (dragStartX.current !== null) {
           const d = e.changedTouches[0].clientX - dragStartX.current;
+          if (Math.abs(d) > 30) setShowSwipeHint(false);
           if (d < -30) next(); else if (d > 30) prev();
           dragStartX.current = null;
         }
@@ -817,7 +816,7 @@ const Process = () => {
   }, [active, steps.length, isAutoPlay, isInView]);
 
   return (
-    <section id="process" ref={sectionRef} className="py-12 md:py-16 lg:py-20 bg-white relative overflow-hidden flex flex-col justify-center min-h-[100svh]">
+    <section id="process" ref={sectionRef} className="py-12 md:py-16 lg:py-20 bg-white relative overflow-hidden flex flex-col justify-center min-h-[100svh] snap-start snap-always">
       <div className="absolute inset-0 bg-[linear-gradient(to_right,#00000008_1px,transparent_1px),linear-gradient(to_bottom,#00000008_1px,transparent_1px)] bg-[size:24px_24px]" />
 
       <div className="container mx-auto px-4 md:px-6 relative z-10">
@@ -1068,7 +1067,7 @@ const Contact = () => {
   const errorClasses = "text-red-400 text-xs mt-1.5 ml-1 font-medium";
 
   return (
-    <section id="contact" className="py-12 md:py-16 lg:py-20 bg-[#0a594f] relative overflow-hidden flex flex-col justify-center min-h-[100svh]">
+    <section id="contact" className="py-16 md:py-24 lg:py-32 bg-[#0a594f] relative overflow-hidden flex flex-col justify-center snap-start">
       <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_bottom_left,_var(--tw-gradient-stops))] from-[#114a42] to-transparent opacity-80"></div>
       <div className="absolute top-20 right-20 w-96 h-96 bg-[#4daea1]/20 rounded-full blur-[128px] pointer-events-none"></div>
 
@@ -1240,11 +1239,11 @@ const StickyMobileCTA = () => (
   <div className="fixed bottom-0 left-0 right-0 z-40 md:hidden px-4 pb-4 pt-2 bg-gradient-to-t from-[#050d0b]/95 to-transparent backdrop-blur-sm">
     <button
       onClick={() => {
-        const mainEl = document.querySelector('main');
+        const scrollContainer = document.getElementById('scroll-container');
         const contactSection = document.getElementById('contact');
-        if (mainEl && contactSection) {
+        if (scrollContainer && contactSection) {
           const top = contactSection.offsetTop;
-          mainEl.scrollTo({ top, behavior: 'smooth' });
+          scrollContainer.scrollTo({ top, behavior: 'smooth' });
         }
       }}
       className="w-full bg-gradient-to-r from-[#4daea1] to-[#0a594f] text-white font-bold py-4 px-6 rounded-2xl shadow-2xl shadow-[#4daea1]/30 flex items-center justify-center gap-2 text-sm tracking-wide active:scale-95 transition-transform"
@@ -1280,13 +1279,15 @@ const FloatingWhatsApp = () => (
 
 const App = () => {
   return (
-    <main className="font-sans antialiased bg-gray-50 selection:bg-[#4daea1] selection:text-white overflow-x-hidden w-full scroll-smooth relative pb-[72px] md:pb-0">
+    <main className="font-sans antialiased bg-gray-50 selection:bg-[#4daea1] selection:text-white overflow-x-hidden w-full relative pb-[72px] md:pb-0">
       <Navbar />
-      <div className="flex flex-col w-full h-full">
+      {/* Snap container — only these sections "lock" into place */}
+      <div id="scroll-container" className="snap-y snap-mandatory h-screen overflow-y-auto" style={{ scrollBehavior: 'smooth' }}>
         <Hero />
         <About />
         <Services />
         <Process />
+        {/* Contact & Footer flow freely at the end */}
         <Contact />
         <Footer />
       </div>
