@@ -1,11 +1,11 @@
 'use client'; // DIRECTIVA OBLIGATORIA PARA NEXT.JS APP ROUTER
 
 import React, { useState, useEffect, useRef } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence, useInView } from 'framer-motion';
 import {
   Menu, X, ArrowRight, TrendingUp, Activity, Target, ShieldCheck, ChevronDown,
   MessageCircle, CheckCircle2, Search, Compass, Rocket, Lock, Clock, FileText,
-  Users, BarChart3, Briefcase, LineChart, FileCheck
+  Users, BarChart3, Briefcase, LineChart, FileCheck, MousePointer2
 } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 
@@ -551,6 +551,9 @@ const Services = () => {
   const [active, setActive] = useState(0);
   const [direction, setDirection] = useState(1);
   const [isAutoPlay, setIsAutoPlay] = useState(true);
+  const [showSwipeHint, setShowSwipeHint] = useState(true);
+  const sectionRef = useRef(null);
+  const isInView = useInView(sectionRef, { amount: 0.4 });
   const canvasRef = useRef(null as unknown as HTMLCanvasElement);
   const { jump } = useAmbientParticles(canvasRef);
   const dragStartX = useRef(null as null | number);
@@ -562,7 +565,10 @@ const Services = () => {
   const goTo = (idx: number, fromUser = false) => {
     if (isAnimating.current || idx === active) return;
     
-    if (fromUser) setIsAutoPlay(false);
+    if (fromUser) {
+      setIsAutoPlay(false);
+      setShowSwipeHint(false);
+    }
     
     // Continuous loop check:
     let diff = idx - active;
@@ -583,18 +589,22 @@ const Services = () => {
 
   // Auto-advance Services cards every 15 seconds para dar más tiempo de lectura
   useEffect(() => {
-    if (!isAutoPlay) return;
+    if (!isAutoPlay || !isInView) return;
     const timer = setInterval(() => {
       goTo((active + 1) % pillars.length);
     }, 15000);
     return () => clearInterval(timer);
-  }, [active, isAutoPlay]);
+  }, [active, isAutoPlay, isInView]);
 
   return (
     <section
       id="services"
+      ref={sectionRef}
       className="py-8 md:py-16 lg:py-20 bg-[#0a1614] relative overflow-hidden min-h-[100svh] flex flex-col justify-center"
-      onMouseDown={(e) => { dragStartX.current = e.clientX; }}
+      onMouseDown={(e) => { 
+        dragStartX.current = e.clientX; 
+        setShowSwipeHint(false);
+      }}
       onMouseUp={(e) => {
         if (dragStartX.current !== null) {
           const d = e.clientX - dragStartX.current;
@@ -602,7 +612,10 @@ const Services = () => {
           dragStartX.current = null;
         }
       }}
-      onTouchStart={(e) => { dragStartX.current = e.touches[0].clientX; }}
+      onTouchStart={(e) => { 
+        dragStartX.current = e.touches[0].clientX; 
+        setShowSwipeHint(false);
+      }}
       onTouchEnd={(e) => {
         if (dragStartX.current !== null) {
           const d = e.changedTouches[0].clientX - dragStartX.current;
@@ -628,6 +641,53 @@ const Services = () => {
         </motion.div>
 
         <div className="relative max-w-2xl mx-auto select-none">
+          {/* Swipe UI Overlay Hint (Hand Animation) — only on mobile & until first interaction */}
+          <AnimatePresence>
+            {showSwipeHint && (
+              <motion.div 
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="absolute inset-0 z-50 flex items-center justify-center pointer-events-none md:hidden"
+              >
+                <motion.div 
+                  initial={{ x: -20 }}
+                  animate={{ x: 20 }}
+                  transition={{ 
+                    repeat: Infinity, 
+                    repeatType: "reverse", 
+                    duration: 1.2,
+                    ease: "easeInOut"
+                  }}
+                  className="flex flex-col items-center gap-4"
+                >
+                  <div className="bg-white/10 backdrop-blur-md rounded-full p-6 border border-white/20 shadow-2xl relative">
+                    <motion.div
+                      animate={{ 
+                        scale: [1, 1.2, 1],
+                        opacity: [0.5, 1, 0.5]
+                      }}
+                      transition={{ repeat: Infinity, duration: 1.2 }}
+                      className="absolute inset-0 bg-[#4daea1]/20 rounded-full blur-xl"
+                    />
+                    <MousePointer2 className="w-10 h-10 text-white rotate-[15deg] drop-shadow-lg" />
+                    
+                    {/* Floating Arrows */}
+                    <motion.div className="absolute -left-12 top-1/2 -translate-y-1/2">
+                      <ArrowRight className="w-6 h-6 text-white/40 rotate-180" />
+                    </motion.div>
+                    <motion.div className="absolute -right-12 top-1/2 -translate-y-1/2">
+                      <ArrowRight className="w-6 h-6 text-white/40" />
+                    </motion.div>
+                  </div>
+                  <span className="text-white text-[10px] font-bold tracking-[0.4em] uppercase bg-[#0a1614]/80 px-4 py-2 rounded-full border border-white/10 backdrop-blur-sm">
+                    Deslizá para ver más
+                  </span>
+                </motion.div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+
           {/* Perspective wrapper for 3D Globe Equator effect */}
           <div style={{ perspective: '1200px', perspectiveOrigin: '50% 50%' }}>
             <div className="relative overflow-hidden" style={{ minHeight: '360px' }}>
@@ -744,18 +804,20 @@ const Process = () => {
 
   const [active, setActive] = useState(0);
   const [isAutoPlay, setIsAutoPlay] = useState(true);
+  const sectionRef = useRef(null);
+  const isInView = useInView(sectionRef, { amount: 0.4 });
 
   // Auto-advance timeline — resets every time 'active' changes
   useEffect(() => {
-    if (!isAutoPlay) return;
+    if (!isAutoPlay || !isInView) return;
     const timer = setInterval(() => {
       setActive((prev) => (prev + 1) % steps.length);
     }, 12000); // changes every 12 seconds
     return () => clearInterval(timer);
-  }, [active, steps.length, isAutoPlay]);
+  }, [active, steps.length, isAutoPlay, isInView]);
 
   return (
-    <section id="process" className="py-12 md:py-16 lg:py-20 bg-white relative overflow-hidden flex flex-col justify-center min-h-[100svh]">
+    <section id="process" ref={sectionRef} className="py-12 md:py-16 lg:py-20 bg-white relative overflow-hidden flex flex-col justify-center min-h-[100svh]">
       <div className="absolute inset-0 bg-[linear-gradient(to_right,#00000008_1px,transparent_1px),linear-gradient(to_bottom,#00000008_1px,transparent_1px)] bg-[size:24px_24px]" />
 
       <div className="container mx-auto px-4 md:px-6 relative z-10">
