@@ -550,6 +550,7 @@ const Services = () => {
 
   const [active, setActive] = useState(0);
   const [direction, setDirection] = useState(1);
+  const [isAutoPlay, setIsAutoPlay] = useState(true);
   const canvasRef = useRef(null as unknown as HTMLCanvasElement);
   const { jump } = useAmbientParticles(canvasRef);
   const dragStartX = useRef(null as null | number);
@@ -558,8 +559,10 @@ const Services = () => {
   // Determine direction but force continuous wrap logic
   // Swiping left = negative diff = next card
   // dir=1 means animation flows left-to-right on screen, dir=-1 means right-to-left
-  const goTo = (idx: number) => {
+  const goTo = (idx: number, fromUser = false) => {
     if (isAnimating.current || idx === active) return;
+    
+    if (fromUser) setIsAutoPlay(false);
     
     // Continuous loop check:
     let diff = idx - active;
@@ -575,15 +578,17 @@ const Services = () => {
     isAnimating.current = true;
     setTimeout(() => { isAnimating.current = false; }, 600);
   };
-  const next = () => goTo((active + 1) % pillars.length);
-  const prev = () => goTo((active - 1 + pillars.length) % pillars.length);
+  const next = () => goTo((active + 1) % pillars.length, true);
+  const prev = () => goTo((active - 1 + pillars.length) % pillars.length, true);
 
   // Auto-advance Services cards every 15 seconds para dar más tiempo de lectura
   useEffect(() => {
+    if (!isAutoPlay) return;
     const timer = setInterval(() => {
+      goTo((active + 1) % pillars.length);
     }, 15000);
     return () => clearInterval(timer);
-  }, [active]);
+  }, [active, isAutoPlay]);
 
   return (
     <section
@@ -713,7 +718,7 @@ const Services = () => {
             </button>
             <div className="flex gap-2 items-center">
               {pillars.map((_, i) => (
-                <button key={i} onClick={() => goTo(i)} className={`transition-all duration-300 rounded-full ${i === active ? 'w-8 h-2.5 bg-[#4daea1]' : 'w-2.5 h-2.5 bg-white/20 hover:bg-white/40'}`} />
+                <button key={i} onClick={() => goTo(i, true)} className={`transition-all duration-300 rounded-full ${i === active ? 'w-8 h-2.5 bg-[#4daea1]' : 'w-2.5 h-2.5 bg-white/20 hover:bg-white/40'}`} />
               ))}
             </div>
             <button onClick={next} className="w-12 h-12 rounded-full border border-white/10 bg-white/5 hover:bg-[#4daea1]/20 hover:border-[#4daea1]/40 flex items-center justify-center text-white transition-all active:scale-90">
@@ -732,20 +737,22 @@ const Services = () => {
 // =============================================
 const Process = () => {
   const steps = [
-    { id: "01", phase: "Inmersión", title: "Radiografía", desc: "Nos metemos de lleno en los números y procesos de tu negocio para entender dónde estamos parados. Identificamos juntos dónde se está escapando el dinero, qué procesos están trabados y cuáles son las oportunidades de mejora inmediata.", deliverable: "Diagnóstico de Salud Financiera y Operativa", icon: <FileCheck className="w-8 h-8 md:w-10 md:h-10" />, color: "from-blue-400 to-blue-600", accent: "#3b82f6" },
-    { id: "02", phase: "Diseño Estratégico", title: "La Hoja de Ruta", desc: "Con el diagnóstico sobre la mesa, armamos un plan de acción claro. Definimos prioridades para mejorar tu rentabilidad y tu organización en los próximos meses, asignando recursos de forma inteligente y sin prometer cosas imposibles.", deliverable: "Plan de Acción (RoadMap) a 90 días", icon: <Compass className="w-8 h-8 md:w-10 md:h-10" />, color: "from-emerald-400 to-emerald-600", accent: "#10b981" },
-    { id: "03", phase: "Acción y Control", title: "Puesta en Marcha", desc: "No te dejamos un PDF lindo y nos vamos. Te acompañamos en la implementación diaria. Instalamos tableros de control muy simples de leer para que puedas medir los avances, corregir desvíos a tiempo y ver resultados reales en tu cuenta bancaria.", deliverable: "Tableros de Control (KPIs) y Soporte Continuo", icon: <LineChart className="w-8 h-8 md:w-10 md:h-10" />, color: "from-[#4daea1] to-[#0a594f]", accent: "#4daea1" },
+    { id: "01", phase: "Inmersión", title: "Diagnóstico", desc: "Nos metemos de lleno en los números y procesos de tu negocio para entender dónde estamos parados. Identificamos juntos dónde se está escapando el dinero, qué procesos están trabados y cuáles son las oportunidades de mejora inmediata.", deliverable: "Diagnóstico de Salud Financiera y Operativa", icon: <FileCheck className="w-8 h-8 md:w-10 md:h-10" />, color: "from-blue-400 to-blue-600", accent: "#3b82f6" },
+    { id: "02", phase: "Diseño Estratégico", title: "Planificación y diseño de estrategia", desc: "Con el diagnóstico sobre la mesa, armamos un plan de acción claro. Definimos prioridades para mejorar tu rentabilidad y tu organización en los próximos meses, asignando recursos de forma inteligente y sin prometer cosas imposibles.", deliverable: "Plan de Acción (RoadMap) a 90 días", icon: <Compass className="w-8 h-8 md:w-10 md:h-10" />, color: "from-emerald-400 to-emerald-600", accent: "#10b981" },
+    { id: "03", phase: "Acción y Control", title: "Implementación y control", desc: "No te dejamos un PDF lindo y nos vamos. Te acompañamos en la implementación diaria. Instalamos tableros de control muy simples de leer para que puedas medir los avances, corregir desvíos a tiempo y ver resultados reales en tu cuenta bancaria.", deliverable: "Tableros de Control (KPIs) y Soporte Continuo", icon: <LineChart className="w-8 h-8 md:w-10 md:h-10" />, color: "from-[#4daea1] to-[#0a594f]", accent: "#4daea1" },
   ];
 
   const [active, setActive] = useState(0);
+  const [isAutoPlay, setIsAutoPlay] = useState(true);
 
   // Auto-advance timeline — resets every time 'active' changes
   useEffect(() => {
+    if (!isAutoPlay) return;
     const timer = setInterval(() => {
       setActive((prev) => (prev + 1) % steps.length);
     }, 12000); // changes every 12 seconds
     return () => clearInterval(timer);
-  }, [active, steps.length]);
+  }, [active, steps.length, isAutoPlay]);
 
   return (
     <section id="process" className="py-12 md:py-16 lg:py-20 bg-white relative overflow-hidden flex flex-col justify-center min-h-[100svh]">
@@ -773,7 +780,10 @@ const Process = () => {
                 return (
                   <button 
                     key={step.id} 
-                    onClick={() => setActive(index)}
+                    onClick={() => {
+                      setActive(index);
+                      setIsAutoPlay(false);
+                    }}
                     className="relative flex items-center gap-3 md:gap-8 w-full group text-left transition-all duration-300"
                   >
                     {/* Glowing Dot */}
@@ -860,7 +870,10 @@ const Process = () => {
                   return (
                     <button
                       key={step.id}
-                      onClick={() => setActive(index)}
+                      onClick={() => {
+                        setActive(index);
+                        setIsAutoPlay(false);
+                      }}
                       className="relative flex items-center gap-4 w-full group text-left transition-all duration-300"
                     >
                       <div className="relative flex-shrink-0 flex items-center justify-center">
