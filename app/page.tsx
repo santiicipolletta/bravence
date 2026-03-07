@@ -516,7 +516,7 @@ const Services = () => {
   const pillars = [
     { 
       id: 1, 
-      title: "Estrategia Comercial y Marketing", 
+      title: "Nuestros servicios de Estrategia Comercial y Marketing", 
       icon: <Target className="w-7 h-7" />, 
       bg: "from-cyan-400 to-cyan-600", 
       desc: "Sabemos que invertir en publicidad y no ver resultados genera mucha frustración. Te ayudamos a medir qué canales traccionan realmente, para que cada peso que inviertas atraiga a los clientes correctos y vuelva a tu negocio.",
@@ -524,7 +524,7 @@ const Services = () => {
     },
     { 
       id: 2, 
-      title: "Ingeniería Financiera y Pricing", 
+      title: "Nuestros servicios de Ingeniería Financiera y Pricing", 
       icon: <Activity className="w-7 h-7" />, 
       bg: "from-teal-400 to-teal-600", 
       desc: "Nos sentamos a revisar tus costos reales y te ayudamos a definir precios que te protejan de los cambios económicos. Queremos que vender más signifique realmente ganar más.",
@@ -532,7 +532,7 @@ const Services = () => {
     },
     { 
       id: 3, 
-      title: "Optimización Operativa", 
+      title: "Nuestros servicios de Optimización Operativa", 
       icon: <TrendingUp className="w-7 h-7" />, 
       bg: "from-emerald-500 to-emerald-700", 
       desc: "Si sentís que sos indispensable y pasás el día resolviendo urgencias, te acompañamos para ordenar el día a día. El objetivo es que tu equipo trabaje con mayor autonomía, permitiéndote recuperar tu tiempo.",
@@ -540,7 +540,7 @@ const Services = () => {
     },
     { 
       id: 4, 
-      title: "Inteligencia de Datos y Gobierno Corporativo", 
+      title: "Nuestros servicios de Inteligencia de Datos y Gobierno Corporativo", 
       icon: <ShieldCheck className="w-7 h-7" />, 
       bg: "from-teal-600 to-teal-900", 
       desc: "El olfato que te trajo hasta acá es valioso, pero para crecer sano hace falta claridad. Armamos tableros simples para ver la salud de tu empresa en una pantalla y ordenamos tu estructura familiar y financiera.",
@@ -610,27 +610,17 @@ const Services = () => {
       <canvas ref={canvasRef} className="absolute inset-0 w-full h-full pointer-events-none z-0" />
 
       <div className="container mx-auto px-4 md:px-6 relative z-10">
-        <div className="text-center mb-8 md:mb-10 max-w-4xl mx-auto select-none">
-          <span className="inline-block text-[#4daea1] font-bold tracking-widest uppercase text-xs mb-3 bg-[#4daea1]/10 px-4 py-1.5 rounded-full border border-[#4daea1]/20">Servicios</span>
-          <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-4">
-            Nuestros servicios personalizados para tu empresa
-          </h2>
-          <p className="text-gray-400 text-sm md:text-lg leading-relaxed mb-4 md:mb-0">
-            Sin fórmulas mágicas, con datos claros y sentido común.
-          </p>
-          
-          {/* Swipe Hint */}
-          <motion.div 
-            initial={{ opacity: 0, y: 10 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="flex items-center justify-center gap-2 text-[#4daea1]/60 text-[10px] font-bold uppercase tracking-[0.2em] md:hidden"
-          >
-            <span className="w-4 h-px bg-[#4daea1]/30" />
-            Deslizá hacia los costados
-            <span className="w-4 h-px bg-[#4daea1]/30" />
-          </motion.div>
-        </div>
+        {/* Swipe Hint */}
+        <motion.div 
+          initial={{ opacity: 0, y: 10 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          className="flex items-center justify-center gap-2 text-[#4daea1]/60 text-[10px] font-bold uppercase tracking-[0.2em] mb-8 md:hidden"
+        >
+          <span className="w-4 h-px bg-[#4daea1]/30" />
+          Nuestros Servicios - Deslizá
+          <span className="w-4 h-px bg-[#4daea1]/30" />
+        </motion.div>
 
         <div className="relative max-w-2xl mx-auto select-none">
           {/* Perspective wrapper for 3D Globe Equator effect */}
@@ -650,11 +640,11 @@ const Services = () => {
                 const isRight = diff === 1;
 
                 // Propiedades de animación basadas en la posición relativa
-                const currentScale = isCenter ? 1 : 0.85;
-                const currentOpacity = isCenter ? 1 : 0.4;
-                const currentX = isCenter ? '0%' : isLeft ? '-65%' : '65%';
-                const currentZ = isCenter ? 0 : -150;
-                const currentRotateY = isCenter ? 0 : isLeft ? 30 : -30;
+                const currentScale = isCenter ? 1 : 0.8;
+                const currentOpacity = isCenter ? 1 : 0.3;
+                const currentX = isCenter ? '0%' : isLeft ? '-72%' : '72%';
+                const currentZ = isCenter ? 0 : -200;
+                const currentRotateY = isCenter ? 0 : isLeft ? 35 : -35;
                 const zIndex = isCenter ? 30 : 10;
 
                 return (
