@@ -556,6 +556,8 @@ const Services = () => {
   const canvasRef = useRef(null as unknown as HTMLCanvasElement);
   const { jump } = useAmbientParticles(canvasRef);
   const dragStartX = useRef(null as null | number);
+  const dragStartY = useRef(null as null | number);
+  const isHorizontalSwipe = useRef(false);
   const isAnimating = useRef(false);
 
   // Determine direction but force continuous wrap logic
@@ -612,7 +614,19 @@ const Services = () => {
         }
       }}
       onTouchStart={(e) => { 
-        dragStartX.current = e.touches[0].clientX; 
+        dragStartX.current = e.touches[0].clientX;
+        dragStartY.current = e.touches[0].clientY;
+        isHorizontalSwipe.current = false;
+      }}
+      onTouchMove={(e) => {
+        if (dragStartX.current === null || dragStartY.current === null) return;
+        const dx = Math.abs(e.touches[0].clientX - dragStartX.current);
+        const dy = Math.abs(e.touches[0].clientY - dragStartY.current);
+        // If horizontal movement is dominant, lock vertical scroll
+        if (dx > 10 && dx > dy * 1.2) {
+          isHorizontalSwipe.current = true;
+          e.preventDefault();
+        }
       }}
       onTouchEnd={(e) => {
         if (dragStartX.current !== null) {
@@ -620,6 +634,8 @@ const Services = () => {
           if (Math.abs(d) > 30) setShowSwipeHint(false);
           if (d < -30) next(); else if (d > 30) prev();
           dragStartX.current = null;
+          dragStartY.current = null;
+          isHorizontalSwipe.current = false;
         }
       }}
     >
