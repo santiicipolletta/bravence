@@ -243,10 +243,9 @@ const Hero = () => {
           loop
           muted
           playsInline
-          preload="auto"
           className="w-full h-full object-cover pointer-events-none"
         >
-          <source src="/videofondolandingpage (1).mp4" type="video/mp4" />
+          <source src="/landing_bg.mp4" type="video/mp4" />
         </video>
       </div>
       {/* Darker overlay for better text contrast */}
