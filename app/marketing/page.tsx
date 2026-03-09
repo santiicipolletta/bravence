@@ -70,6 +70,54 @@ try {
 
 // --- COMPONENTS ---
 
+// --- VIDEO AUTOPLAY HOOK ---
+// Fuerza la reproducción en navegadores restringidos (iOS Low Power mode)
+const useVideoAutoPlay = () => {
+  const videoRef = useRef<HTMLVideoElement>(null);
+  
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
+
+    video.defaultMuted = true;
+    video.muted = true;
+    video.playsInline = true;
+
+    const attemptPlay = () => {
+      if (!video) return;
+      const playPromise = video.play();
+      if (playPromise !== undefined) {
+        playPromise.catch((error) => {
+          console.warn("Auto-play prevented. Waiting for user interaction...", error);
+        });
+      }
+    };
+
+    // Intentar ni bien carga
+    attemptPlay();
+
+    // Workaround para iOS Low Power Mode: enganchar a cualquier itereacción del usuario
+    const handleInteraction = () => {
+      attemptPlay();
+      document.removeEventListener('touchstart', handleInteraction);
+      document.removeEventListener('click', handleInteraction);
+      document.removeEventListener('scroll', handleInteraction);
+    };
+
+    document.addEventListener('touchstart', handleInteraction, { once: true, passive: true });
+    document.addEventListener('click', handleInteraction, { once: true, passive: true });
+    document.addEventListener('scroll', handleInteraction, { once: true, passive: true });
+
+    return () => {
+      document.removeEventListener('touchstart', handleInteraction);
+      document.removeEventListener('click', handleInteraction);
+      document.removeEventListener('scroll', handleInteraction);
+    };
+  }, []);
+
+  return videoRef;
+};
+
 const Button = ({ children, variant = 'primary', className = '', onClick, type = 'button', disabled = false }: any) => {
   const baseStyle = "relative overflow-hidden px-8 py-4 font-bold tracking-[-0.02em] transition-all duration-300 ease-out flex items-center justify-center gap-2 group rounded-lg";
 
@@ -235,6 +283,7 @@ const Navbar = () => {
 // --- REFACTORED HERO SECTION (COMPACT VERSION) ---
 const Hero = () => {
   const [videoLoaded, setVideoLoaded] = useState(false);
+  const videoRef = useVideoAutoPlay();
 
   return (
     <section id="hero" className="relative flex flex-col justify-center pt-24 pb-16 md:pt-40 md:pb-28 overflow-hidden bg-[#0a594f] min-h-[100svh]">
@@ -244,14 +293,17 @@ const Hero = () => {
         <div className="absolute inset-0 bg-gradient-to-br from-[#0a594f] via-[#063c35] to-[#0a1614] z-0" />
         
         <video
+          ref={videoRef}
           autoPlay
           loop
           muted
           playsInline
           preload="auto"
+          poster="/poster-marketing-optimized.jpg"
           onPlaying={() => setVideoLoaded(true)}
           className={`w-full h-full object-cover pointer-events-none relative z-10 transition-opacity duration-1000 ${videoLoaded ? 'opacity-100' : 'opacity-0'}`}
         >
+          <source src="/landing_bg.webm" type="video/webm" />
           <source src="/landing_bg.mp4" type="video/mp4" />
         </video>
       </div>
@@ -363,6 +415,8 @@ const Hero = () => {
 };
 
 const About = () => {
+  const videoRef = useVideoAutoPlay();
+
   return (
     <section id="about" className="py-12 md:py-16 lg:py-20 bg-[#06100e] relative overflow-hidden flex flex-col justify-center min-h-[100svh]">
       <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-gray-200 to-transparent" />
@@ -436,11 +490,12 @@ const About = () => {
             <div className="absolute inset-0 bg-[#4daea1] rounded-3xl transform -rotate-3 transition-transform group-hover:-rotate-6 duration-500 opacity-10" />
             <div className="relative rounded-3xl overflow-hidden shadow-2xl bg-[#0a594f]/5 aspect-[4/3] group-hover:scale-105 transition-transform duration-1000 ease-out">
               <video
+                ref={videoRef}
                 autoPlay
                 loop
                 muted
                 playsInline
-                preload="none"
+                preload="auto"
                 className="w-full h-full object-cover absolute inset-0 pointer-events-none"
               >
                 <source src="/pantallabravence.webm" type="video/webm" />
