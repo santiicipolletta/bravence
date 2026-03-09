@@ -234,17 +234,23 @@ const Navbar = () => {
 
 // --- REFACTORED HERO SECTION (COMPACT VERSION) ---
 const Hero = () => {
+  const [videoLoaded, setVideoLoaded] = useState(false);
+
   return (
     <section id="hero" className="relative flex flex-col justify-center pt-24 pb-16 md:pt-40 md:pb-28 overflow-hidden bg-[#0a594f] min-h-[100svh]">
-      {/* Background Video */}
-      <div className="absolute inset-0 w-full h-full pointer-events-none opacity-90 bg-[#0a594f]">
+      {/* Background Video + Fallback */}
+      <div className={`absolute inset-0 w-full h-full pointer-events-none transition-opacity duration-1000 ${videoLoaded ? 'opacity-90' : 'opacity-100'} bg-[#0a594f]`}>
+        {/* Subtle Gradient Fallback while video loads or if blocked */}
+        <div className="absolute inset-0 bg-gradient-to-br from-[#0a594f] via-[#063c35] to-[#0a1614] z-0" />
+        
         <video
           autoPlay
           loop
           muted
           playsInline
           preload="auto"
-          className="w-full h-full object-cover pointer-events-none"
+          onPlaying={() => setVideoLoaded(true)}
+          className={`w-full h-full object-cover pointer-events-none relative z-10 transition-opacity duration-1000 ${videoLoaded ? 'opacity-100' : 'opacity-0'}`}
         >
           <source src="/landing_bg.mp4" type="video/mp4" />
         </video>
