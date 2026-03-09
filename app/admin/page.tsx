@@ -51,6 +51,7 @@ export default function AdminDashboard() {
   const [error, setError] = useState("");
   
   // Filtros
+  const [activeTab, setActiveTab] = useState<'main' | 'marketing'>('main');
   const [searchTerm, setSearchTerm] = useState("");
   const [revenueFilter, setRevenueFilter] = useState("all");
 
@@ -135,26 +136,33 @@ export default function AdminDashboard() {
 
   // Lógica de Filtrado
   const filteredLeads = leads.filter(lead => {
+    const isMarketing = lead.source === 'landing_marketing';
+    if (activeTab === 'main' && isMarketing) return false;
+    if (activeTab === 'marketing' && !isMarketing) return false;
+
     const matchesSearch = 
       lead.name?.toLowerCase().includes(searchTerm.toLowerCase()) || 
       lead.company?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       lead.email?.toLowerCase().includes(searchTerm.toLowerCase());
     
-    const matchesRevenue = revenueFilter === 'all' || lead.revenue === revenueFilter;
+    const matchesRevenue = activeTab === 'marketing' || revenueFilter === 'all' || lead.revenue === revenueFilter;
 
     return matchesSearch && matchesRevenue;
   });
 
-  const totalLeads = leads.length;
-  const highTicketLeads = leads.filter(l => l.revenue === 'Más de $200 Millones' || l.revenue === 'corporate').length;
+  const totalLeads = filteredLeads.length;
+  const highTicketLeads = activeTab === 'main' ? filteredLeads.filter(l => l.revenue === 'Más de $200 Millones' || l.revenue === 'corporate').length : 0;
 
   const downloadCSV = () => {
-    const headers = ["Fecha", "Nombre", "Empresa", "Cargo", "Email", "Teléfono", "Facturación", "Desafío"];
+    const headers = ["Fecha", "Origen", "Nombre", "Empresa", "Cargo", "Email", "Teléfono", "Facturación", "Desafío"];
     const csvContent = [
       headers.join(","),
-      ...filteredLeads.map(l => [
-        `"${l.date}"`, `"${l.name}"`, `"${l.company}"`, `"${l.role}"`, `"${l.email}"`, `"${l.phone}"`, `"${l.revenue}"`, `"${l.challenge}"`
-      ].join(","))
+      ...filteredLeads.map(l => {
+        const sourceLabel = l.source === 'landing_marketing' ? 'Marketing' : (l.source === 'web_form_prod' ? 'Web Principal' : (l.source || 'Directo'));
+        return [
+          `"${l.date}"`, `"${sourceLabel}"`, `"${l.name}"`, `"${l.company}"`, `"${l.role || ''}"`, `"${l.email}"`, `"${l.phone}"`, `"${l.revenue || ''}"`, `"${l.challenge}"`
+        ].join(",");
+      })
     ].join("\n");
 
     const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
@@ -211,6 +219,22 @@ export default function AdminDashboard() {
 
       <div className="max-w-7xl mx-auto p-6">
         
+        {/* TABS HEADER */}
+        <div className="flex space-x-2 md:space-x-4 mb-8 border-b border-gray-200">
+          <button 
+            onClick={() => setActiveTab('main')}
+            className={`py-3 px-4 md:px-6 font-bold text-sm tracking-wide transition-all ${activeTab === 'main' ? 'text-[#0a594f] border-b-2 border-[#0a594f]' : 'text-gray-400 hover:text-gray-700'}`}
+          >
+            🌐 Web Principal
+          </button>
+          <button 
+            onClick={() => setActiveTab('marketing')}
+            className={`py-3 px-4 md:px-6 font-bold text-sm tracking-wide transition-all ${activeTab === 'marketing' ? 'text-[#0a594f] border-b-2 border-[#0a594f]' : 'text-gray-400 hover:text-gray-700'}`}
+          >
+            🚀 Landing Marketing
+          </button>
+        </div>
+
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
           <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 flex items-center gap-4">
             <div className="p-3 bg-blue-50 text-blue-600 rounded-lg"><User size={24} /></div>
@@ -247,20 +271,22 @@ export default function AdminDashboard() {
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
             </div>
-            <div className="relative">
-              <select 
-                className="appearance-none bg-gray-50 border border-gray-200 text-gray-700 py-2 pl-4 pr-10 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#4daea1] text-sm cursor-pointer hover:bg-gray-100"
-                value={revenueFilter}
-                onChange={(e) => setRevenueFilter(e.target.value)}
-              >
-                <option value="all">Toda Facturación</option>
-                <option value="Menos de $10 Millones">Micro (&lt;10M)</option>
-                <option value="Entre $10M y $50 Millones">Pequeña (10-50M)</option>
-                <option value="Entre $50M y $200 Millones">Mediana (50-200M)</option>
-                <option value="Más de $200 Millones">Corporate (&gt;200M)</option>
-              </select>
-              <Filter className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" size={14} />
-            </div>
+            {activeTab === 'main' && (
+              <div className="relative">
+                <select 
+                  className="appearance-none bg-gray-50 border border-gray-200 text-gray-700 py-2 pl-4 pr-10 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#4daea1] text-sm cursor-pointer hover:bg-gray-100"
+                  value={revenueFilter}
+                  onChange={(e) => setRevenueFilter(e.target.value)}
+                >
+                  <option value="all">Toda Facturación</option>
+                  <option value="Menos de $10 Millones">Micro (&lt;10M)</option>
+                  <option value="Entre $10M y $50 Millones">Pequeña (10-50M)</option>
+                  <option value="Entre $50M y $200 Millones">Mediana (50-200M)</option>
+                  <option value="Más de $200 Millones">Corporate (&gt;200M)</option>
+                </select>
+                <Filter className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" size={14} />
+              </div>
+            )}
           </div>
           <button 
             onClick={downloadCSV}
@@ -275,11 +301,13 @@ export default function AdminDashboard() {
             <table className="w-full text-left text-sm text-gray-600">
               <thead className="bg-gray-50 text-gray-700 font-bold uppercase text-xs tracking-wider border-b border-gray-200">
                 <tr>
-                  <th className="px-6 py-4">Fecha</th>
-                  <th className="px-6 py-4">Empresa / Contacto</th>
-                  <th className="px-6 py-4">Facturación</th>
-                  <th className="px-6 py-4">Desafío Principal</th>
-                  <th className="px-6 py-4 text-right">Acciones</th>
+                  <th className="px-6 py-4 w-[15%]">Fecha</th>
+                  <th className="px-6 py-4 w-[25%]">Empresa / Contacto</th>
+                  {activeTab === 'main' && <th className="px-6 py-4 w-[20%]">Facturación</th>}
+                  {activeTab === 'marketing' && <th className="px-6 py-4 w-[20%]">Contacto</th>}
+                  {activeTab === 'marketing' && <th className="px-6 py-4 w-[15%]">Web Actual</th>}
+                  <th className={`px-6 py-4 ${activeTab === 'main' ? 'w-[25%]' : 'w-[15%]'}`}>Desafío Principal</th>
+                  <th className="px-6 py-4 text-right w-[15%]">Acciones</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-100">
@@ -302,21 +330,48 @@ export default function AdminDashboard() {
                       </td>
                       <td className="px-6 py-4">
                         <div className="font-bold text-gray-900 text-base">{lead.company}</div>
-                        <div className="text-xs text-gray-500 flex items-center gap-1 mt-0.5">
-                          <User size={12} /> {lead.name} <span className="text-gray-300">|</span> {lead.role}
+                        <div className="text-xs text-gray-500 flex items-center gap-1 mt-0.5 mb-1.5">
+                          <User size={12} /> {lead.name} {lead.role ? <><span className="text-gray-300">|</span> {lead.role}</> : null}
+                        </div>
+                        {/* Lead Source Badge */}
+                        <div className="inline-block px-2 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider border text-center whitespace-nowrap overflow-hidden
+                          ${lead.source === 'landing_marketing' ? 'bg-blue-50 text-blue-600 border-blue-100' : 'bg-gray-100 text-gray-500 border-gray-200'}
+                        ">
+                          {lead.source === 'landing_marketing' ? '🚀 Marketing Landing' : (lead.source === 'web_form_prod' ? '🌐 Web Principal' : '📥 Lead Directo')}
                         </div>
                       </td>
-                      <td className="px-6 py-4">
-                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ${
-                          lead.revenue === 'Más de $200 Millones' ? 'bg-purple-100 text-purple-800 border-purple-200' :
-                          lead.revenue === 'Entre $50M y $200 Millones' ? 'bg-blue-100 text-blue-800 border-blue-200' :
-                          'bg-gray-100 text-gray-800 border-gray-200'
-                        }`}>
-                          {lead.revenue === 'Más de $200 Millones' && '💎 '}
-                          {lead.revenue}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4 max-w-xs truncate" title={lead.challenge}>
+                      {activeTab === 'main' && (
+                        <td className="px-6 py-4">
+                          <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ${
+                            lead.revenue === 'Más de $200 Millones' ? 'bg-purple-100 text-purple-800 border-purple-200' :
+                            lead.revenue === 'Entre $50M y $200 Millones' ? 'bg-blue-100 text-blue-800 border-blue-200' :
+                            'bg-gray-100 text-gray-800 border-gray-200'
+                          }`}>
+                            {lead.revenue === 'Más de $200 Millones' && '💎 '}
+                            {lead.revenue || 'No especificada'}
+                          </span>
+                        </td>
+                      )}
+                      
+                      {activeTab === 'marketing' && (
+                        <>
+                          <td className="px-6 py-4">
+                            <div className="text-sm font-medium text-gray-900 flex items-center gap-1.5"><Phone size={12} className="text-gray-400"/> {lead.phone}</div>
+                            <div className="text-xs text-gray-500 flex items-center gap-1.5 mt-1"><Mail size={12} className="text-gray-400"/> {lead.email}</div>
+                          </td>
+                          <td className="px-6 py-4">
+                            {lead.website ? (
+                              <a href={lead.website.startsWith('http') ? lead.website : `https://${lead.website}`} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:text-blue-800 text-sm hover:underline flex items-center gap-1">
+                                {lead.website.replace(/^https?:\/\//,'')}
+                              </a>
+                            ) : (
+                              <span className="text-gray-400 italic text-xs">No provista</span>
+                            )}
+                          </td>
+                        </>
+                      )}
+
+                      <td className="px-6 py-4 max-w-[12rem] truncate" title={lead.challenge}>
                         {lead.challenge}
                       </td>
                       <td className="px-6 py-4 text-right">

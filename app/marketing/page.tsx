@@ -246,7 +246,7 @@ const Hero = () => {
           preload="auto"
           className="w-full h-full object-cover pointer-events-none"
         >
-          <source src="/AZukPXaE7IJQHYe8nTsMwg-AZukPXaEbXl-tmVwTX0EyA.webm" type="video/webm" />
+          <source src="/videofondolandingpage (1).mp4" type="video/mp4" />
         </video>
       </div>
       {/* Darker overlay for better text contrast */}
@@ -271,7 +271,7 @@ const Hero = () => {
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 2.0 }}
-            className="inline-flex items-center gap-3 py-1.5 px-4 bg-white/[0.03] backdrop-blur-xl rounded-full border border-white/10 shadow-[0_4px_24px_-8px_rgba(0,0,0,0.5)] mb-5 group cursor-default" 
+            className="inline-flex items-center gap-3 py-1.5 px-4 bg-white/[0.03] backdrop-blur-xl rounded-full border border-white/10 shadow-[0_4px_24px_-8px_rgba(0,0,0,0.5)] mb-5 group cursor-default"
           >
             <span className="relative flex h-2 w-2">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#4daea1] opacity-75"></span>
@@ -282,26 +282,26 @@ const Hero = () => {
             </span>
           </motion.div>
 
-          <h1 className="text-[10vw] sm:text-[8vw] md:text-[8vw] lg:text-[7.5vw] font-black text-white tracking-[-0.05em] leading-[0.95] drop-shadow-2xl mb-4 md:mb-8 max-w-none">
-            El socio estratégico que <br />
-            <span className="bg-clip-text text-transparent bg-gradient-to-r from-[#ffffff] via-[#c6fff7] to-[#4daea1]">
-              tu empresa necesita
+          <h1 className="text-[10vw] sm:text-[8vw] md:text-[7.5vw] lg:text-[6.5vw] font-black text-white tracking-[-0.05em] leading-[0.95] drop-shadow-2xl mb-4 md:mb-8 max-w-none">
+            Estrategia Digital y <br />
+            <span className="bg-clip-text text-transparent bg-gradient-to-r from-[#ffffff] via-[#c6fff7] to-[#4daea1] pr-2 pb-1 inline-block">
+              Optimización de Ventas
             </span><br />
-            para escalar seguro.
+            para tu empresa
           </h1>
 
           <div className="flex flex-col gap-3 md:gap-4 mb-6 md:mb-8 text-gray-300 font-light border-l border-white/20 pl-4 py-1">
             <div className="flex items-center gap-3">
                <CheckCircle2 className="w-5 h-5 text-[#4daea1] shrink-0" />
-               <p className="text-sm md:text-lg lg:text-xl leading-snug">Claridad y orden sobre los <strong className="text-white font-medium">números de tu empresa.</strong></p>
+               <p className="text-sm md:text-lg lg:text-xl leading-snug">Páginas web enfocadas en <strong className="text-white font-medium">conversión.</strong></p>
             </div>
             <div className="flex items-center gap-3">
                <CheckCircle2 className="w-5 h-5 text-[#4daea1] shrink-0" />
-               <p className="text-sm md:text-lg lg:text-xl leading-snug">Sistemas para optimizar tus <strong className="text-white font-medium">operaciones diarias.</strong></p>
+               <p className="text-sm md:text-lg lg:text-xl leading-snug">Embudos de venta <strong className="text-white font-medium">estructurados.</strong></p>
             </div>
             <div className="flex items-center gap-3">
                <CheckCircle2 className="w-5 h-5 text-[#4daea1] shrink-0" />
-               <p className="text-sm md:text-lg lg:text-xl leading-snug">Aumentamos la <strong className="text-white font-medium">rentabilidad real</strong> de lo que vendes.</p>
+               <p className="text-sm md:text-lg lg:text-xl leading-snug">Análisis detallado de tu <strong className="text-white font-medium">cliente ideal.</strong></p>
             </div>
           </div>
 
@@ -314,16 +314,16 @@ const Hero = () => {
                 onClick={() => document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' })}
               >
                 <span className="relative z-10 flex items-center justify-center gap-2">
-                  Agendar Diagnóstico Gratuito <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                  Auditar mis ventas <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                 </span>
               </Button>
             </div>
             <Button
               variant="outline"
               className="!text-white !border-white/30 hover:!bg-white/10 !rounded-full !px-8 md:!px-10 !py-3.5 md:!py-5 w-full sm:w-auto text-sm md:text-base"
-              onClick={() => document.getElementById('process')?.scrollIntoView({ behavior: 'smooth' })}
+              onClick={() => document.getElementById('services')?.scrollIntoView({ behavior: 'smooth' })}
             >
-              Ver cómo trabajamos
+              Ver servicios comerciales
             </Button>
           </div>
         </motion.div>
@@ -375,24 +375,30 @@ const About = () => {
               <span className="w-8 h-[2px] bg-[#4daea1]"></span> Sobre Nosotros
             </h3>
             <h2 className="text-2xl md:text-4xl lg:text-5xl font-bold text-white mb-4 md:mb-8 leading-tight max-w-xl">
-              Visión técnica. <br />
+              El marketing sin estructura comercial <br />
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#0a594f] to-[#4daea1]">
-                Sentido común y los pies en la tierra.
+                no sirve.
               </span>
             </h2>
             <div className="space-y-4 text-gray-300 text-base leading-relaxed font-light max-w-2xl">
               <p>
-                Sabemos lo que cuesta levantar una persiana todos los días en Argentina. Gestionar tu negocio <strong className="text-white font-medium">"a ojo" o solo por intuición</strong> se vuelve peligroso en un contexto que cambia constantemente.
+                La mayoría de las empresas gasta presupuesto publicitario <strong className="text-white font-bold">antes de tener la casa en orden.</strong>
               </p>
               <p>
-                <strong className="text-[#c6fff7] font-bold">Bravence</strong> nació para ser <span className="text-[#4daea1] font-semibold">tu socio técnico</span>; ese que se sienta a tu lado con datos reales. Te damos la <strong className="text-white font-medium">claridad absoluta que necesitás</strong> para tomar decisiones seguras y volver a dormir tranquilo.
+                De nada sirve llevar cientos de visitas a una web o a un WhatsApp <strong className="text-white font-bold">donde no hay un proceso de ventas claro</strong> para atenderlos.
+              </p>
+              <p>
+                En <strong className="text-[#c6fff7] font-bold">Bravence</strong> no hacemos &quot;magia digital&quot; ni vendemos seguidores. <strong className="text-white font-bold">Primero analizamos tu negocio y a tu cliente.</strong>
+              </p>
+              <p>
+                Luego, construimos la web y organizamos el embudo comercial para que recuperes tu inversión con <strong className="text-[#4daea1] font-bold">rentabilidad comprobable.</strong>
               </p>
             </div>
             <div className="mt-6 relative group/quote">
               <div className="absolute -inset-1 bg-gradient-to-r from-[#4daea1]/30 to-[#0a594f]/30 rounded-2xl blur opacity-0 group-hover/quote:opacity-100 transition duration-700"></div>
               <div className="relative p-5 bg-white/[0.03] backdrop-blur-md border border-white/10 hover:border-[#4daea1]/30 rounded-2xl transition-all duration-300">
                 <p className="text-[#c6fff7] font-medium italic text-sm md:text-base leading-relaxed relative z-10">
-                  &quot;No te vendemos manuales teóricos ni motivación vacía. Construimos sistemas a medida para que tu negocio sea rentable, predecible y no dependa de que estés apagando incendios 24/7.&quot;
+                  &quot;No somos una agencia de publicidad tradicional. Somos una consultora de negocios desarrollando las herramientas digitales que tu empresa necesita para vender mejor.&quot;
                 </p>
               </div>
             </div>
@@ -497,9 +503,9 @@ const useAmbientParticles = (canvasRef: { current: HTMLCanvasElement | null }) =
         // SPHERE BOOST: Particles map to a 3D sphere rotating horizontally
         // Continuous wrap direction
         const horizontalVelocity = dir * intensity * 16;
-        
+
         p.x += p.vx + horizontalVelocity;
-        
+
         // Add a slight vertical curve based on horizontal position to simulate a sphere's surface
         const distFromCenter = (p.x - canvas.width / 2) / (canvas.width / 2);
         const sphereCurveY = Math.abs(distFromCenter) * intensity * 4;
@@ -550,37 +556,37 @@ const useAmbientParticles = (canvasRef: { current: HTMLCanvasElement | null }) =
 // =============================================
 const Services = () => {
   const pillars = [
-    { 
-      id: 1, 
-      title: "Nuestros servicios de Estrategia Comercial y Marketing", 
-      icon: <Target className="w-7 h-7" />, 
-      bg: "from-cyan-400 to-cyan-600", 
-      desc: "Sabemos que invertir en publicidad y no ver resultados genera mucha frustración. Te ayudamos a medir qué canales traccionan realmente, para que cada peso que inviertas atraiga a los clientes correctos y vuelva a tu negocio.",
-      items: ["Análisis de rentabilidad por canal", "Optimización de proceso comercial", "Estrategias de retención de clientes", "Integración de herramientas simples (CRM)"] 
+    {
+      id: 1,
+      title: "Desarrollo Web y Landing Pages profesionales",
+      icon: <Target className="w-7 h-7" />,
+      bg: "from-cyan-400 to-cyan-600",
+      desc: "Tu web es la cara de tu negocio. Diseñamos, redactamos y programamos páginas web y landing pages de carga rápida y diseño corporativo. Están estructuradas para que el usuario entienda rápidamente qué vendes y se contacte sin distracciones.",
+      items: ["Páginas web profesionales", "Landing pages rápidas", "Diseño corporativo", "Enfoque en conversión"]
     },
-    { 
-      id: 2, 
-      title: "Nuestros servicios de Ingeniería Financiera y Pricing", 
-      icon: <Activity className="w-7 h-7" />, 
-      bg: "from-teal-400 to-teal-600", 
-      desc: "Nos sentamos a revisar tus costos reales y te ayudamos a definir precios que te protejan de los cambios económicos. Queremos que vender más signifique realmente ganar más.",
-      items: ["Punto de equilibrio real", "Armado de costos de reposición", "Saneamiento del flujo de caja", "Proyecciones financieras"] 
+    {
+      id: 2,
+      title: "Análisis del Cliente Potencial (Buyer Persona)",
+      icon: <Activity className="w-7 h-7" />,
+      bg: "from-teal-400 to-teal-600",
+      desc: "Estudiamos con datos reales quién es tu cliente ideal, qué problema necesita resolver y cómo toma decisiones. Esto te permite dejar de hablarle a todo el mundo y enfocar tu oferta en quienes realmente pueden y quieren pagar tu servicio.",
+      items: ["Estudio con datos reales", "Análisis de problemas", "Proceso de decisión", "Enfoque de oferta preciso"]
     },
-    { 
-      id: 3, 
-      title: "Nuestros servicios de Optimización Operativa", 
-      icon: <TrendingUp className="w-7 h-7" />, 
-      bg: "from-emerald-500 to-emerald-700", 
-      desc: "Si sentís que sos indispensable y pasás el día resolviendo urgencias, te acompañamos para ordenar el día a día. El objetivo es que tu equipo trabaje con mayor autonomía, permitiéndote recuperar tu tiempo.",
-      items: ["Detección de costos ocultos", "Mejora en compras y proveedores", "Documentación de tareas diarias", "Reducción de fricciones operativas"] 
+    {
+      id: 3,
+      title: "Optimización del Proceso de Venta (Embudos)",
+      icon: <TrendingUp className="w-7 h-7" />,
+      bg: "from-emerald-500 to-emerald-700",
+      desc: "Ordenamos el recorrido de tu cliente desde que hace la primera consulta hasta que paga. Estandarizamos las respuestas, organizamos el seguimiento de presupuestos (implementando un CRM simple) y reducimos los tiempos para que no se te caigan las ventas.",
+      items: ["Orden en recorrido de cliente", "Estandarización de respuestas", "Seguimiento con CRM simple", "Reducción de caídas de ventas"]
     },
-    { 
-      id: 4, 
-      title: "Nuestros servicios de Inteligencia de Datos y Gobierno Corporativo", 
-      icon: <ShieldCheck className="w-7 h-7" />, 
-      bg: "from-teal-600 to-teal-900", 
-      desc: "El olfato que te trajo hasta acá es valioso, pero para crecer sano hace falta claridad. Armamos tableros simples para ver la salud de tu empresa en una pantalla y ordenamos tu estructura familiar y financiera.",
-      items: ["Tableros visuales y simples (KPIs)", "Profesionalización para empresas familiares", "Separación caja personal/empresarial", "Organización societaria"] 
+    {
+      id: 4,
+      title: "Optimización de Canales Comerciales",
+      icon: <ShieldCheck className="w-7 h-7" />,
+      bg: "from-teal-600 to-teal-900",
+      desc: "Auditamos por dónde te entran las consultas hoy (Google, Instagram, referidos, LinkedIn). Determinamos cuáles son los canales que realmente te dejan margen de ganancia y enfocamos tu tiempo y presupuesto solo ahí, eliminando lo que no funciona.",
+      items: ["Auditoría de consultas", "Análisis de rentabilidad de canal", "Enfoque de presupuesto", "Eliminación de canales ineficientes"]
     },
   ];
 
@@ -602,23 +608,22 @@ const Services = () => {
   // dir=1 means animation flows left-to-right on screen, dir=-1 means right-to-left
   const goTo = (idx: number, fromUser = false) => {
     if (isAnimating.current || idx === active) return;
-    
+
     if (fromUser) {
       setIsAutoPlay(false);
-      setShowSwipeHint(false);
     }
-    
+
     // Continuous loop check:
     let diff = idx - active;
     if (diff > pillars.length / 2) diff -= pillars.length;
     if (diff < -pillars.length / 2) diff += pillars.length;
-    
+
     // Set flow direction negatively (next = moves left)
-    const dir = diff > 0 ? -1 : 1; 
+    const dir = diff > 0 ? -1 : 1;
     setDirection(dir);
     setActive(idx);
     jump(dir);
-    
+
     isAnimating.current = true;
     setTimeout(() => { isAnimating.current = false; }, 600);
   };
@@ -639,18 +644,18 @@ const Services = () => {
       id="services"
       ref={sectionRef}
       className="py-8 md:py-16 lg:py-20 bg-[#0a1614] relative overflow-hidden min-h-[100svh] flex flex-col justify-center"
-      onMouseDown={(e) => { 
-        dragStartX.current = e.clientX; 
+      onMouseDown={(e) => {
+        dragStartX.current = e.clientX;
       }}
       onMouseUp={(e) => {
         if (dragStartX.current !== null) {
           const d = e.clientX - dragStartX.current;
-          if (Math.abs(d) > 30) setShowSwipeHint(false);
+          if (Math.abs(d) > 40) setShowSwipeHint(false);
           if (d < -40) next(); else if (d > 40) prev();
           dragStartX.current = null;
         }
       }}
-      onTouchStart={(e) => { 
+      onTouchStart={(e) => {
         dragStartX.current = e.touches[0].clientX;
         dragStartY.current = e.touches[0].clientY;
         isHorizontalSwipe.current = false;
@@ -668,8 +673,8 @@ const Services = () => {
       onTouchEnd={(e) => {
         if (dragStartX.current !== null) {
           const d = e.changedTouches[0].clientX - dragStartX.current;
-          if (Math.abs(d) > 30) setShowSwipeHint(false);
-          if (d < -30) next(); else if (d > 30) prev();
+          if (Math.abs(d) > 40) setShowSwipeHint(false);
+          if (d < -40) next(); else if (d > 40) prev();
           dragStartX.current = null;
           dragStartY.current = null;
           isHorizontalSwipe.current = false;
@@ -686,15 +691,15 @@ const Services = () => {
             <span className="w-8 h-[2px] bg-[#4daea1]"></span> Nuestros Pilares <span className="w-8 h-[2px] bg-[#4daea1]"></span>
           </span>
           <h2 className="text-2xl md:text-4xl lg:text-5xl font-bold text-white mb-2 md:mb-4">Herramientas para el <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#0a594f] to-[#4daea1]">crecimiento comercial.</span></h2>
-          <p className="text-gray-400 text-base md:text-lg leading-relaxed font-light">Qué hacemos concretamente para optimizar tu rentabilidad.</p>
+          <p className="text-gray-400 text-base md:text-lg leading-relaxed font-light">Qué hacemos concretamente para mejorar tu facturación.</p>
         </div>
 
         {/* Swipe Hint */}
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, y: 10 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          className="flex items-center justify-center gap-3 text-[#4daea1] text-xs font-bold uppercase tracking-[0.3em] mb-12 md:hidden"
+          className="flex items-center justify-center gap-3 text-[#4daea1] text-xs font-bold uppercase tracking-[0.3em] mb-12"
         >
           <span className="w-4 h-px bg-[#4daea1]/30" />
           Nuestros Servicios - Deslizá
@@ -705,18 +710,17 @@ const Services = () => {
           {/* Swipe UI Overlay Hint (Hand Animation) — only on mobile & until first interaction */}
           <AnimatePresence>
             {showSwipeHint && (
-              <motion.div 
+              <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                className="absolute inset-0 z-50 flex items-center justify-center pointer-events-none md:hidden"
+                className="absolute inset-0 z-50 flex items-center justify-center pointer-events-none"
               >
-                <motion.div 
+                <motion.div
                   initial={{ x: -20 }}
                   animate={{ x: 20 }}
-                  transition={{ 
-                    repeat: Infinity, 
-                    repeatType: "reverse", 
+                  transition={{
+                    repeat: Infinity,
+                    repeatType: "reverse",
                     duration: 1.2,
                     ease: "easeInOut"
                   }}
@@ -724,7 +728,7 @@ const Services = () => {
                 >
                   <div className="bg-white/10 backdrop-blur-md rounded-full p-6 border border-white/20 shadow-2xl relative">
                     <motion.div
-                      animate={{ 
+                      animate={{
                         scale: [1, 1.2, 1],
                         opacity: [0.5, 1, 0.5]
                       }}
@@ -732,7 +736,7 @@ const Services = () => {
                       className="absolute inset-0 bg-[#4daea1]/20 rounded-full blur-xl"
                     />
                     <MousePointer2 className="w-10 h-10 text-white rotate-[15deg] drop-shadow-lg" />
-                    
+
                     {/* Floating Arrows */}
                     <motion.div className="absolute -left-12 top-1/2 -translate-y-1/2">
                       <ArrowRight className="w-6 h-6 text-white/40 rotate-180" />
@@ -783,9 +787,9 @@ const Services = () => {
                       scale: currentScale,
                       opacity: currentOpacity,
                     }}
-                    transition={{ duration: 0.6, ease: [0.32, 0.72, 0, 1] }} 
-                    style={{ 
-                      width: '100%', 
+                    transition={{ duration: 0.6, ease: [0.32, 0.72, 0, 1] }}
+                    style={{
+                      width: '100%',
                       transformStyle: 'preserve-3d',
                       position: isCenter ? 'relative' : 'absolute',
                       top: 0,
@@ -795,7 +799,7 @@ const Services = () => {
                     }}
                   >
                     <div
-                      className="bg-gradient-to-br from-[#0f2e2a] to-[#061a17] rounded-3xl border border-[#4daea1]/20 shadow-2xl p-5 md:p-8 relative overflow-hidden"
+                      className="bg-gradient-to-br from-[#0f2e2a] to-[#061a17] rounded-3xl border border-[#4daea1]/20 shadow-2xl p-5 md:p-8 relative overflow-hidden transition-all duration-300 hover:border-[#4daea1]/60 hover:shadow-[0_0_30px_rgba(77,174,161,0.15)] group/card"
                       style={{ backdropFilter: 'blur(12px)' }}
                     >
                       <div className={`absolute -top-16 -right-16 w-56 h-56 bg-gradient-to-br ${pillar.bg} opacity-[0.13] rounded-full blur-3xl pointer-events-none`} />
@@ -809,10 +813,11 @@ const Services = () => {
                           <h3 className="text-lg md:text-2xl font-bold text-white leading-tight">{pillar.title}</h3>
                         </div>
                       </div>
-                      
-                      <p className="text-gray-300 text-sm leading-relaxed mb-6">
+
+                      <p className="hidden sm:block text-gray-400 text-sm leading-relaxed mb-6">
                         {pillar.desc}
                       </p>
+                      <div className="block sm:hidden h-px w-full bg-white/10 my-4" />
 
                       <ul className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                         {pillar.items.map((item, j) => (
@@ -858,9 +863,9 @@ const Services = () => {
 // =============================================
 const Process = () => {
   const steps = [
-    { id: "01", phase: "Inmersión", title: "Diagnóstico", desc: "Nos metemos de lleno en los números y procesos de tu negocio para entender dónde estamos parados. Identificamos juntos dónde se está escapando el dinero, qué procesos están trabados y cuáles son las oportunidades de mejora inmediata.", deliverable: "Diagnóstico de Salud Financiera y Operativa", icon: <FileCheck className="w-8 h-8 md:w-10 md:h-10" />, color: "from-blue-400 to-blue-600", accent: "#3b82f6" },
-    { id: "02", phase: "Diseño Estratégico", title: "Planificación y diseño de estrategia", desc: "Con el diagnóstico sobre la mesa, armamos un plan de acción claro. Definimos prioridades para mejorar tu rentabilidad y tu organización en los próximos meses, asignando recursos de forma inteligente y sin prometer cosas imposibles.", deliverable: "Plan de Acción (RoadMap) a 90 días", icon: <Compass className="w-8 h-8 md:w-10 md:h-10" />, color: "from-emerald-400 to-emerald-600", accent: "#10b981" },
-    { id: "03", phase: "Acción y Control", title: "Implementación y control", desc: "No te dejamos un PDF lindo y nos vamos. Te acompañamos en la implementación diaria. Instalamos tableros de control muy simples de leer para que puedas medir los avances, corregir desvíos a tiempo y ver resultados reales en tu cuenta bancaria.", deliverable: "Tableros de Control (KPIs) y Soporte Continuo", icon: <LineChart className="w-8 h-8 md:w-10 md:h-10" />, color: "from-[#4daea1] to-[#0a594f]", accent: "#4daea1" },
+    { id: "01", phase: "Diagnóstico Comercial", title: "Diagnóstico Comercial", desc: "Revisamos tu operativa actual y la salud de tu embudo para encontrar las barreras de ventas que frenan tus resultados.", deliverable: "Informe de situación comercial.", icon: <FileCheck className="w-8 h-8 md:w-10 md:h-10" />, color: "from-blue-400 to-blue-600", accent: "#3b82f6" },
+    { id: "02", phase: "Desarrollo y Estructuración", title: "Desarrollo y Estructuración", desc: "Diseñamos tu landing page y estructuramos un proceso claro de ventas para que tu equipo sepa cómo repeler excusas.", deliverable: "Página Web / Landing Page y Proceso de Ventas documentado.", icon: <Compass className="w-8 h-8 md:w-10 md:h-10" />, color: "from-emerald-400 to-emerald-600", accent: "#10b981" },
+    { id: "03", phase: "Medición y Ajuste", title: "Medición y Ajuste", desc: "Medimos métricas reales (visitas, consultas, ventas) y realizamos ajustes de precisión para escalar tu rentabilidad.", deliverable: "Tablero de métricas comerciales.", icon: <LineChart className="w-8 h-8 md:w-10 md:h-10" />, color: "from-[#4daea1] to-[#0a594f]", accent: "#4daea1" },
   ];
 
   const [active, setActive] = useState(0);
@@ -884,19 +889,19 @@ const Process = () => {
       <div className="container mx-auto px-4 md:px-6 relative z-10">
         <div className="text-center mb-6 md:mb-10 max-w-4xl mx-auto">
           <span className="inline-block text-[#0a594f] font-bold tracking-widest uppercase text-xs mb-3 bg-[#4daea1]/10 px-4 py-1.5 rounded-full border border-[#4daea1]/20">Nuestro Método</span>
-          <h2 className="text-2xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-2 md:mb-4">Un proceso claro, <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#0a594f] to-[#4daea1]">sin cajas negras.</span></h2>
-          <p className="hidden md:block text-gray-600 text-base md:text-lg leading-relaxed">No imponemos recetas armadas. Entendemos tu negocio, diseñamos un plan realista y te acompañamos a implementarlo paso a paso.</p>
+          <h2 className="text-2xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-2 md:mb-4">Cómo <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#0a594f] to-[#4daea1]">trabajamos.</span></h2>
+          <p className="hidden md:block text-gray-600 text-base md:text-lg leading-relaxed">Un proceso lógico y ordenado para profesionalizar tus ventas.</p>
         </div>
 
 
         <div className="relative max-w-6xl mx-auto">
           {/* Desktop: 2-col grid timeline */}
           <div className="hidden md:grid md:grid-cols-12 gap-8 md:gap-16 items-center min-h-[400px]">
-          
-          {/* Left Column: Interactive Timeline Map */}
-          <div className="col-span-4 md:col-span-5 relative">
-            <div className="absolute left-[15px] md:left-[23px] top-0 bottom-0 w-px bg-gray-200" />
-            
+
+            {/* Left Column: Interactive Timeline Map */}
+            <div className="col-span-4 md:col-span-5 relative">
+              <div className="absolute left-[15px] md:left-[23px] top-0 bottom-0 w-px bg-gray-200" />
+
             <div className="space-y-4 md:space-y-8 relative py-8">
               {/* Navigation Arrows indicators - Desktop */}
               <div className="absolute -top-2 left-[15px] md:left-[23px] -translate-x-1/2 z-20">
@@ -913,45 +918,45 @@ const Process = () => {
               </div>
 
               {steps.map((step, index) => {
-                const isActive = active === index;
-                return (
-                  <button 
-                    key={step.id} 
-                    onClick={() => {
-                      setActive(index);
-                      setIsAutoPlay(false);
-                    }}
-                    className="relative flex items-center gap-3 md:gap-8 w-full group text-left transition-all duration-300"
-                  >
-                    {/* Glowing Dot */}
-                    <div className="relative flex-shrink-0 flex items-center justify-center">
-                      <div className={`w-8 h-8 md:w-12 md:h-12 rounded-full border-2 transition-all duration-500 flex items-center justify-center z-10 ${isActive ? 'bg-white border-[#4daea1] text-[#0a594f] shadow-[0_0_20px_rgba(77,174,161,0.3)]' : 'bg-gray-50 border-gray-200 text-gray-400 group-hover:border-[#4daea1]/40'}`}>
-                        <span className="font-bold text-xs md:text-sm tracking-wider">{step.id}</span>
+                  const isActive = active === index;
+                  return (
+                    <button
+                      key={step.id}
+                      onClick={() => {
+                        setActive(index);
+                        setIsAutoPlay(false);
+                      }}
+                      className="relative flex items-center gap-3 md:gap-8 w-full group text-left transition-all duration-300"
+                    >
+                      {/* Glowing Dot */}
+                      <div className="relative flex-shrink-0 flex items-center justify-center">
+                        <div className={`w-8 h-8 md:w-12 md:h-12 rounded-full border-2 transition-all duration-500 flex items-center justify-center z-10 ${isActive ? 'bg-white border-[#4daea1] text-[#0a594f] shadow-[0_0_20px_rgba(77,174,161,0.3)]' : 'bg-gray-50 border-gray-200 text-gray-400 group-hover:border-[#4daea1]/40'}`}>
+                          <span className="font-bold text-xs md:text-sm tracking-wider">{step.id}</span>
+                        </div>
+                        {/* Active line filler */}
+                        {isActive && index !== steps.length - 1 && (
+                          <motion.div
+                            layoutId="activeLine"
+                            className="absolute top-8 md:top-12 left-1/2 -ml-[1px] w-[2px] h-16 md:h-24 bg-gradient-to-b from-[#4daea1] to-transparent z-0 origin-top"
+                            initial={{ scaleY: 0 }}
+                            animate={{ scaleY: 1 }}
+                            transition={{ duration: 0.5 }}
+                          />
+                        )}
                       </div>
-                      {/* Active line filler */}
-                      {isActive && index !== steps.length - 1 && (
-                         <motion.div 
-                           layoutId="activeLine"
-                           className="absolute top-8 md:top-12 left-1/2 -ml-[1px] w-[2px] h-16 md:h-24 bg-gradient-to-b from-[#4daea1] to-transparent z-0 origin-top"
-                           initial={{ scaleY: 0 }}
-                           animate={{ scaleY: 1 }}
-                           transition={{ duration: 0.5 }}
-                         />
-                      )}
-                    </div>
 
-                    {/* Timeline Text */}
-                    <div className="flex-1">
-                      <h4 className={`text-sm sm:text-base md:text-xl font-bold transition-colors duration-300 leading-tight ${isActive ? 'text-gray-900' : 'text-gray-400 group-hover:text-gray-600'}`}>
-                        {step.title}
-                      </h4>
-                      <p className={`text-[9px] md:text-sm uppercase tracking-widest font-bold mt-0.5 md:mt-1 transition-colors duration-300 ${isActive ? 'text-[#0a594f]' : 'text-gray-400'}`}>
-                        {step.phase}
-                      </p>
-                    </div>
-                  </button>
-                );
-              })}
+                      {/* Timeline Text */}
+                      <div className="flex-1">
+                        <h4 className={`text-sm sm:text-base md:text-xl font-bold transition-colors duration-300 leading-tight ${isActive ? 'text-gray-900' : 'text-gray-400 group-hover:text-gray-600'}`}>
+                          {step.title}
+                        </h4>
+                        <p className={`text-[9px] md:text-sm uppercase tracking-widest font-bold mt-0.5 md:mt-1 transition-colors duration-300 ${isActive ? 'text-[#0a594f]' : 'text-gray-400'}`}>
+                          {step.phase}
+                        </p>
+                      </div>
+                    </button>
+                  );
+                })}
 
               <div className="absolute -bottom-2 left-[15px] md:left-[23px] -translate-x-1/2 z-20">
                 <button 
@@ -968,46 +973,46 @@ const Process = () => {
             </div>
           </div>
 
-          {/* Right Column: Active Content Viewer */}
-          <div className="col-span-8 md:col-span-7 relative h-full flex flex-col justify-center">
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={active}
-                initial={{ opacity: 0, y: 40, filter: 'blur(10px)' }}
-                animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
-                exit={{ opacity: 0, y: -40, filter: 'blur(10px)' }}
-                transition={{ duration: 0.5, ease: [0.33, 1, 0.68, 1] }}
-                className="relative bg-white border border-gray-100 shadow-[0_8px_30px_rgb(0,0,0,0.06)] backdrop-blur-md rounded-[2.5rem] p-6 md:p-10"
-              >
-                {/* Background glow accent */}
-                <div className={`absolute inset-0 bg-gradient-to-br ${steps[active].color} opacity-[0.03] rounded-[2.5rem] pointer-events-none`} />
+            {/* Right Column: Active Content Viewer */}
+            <div className="col-span-8 md:col-span-7 relative h-full flex flex-col justify-center">
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={active}
+                  initial={{ opacity: 0, y: 40, filter: 'blur(10px)' }}
+                  animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+                  exit={{ opacity: 0, y: -40, filter: 'blur(10px)' }}
+                  transition={{ duration: 0.5, ease: [0.33, 1, 0.68, 1] }}
+                  className="relative bg-white border border-gray-100 shadow-[0_8px_30px_rgb(0,0,0,0.06)] backdrop-blur-md rounded-[2.5rem] p-6 md:p-10"
+                >
+                  {/* Background glow accent */}
+                  <div className={`absolute inset-0 bg-gradient-to-br ${steps[active].color} opacity-[0.03] rounded-[2.5rem] pointer-events-none`} />
 
-                <div className="relative z-10">
-                  <div className={`w-12 h-12 md:w-20 md:h-20 lg:w-24 lg:h-24 rounded-2xl md:rounded-3xl border border-gray-100 shadow-xl flex items-center justify-center text-white mb-4 md:mb-8 bg-gradient-to-br ${steps[active].color}`}>
-                    {steps[active].icon}
-                  </div>
-                  
-                  <h3 className="text-xl md:text-3xl lg:text-4xl font-bold text-gray-900 mb-2 md:mb-6 leading-tight">
-                    {steps[active].title}
-                  </h3>
-                  
-                  <p className="text-gray-600 leading-relaxed text-xs md:text-base lg:text-lg mb-6 md:mb-10 font-light">
-                    {steps[active].desc}
-                  </p>
+                  <div className="relative z-10">
+                    <div className={`w-12 h-12 md:w-20 md:h-20 lg:w-24 lg:h-24 rounded-2xl md:rounded-3xl border border-gray-100 shadow-xl flex items-center justify-center text-white mb-4 md:mb-8 bg-gradient-to-br ${steps[active].color}`}>
+                      {steps[active].icon}
+                    </div>
 
-                  <div className="bg-[#f8fafc] border border-[#4daea1]/20 shadow-sm rounded-2xl p-6 flex flex-col sm:flex-row items-start sm:items-center gap-5">
-                    <div className="w-12 h-12 rounded-full bg-white shadow-sm border border-[#4daea1]/20 flex items-center justify-center flex-shrink-0">
-                      <Briefcase className="w-5 h-5 text-[#4daea1]" />
-                    </div>
-                    <div>
-                      <p className="text-xs uppercase tracking-widest font-bold text-[#4daea1] mb-1">Entregable Concreto</p>
-                      <p className="text-base md:text-lg font-bold text-gray-900">{steps[active].deliverable}</p>
+                    <h3 className="text-xl md:text-3xl lg:text-4xl font-bold text-gray-900 mb-2 md:mb-6 leading-tight">
+                      {steps[active].title}
+                    </h3>
+
+                    <p className="text-gray-600 leading-relaxed text-xs md:text-base lg:text-lg mb-6 md:mb-10 font-light">
+                      {steps[active].desc}
+                    </p>
+
+                    <div className="bg-[#f8fafc] border border-[#4daea1]/20 shadow-sm rounded-2xl p-6 flex flex-col sm:flex-row items-start sm:items-center gap-5">
+                      <div className="w-12 h-12 rounded-full bg-white shadow-sm border border-[#4daea1]/20 flex items-center justify-center flex-shrink-0">
+                        <Briefcase className="w-5 h-5 text-[#4daea1]" />
+                      </div>
+                      <div>
+                        <p className="text-xs uppercase tracking-widest font-bold text-[#4daea1] mb-1">Entregable Concreto</p>
+                        <p className="text-base md:text-lg font-bold text-gray-900">{steps[active].deliverable}</p>
+                      </div>
                     </div>
                   </div>
-                </div>
-              </motion.div>
-            </AnimatePresence>
-          </div>
+                </motion.div>
+              </AnimatePresence>
+            </div>
           </div>{/* End hidden md:grid -- Desktop layout */}
 
           {/* Mobile: circular numbered timeline + card — same look as desktop */}
@@ -1044,9 +1049,8 @@ const Process = () => {
                       className="relative flex items-center gap-4 w-full group text-left transition-all duration-300"
                     >
                       <div className="relative flex-shrink-0 flex items-center justify-center">
-                        <div className={`w-8 h-8 rounded-full border-2 transition-all duration-500 flex items-center justify-center z-10 ${
-                          isActive ? 'bg-white border-[#4daea1] text-[#0a594f] shadow-[0_0_16px_rgba(77,174,161,0.3)]' : 'bg-gray-50 border-gray-200 text-gray-400'
-                        }`}>
+                        <div className={`w-8 h-8 rounded-full border-2 transition-all duration-500 flex items-center justify-center z-10 ${isActive ? 'bg-white border-[#4daea1] text-[#0a594f] shadow-[0_0_16px_rgba(77,174,161,0.3)]' : 'bg-gray-50 border-gray-200 text-gray-400'
+                          }`}>
                           <span className="font-bold text-xs">{step.id}</span>
                         </div>
                         {isActive && index !== steps.length - 1 && (
@@ -1060,12 +1064,10 @@ const Process = () => {
                         )}
                       </div>
                       <div className="flex-1">
-                        <h4 className={`text-sm font-bold leading-tight transition-colors ${
-                          isActive ? 'text-gray-900' : 'text-gray-400'
-                        }`}>{step.title}</h4>
-                        <p className={`text-[9px] uppercase tracking-widest font-bold mt-0.5 transition-colors ${
-                          isActive ? 'text-[#0a594f]' : 'text-gray-400'
-                        }`}>{step.phase}</p>
+                        <h4 className={`text-sm font-bold leading-tight transition-colors ${isActive ? 'text-gray-900' : 'text-gray-400'
+                          }`}>{step.title}</h4>
+                        <p className={`text-[9px] uppercase tracking-widest font-bold mt-0.5 transition-colors ${isActive ? 'text-[#0a594f]' : 'text-gray-400'
+                          }`}>{step.phase}</p>
                       </div>
                     </button>
                   );
@@ -1094,7 +1096,7 @@ const Process = () => {
                       <Briefcase className="w-3.5 h-3.5 text-[#4daea1]" />
                     </div>
                     <div>
-                      <p className="text-[11px] uppercase tracking-widest font-bold text-[#4daea1] mb-0.5">Entregable</p>
+                      <p className="text-[11px] uppercase tracking-widest font-bold text-[#4daea1] mb-0.5">Entregable Concreto</p>
                       <p className="text-xs font-bold text-gray-900">{steps[active].deliverable}</p>
                     </div>
                   </div>
@@ -1114,7 +1116,7 @@ const Process = () => {
              }}
              className="bg-[#0a594f] hover:bg-[#0d7a6e] text-white border border-transparent font-bold py-3.5 px-8 rounded-xl shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all flex items-center gap-3"
           >
-             Agendar mi Diagnóstico <ArrowRight className="w-4 h-4" />
+             Agendar mi Diagnóstico Comercial <ArrowRight className="w-4 h-4" />
           </button>
         </div>
 
@@ -1162,7 +1164,7 @@ const Examples = () => {
              <div className="flex items-center justify-between px-2">
                 <h3 className="text-white font-bold text-lg md:text-xl flex items-center gap-2">
                    <div className="w-2 h-2 rounded-full bg-[#4daea1] shadow-[0_0_10px_#4daea1]"></div>
-                   Centinel Motos
+                   Centinel GPS
                 </h3>
              </div>
              {/* Browser Mockup */}
@@ -1201,7 +1203,7 @@ const Examples = () => {
              <div className="flex items-center justify-between px-2">
                 <h3 className="text-white font-bold text-lg md:text-xl flex items-center gap-2">
                    <div className="w-2 h-2 rounded-full bg-[#4daea1] shadow-[0_0_10px_#4daea1]"></div>
-                   CMC Seguridad Promocional
+                   CMC alarmas y seguridad
                 </h3>
              </div>
              {/* Browser Mockup */}
@@ -1252,6 +1254,7 @@ const Examples = () => {
 };
 
 
+
 const Contact = () => {
   const { register, handleSubmit, formState: { errors }, reset } = useForm();
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -1291,7 +1294,7 @@ const Contact = () => {
           ...data,
           createdAt: serverTimestamp(),
           status: 'new',
-          source: 'web_form_prod',
+          source: 'landing_marketing',
           userId: currentUser ? currentUser.uid : 'anonymous'
         });
         console.log("✅ ÉXITO: Datos guardados en Firebase Firestore:", data);
@@ -1328,38 +1331,23 @@ const Contact = () => {
             <div className="absolute top-0 right-0 w-64 h-64 bg-[#4daea1]/10 rounded-full blur-[80px] pointer-events-none" />
 
             <div className="relative z-10">
-              <h3 className="text-2xl md:text-4xl font-bold tracking-tight mb-3 md:mb-6 text-white leading-tight">Hablemos de tu <br /><span className="text-[#4daea1]">Negocio</span></h3>
+              <h3 className="text-2xl md:text-4xl font-bold tracking-tight mb-3 md:mb-6 text-white leading-tight">Hablemos de tus <br /><span className="text-[#4daea1]">ventas</span></h3>
               <p className="text-gray-400 mb-6 md:mb-10 leading-relaxed font-light text-sm md:text-base">
-                Dar el primer paso para dominar tus números no tiene costo. Agendá una <strong className="text-white">sesión estratégica de 30 minutos</strong> con uno de nuestros socios.
+                Contanos cómo estás comercializando tus productos o servicios hoy para entender si podemos ayudarte a mejorar tus números.
               </p>
 
-              <div className="space-y-6">
-                <div className="flex items-start gap-4 group cursor-default">
-                  <div className="w-12 h-12 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center shrink-0 text-[#4daea1] group-hover:bg-[#4daea1]/10 transition-colors duration-300">
-                    <CheckCircle2 size={24} />
-                  </div>
-                  <div className="pt-1">
-                    <h5 className="font-bold text-white text-sm">Escucha Activa</h5>
-                    <p className="text-xs text-gray-400 mt-1">Conocemos tu modelo de negocio a fondo.</p>
-                  </div>
+              <div className="space-y-4 md:space-y-5">
+                <div className="flex items-start gap-3">
+                  <CheckCircle2 className="w-5 h-5 text-[#4daea1] shrink-0 mt-0.5" />
+                  <p className="text-sm md:text-base text-gray-300 font-medium">Análisis detallado de tu operativa y sector actual <span className="text-[#4daea1] font-bold">(100% Bonificado)</span>.</p>
                 </div>
-                <div className="flex items-start gap-4 group cursor-default">
-                  <div className="w-12 h-12 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center shrink-0 text-[#4daea1] group-hover:bg-[#4daea1]/10 transition-colors duration-300">
-                    <CheckCircle2 size={24} />
-                  </div>
-                  <div className="pt-1">
-                    <h5 className="font-bold text-white text-sm">Diagnóstico Inicial</h5>
-                    <p className="text-xs text-gray-400 mt-1">Identificamos cuellos de botella y oportunidades.</p>
-                  </div>
+                <div className="flex items-start gap-3">
+                  <CheckCircle2 className="w-5 h-5 text-[#4daea1] shrink-0 mt-0.5" />
+                  <p className="text-sm md:text-base text-gray-300 font-medium">Evaluación de las fricciones en tu embudo de ventas.</p>
                 </div>
-                <div className="flex items-start gap-4 group cursor-default">
-                  <div className="w-12 h-12 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center shrink-0 text-[#4daea1] group-hover:bg-[#4daea1]/10 transition-colors duration-300">
-                    <CheckCircle2 size={24} />
-                  </div>
-                  <div className="pt-1">
-                    <h5 className="font-bold text-white text-sm">Plan de Acción</h5>
-                    <p className="text-xs text-gray-400 mt-1">Te llevás recomendaciones prácticas, trabajes o no con nosotros.</p>
-                  </div>
+                <div className="flex items-start gap-3">
+                  <CheckCircle2 className="w-5 h-5 text-[#4daea1] shrink-0 mt-0.5" />
+                  <p className="text-sm md:text-base text-gray-300 font-medium">30 min de consultoría con un socio estratégico <span className="text-[#4daea1] font-bold">(Sin Costo)</span>.</p>
                 </div>
               </div>
             </div>
@@ -1420,76 +1408,49 @@ const Contact = () => {
                   </div>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                <div className="grid grid-cols-1 gap-6">
                   <div>
-                    <label className={labelClasses}>Tu rol en la empresa *</label>
-                    <div className="relative">
-                      <select {...register("role")} className={`${inputClasses} appearance-none cursor-pointer`} defaultValue="Dueño / Socio">
-                        <option value="Dueño / Socio">Dueño / Socio</option>
-                        <option value="Gerente General">Gerente General</option>
-                        <option value="Director de Área">Director de Área</option>
-                        <option value="Otro">Otro</option>
-                      </select>
-                      <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500 pointer-events-none" />
-                    </div>
-                  </div>
-                  <div>
-                    <label className={labelClasses} title="Esto nos ayuda a entender tu escala y prepararnos mejor">
-                      ¿En qué rango de facturación mensual se encuentra la empresa? *
-                    </label>
-                    <div className="relative">
-                      <select {...register("revenue", { required: "Requerido" })} className={`${inputClasses} appearance-none cursor-pointer`} defaultValue="">
-                        <option value="" disabled>Selecciona un rango...</option>
-                        {/* CORREGIDO: Valores legibles */}
-                        <option value="Menos de $10 Millones">Menos de $10 Millones</option>
-                        <option value="Entre $10M y $50 Millones">Entre $10M y $50 Millones</option>
-                        <option value="Entre $50M y $200 Millones">Entre $50M y $200 Millones</option>
-                        <option value="Más de $200 Millones">Más de $200 Millones</option>
-                      </select>
-                      <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500 pointer-events-none" />
-                    </div>
-                    {errors.revenue && <p className={errorClasses}>Selecciona un rango de facturación</p>}
+                    <label className={labelClasses}>Sitio web actual (si tenés)</label>
+                    <input {...register("website")} className={inputClasses} placeholder="www.mi-empresa.com" />
                   </div>
                 </div>
 
-                <div>
-                  <label className={labelClasses}>¿Qué es lo que más te quita el sueño hoy en tu negocio? *</label>
-                  <div className="relative">
-                    <select {...register("challenge", { required: "Requerido" })} className={`${inputClasses} appearance-none font-medium text-[#0a594f] cursor-pointer`} defaultValue="">
-                      <option value="" disabled>Selecciona una opción...</option>
-                      {/* CORREGIDO: Valores legibles */}
-                      <option value="Rentabilidad y Costos">Rentabilidad y Costos</option>
-                      <option value="Estrategia Comercial / Ventas">Estrategia Comercial / Ventas</option>
-                      <option value="Eficiencia Operativa">Eficiencia Operativa</option>
-                      <option value="Profesionalización / Gobierno">Profesionalización / Gobierno</option>
-                      <option value="Otro">Otro</option>
-                    </select>
-                    <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500 pointer-events-none" />
+                <div className="grid grid-cols-1 gap-6">
+                  <div>
+                    <label className={labelClasses}>¿Cuál es tu principal problema hoy para vender más? *</label>
+                    <div className="relative">
+                      <select {...register("challenge", { required: "Requerido" })} className={`${inputClasses} appearance-none cursor-pointer`} defaultValue="">
+                        <option value="" disabled>Selecciona una opción...</option>
+                        <option value="Faltan consultas">Faltan consultas</option>
+                        <option value="Llegan pero no compran">Llegan pero no compran</option>
+                        <option value="La web está desactualizada">La web está desactualizada</option>
+                        <option value="Desorganización interna">Desorganización interna</option>
+                      </select>
+                      <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500 pointer-events-none" />
+                    </div>
+                    {errors.challenge && <p className={errorClasses}>Selecciona un desafío</p>}
                   </div>
-                  {errors.challenge && <p className={errorClasses}>Selecciona un desafío</p>}
                 </div>
+
 
                 {submissionError && <div className="bg-red-50 text-red-600 text-sm p-3 rounded-lg border border-red-100">{submissionError}</div>}
 
                 <div className="pt-4 relative group/btn">
-                  <div className="flex items-center justify-center gap-2 mb-3">
-                    <div className="w-2 h-2 rounded-full bg-[#4daea1] animate-pulse"></div>
-                    <span className="text-[10px] uppercase tracking-widest text-[#c6fff7] font-bold bg-[#4daea1]/10 px-3 py-1 rounded-full border border-[#4daea1]/20 backdrop-blur-md shadow-sm">
-                      Para garantizar calidad, tomamos solo 5 diagnósticos gratuitos por semana.
-                    </span>
+                  <div className="flex items-center gap-2 mb-3 justify-center text-xs md:text-sm text-[#4daea1] font-medium bg-[#4daea1]/10 py-1.5 px-3 rounded-md w-fit mx-auto border border-[#4daea1]/20">
+                    <Clock size={14} className="animate-pulse" />
+                    <span>Para garantizar calidad, tomamos solo 5 diagnósticos gratuitos por semana.</span>
                   </div>
-
-                  <div className="absolute inset-x-0 bottom-0 bg-gradient-to-r from-[#4daea1] to-[#0a594f] rounded-xl blur opacity-30 group-hover/btn:opacity-60 transition duration-500 mt-4 h-16 pointer-events-none"></div>
-                  <Button type="submit" variant="primary" className="w-full relative !rounded-xl !py-4 bg-gradient-to-r from-[#0a594f] to-[#0d7a6e] hover:from-[#0d7a6e] hover:to-[#4daea1] border border-white/10 shadow-xl overflow-hidden group/submit" disabled={isSubmitting}>
-                    <span className="relative z-10 font-bold tracking-wide flex justify-center items-center gap-2">
-                      {isSubmitting ? 'Procesando...' : 'Solicitar Diagnóstico Gratuito'}
-                      {!isSubmitting && <ArrowRight className="w-4 h-4 group-hover/submit:translate-x-1 transition-transform" />}
+                  <div className="absolute inset-x-0 bottom-0 h-full bg-gradient-to-r from-[#4daea1] to-[#0a594f] rounded-xl blur opacity-30 group-hover/btn:opacity-60 transition duration-500"></div>
+                  <Button type="submit" variant="primary" className="w-full relative !rounded-xl !py-4 bg-gradient-to-r from-[#0a594f] to-[#0d7a6e] hover:from-[#0d7a6e] hover:to-[#4daea1] border border-white/10 shadow-xl overflow-hidden" disabled={isSubmitting}>
+                    <span className="relative z-10 font-bold tracking-wide">
+                      {isSubmitting ? 'Procesando solicitud...' : 'Solicitar Diagnóstico Comercial'}
                     </span>
                   </Button>
                 </div>
 
-                <div className="flex justify-center pt-3 text-xs text-gray-400 px-2 text-center">
-                  <span>Garantizamos total confidencialidad sobre tu información. Respondemos en menos de 24hs.</span>
+                <div className="flex justify-center pt-2 text-[10px] sm:text-xs text-gray-400 px-2 text-center items-center gap-1">
+                  <ShieldCheck size={14} className="text-gray-500" />
+                  <span>Garantizamos total confidencialidad sobre tu información. Respondemos en menos de 2h.</span>
                 </div>
               </form>
             )}
@@ -1502,7 +1463,7 @@ const Contact = () => {
 
 // Sticky CTA bar for mobile — always visible, max conversion
 const StickyMobileCTA = () => (
-  <div className="fixed bottom-0 left-0 right-0 z-[60] md:hidden px-4 pb-4 pt-2 bg-gradient-to-t from-[#050d0b]/95 to-transparent backdrop-blur-sm">
+  <div className="fixed bottom-0 left-0 right-0 z-40 md:hidden px-4 pb-4 pt-2 bg-gradient-to-t from-[#050d0b]/95 to-transparent backdrop-blur-sm">
     <button
       onClick={() => {
         const scrollContainer = document.getElementById('scroll-container');
@@ -1536,7 +1497,7 @@ const Footer = () => (
 );
 
 const FloatingWhatsApp = () => (
-  <a href="https://wa.me/+5493518163142" target="_blank" rel="noopener noreferrer" className="fixed bottom-24 md:bottom-8 right-4 md:right-8 z-50 bg-[#25D366] text-white p-3.5 rounded-full shadow-2xl hover:shadow-green-500/30 hover:scale-110 transition-all duration-300 flex items-center justify-center" aria-label="Contactar por WhatsApp">
+  <a href="https://wa.me/+5493518163142" target="_blank" rel="noopener noreferrer" className="fixed bottom-24 md:bottom-8 right-4 md:right-8 z-[60] mb-2 md:mb-0 bg-[#25D366] text-white p-3.5 rounded-full shadow-2xl hover:shadow-green-500/30 hover:scale-110 transition-all duration-300 flex items-center justify-center" aria-label="Contactar por WhatsApp">
     <svg viewBox="0 0 24 24" className="w-7 h-7 fill-current">
       <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z" />
     </svg>
@@ -1557,7 +1518,7 @@ const useScrollSnap = (containerId: string) => {
 
     const handleScrollEnd = () => {
       if (isSnapping) return;
-      
+
       const hero = document.getElementById('hero');
       const about = document.getElementById('about');
       if (!hero || !about) return;
@@ -1609,6 +1570,7 @@ const App = () => {
         <About />
         <Services />
         <Process />
+        <Examples />
         {/* Contact & Footer flow freely at the end */}
         <Contact />
         <Footer />
