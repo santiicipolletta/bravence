@@ -237,12 +237,13 @@ const Hero = () => {
   return (
     <section id="hero" className="relative flex flex-col justify-center pt-24 pb-16 md:pt-40 md:pb-28 overflow-hidden bg-[#0a594f] min-h-[100svh]">
       {/* Background Video */}
-      <div className="absolute inset-0 w-full h-full pointer-events-none opacity-90">
+      <div className="absolute inset-0 w-full h-full pointer-events-none opacity-90 bg-[#0a594f]">
         <video
           autoPlay
           loop
           muted
           playsInline
+          preload="auto"
           className="w-full h-full object-cover pointer-events-none"
         >
           <source src="/landing_bg.mp4" type="video/mp4" />
