@@ -701,12 +701,12 @@ const Services = () => {
   const next = () => goTo((active + 1) % pillars.length, true);
   const prev = () => goTo((active - 1 + pillars.length) % pillars.length, true);
 
-  // Auto-advance Services cards every 15 seconds para dar más tiempo de lectura
+  // Auto-advance Services cards every 25 seconds para dar más tiempo de lectura
   useEffect(() => {
     if (!isAutoPlay || !isInView) return;
     const timer = setInterval(() => {
       goTo((active + 1) % pillars.length);
-    }, 15000);
+    }, 25000);
     return () => clearInterval(timer);
   }, [active, isAutoPlay, isInView]);
 
@@ -949,7 +949,7 @@ const Process = () => {
     if (!isAutoPlay || !isInView) return;
     const timer = setInterval(() => {
       setActive((prev) => (prev + 1) % steps.length);
-    }, 12000); // changes every 12 seconds
+    }, 22000); // changes every 22 seconds
     return () => clearInterval(timer);
   }, [active, steps.length, isAutoPlay, isInView]);
 
