@@ -383,9 +383,9 @@ const Hero = () => {
             <Button
               variant="outline"
               className="!text-white !border-white/30 hover:!bg-white/10 !rounded-full !px-8 md:!px-10 !py-3.5 md:!py-5 w-full sm:w-auto text-sm md:text-base"
-              onClick={() => document.getElementById('process')?.scrollIntoView({ behavior: 'smooth' })}
+              onClick={() => document.getElementById('services')?.scrollIntoView({ behavior: 'smooth' })}
             >
-              Ver cómo trabajamos
+              Ver servicios comerciales
             </Button>
           </div>
         </motion.div>
@@ -396,7 +396,7 @@ const Hero = () => {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 2.5, duration: 1 }}
-        className="absolute bottom-6 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 cursor-pointer opacity-70 hover:opacity-100 transition-opacity z-20"
+        className="absolute bottom-6 left-1/2 -translate-x-1/2 hidden md:flex flex-col items-center gap-2 cursor-pointer opacity-70 hover:opacity-100 transition-opacity z-20"
         onClick={() => {
           const aboutSection = document.getElementById('about');
           if (aboutSection) {
