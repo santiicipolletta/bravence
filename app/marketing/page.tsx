@@ -306,7 +306,7 @@ const Navbar = () => {
 // --- REFACTORED HERO SECTION (COMPACT VERSION) ---
 const Hero = () => {
   return (
-    <section id="hero" className="relative flex flex-col justify-center pt-16 pb-12 md:pt-24 md:pb-16 overflow-hidden bg-[#0a1f1a] min-h-[100svh]">
+    <section id="hero" className="relative flex flex-col justify-center pt-16 pb-24 md:pt-24 md:pb-20 overflow-hidden bg-[#0a1f1a] min-h-[100svh]">
       {/* Background Canvas: Particle Constellation */}
       <FunnelCanvasBackground />
 
@@ -395,7 +395,7 @@ const Hero = () => {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 2.5, duration: 1 }}
-        className="absolute bottom-6 left-1/2 -translate-x-1/2 hidden md:flex flex-col items-center gap-2 cursor-pointer opacity-70 hover:opacity-100 transition-opacity z-20"
+        className="absolute bottom-4 md:bottom-6 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 cursor-pointer opacity-70 hover:opacity-100 transition-opacity z-20"
         onClick={() => {
           const aboutSection = document.getElementById('about');
           if (aboutSection) {
