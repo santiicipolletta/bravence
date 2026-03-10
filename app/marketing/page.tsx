@@ -8,6 +8,7 @@ import {
   Users, BarChart3, Briefcase, LineChart, FileCheck, MousePointer2
 } from 'lucide-react';
 import { useForm } from 'react-hook-form';
+import FunnelCanvasBackground from '../components/FunnelCanvasBackground';
 
 // --- FIREBASE CONFIGURATION ---
 import { initializeApp } from 'firebase/app';
@@ -71,47 +72,69 @@ try {
 // --- COMPONENTS ---
 
 // --- VIDEO AUTOPLAY HOOK ---
-// Fuerza la reproducción en navegadores restringidos (iOS Low Power mode)
+// Usa IntersectionObserver para disparar play() cuando el video entra al viewport,
+// que es la técnica más confiable en iOS con Low Power Mode activado.
 const useVideoAutoPlay = () => {
   const videoRef = useRef<HTMLVideoElement>(null);
-  
+
   useEffect(() => {
     const video = videoRef.current;
     if (!video) return;
 
+    // Ensure muted+playsInline (required by all mobile browsers for autoplay)
     video.defaultMuted = true;
     video.muted = true;
-    video.playsInline = true;
+    video.setAttribute('muted', '');
+    video.setAttribute('playsinline', '');
+
+    let played = false;
 
     const attemptPlay = () => {
-      if (!video) return;
-      const playPromise = video.play();
-      if (playPromise !== undefined) {
-        playPromise.catch((error) => {
-          console.warn("Auto-play prevented. Waiting for user interaction...", error);
+      if (played) return;
+      const p = video.play();
+      if (p !== undefined) {
+        p.then(() => { played = true; }).catch(() => {
+          // Will retry via IntersectionObserver or user interaction
         });
       }
     };
 
-    // Intentar ni bien carga
+    // 1. Try immediately on mount
     attemptPlay();
 
-    // Workaround para iOS Low Power Mode: enganchar a cualquier itereacción del usuario
-    const handleInteraction = () => {
-      attemptPlay();
-      document.removeEventListener('touchstart', handleInteraction);
-      document.removeEventListener('click', handleInteraction);
-      document.removeEventListener('scroll', handleInteraction);
-    };
+    // 2. IntersectionObserver: fires when video enters viewport (works on iOS with scroll)
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting) {
+          attemptPlay();
+        }
+      },
+      { threshold: 0.1 }
+    );
+    observer.observe(video);
 
-    document.addEventListener('touchstart', handleInteraction, { once: true, passive: true });
-    document.addEventListener('click', handleInteraction, { once: true, passive: true });
-    document.addEventListener('scroll', handleInteraction, { once: true, passive: true });
+    // 3. Listen on the CORRECT scroll container (site uses #scroll-container, not document)
+    const scrollContainer = document.getElementById('scroll-container');
+    const handleInteraction = () => { attemptPlay(); };
+
+    const targets = [scrollContainer, document.documentElement, document];
+    targets.forEach(t => {
+      if (t) {
+        t.addEventListener('touchstart', handleInteraction, { once: true, passive: true } as any);
+        t.addEventListener('scroll', handleInteraction, { once: true, passive: true } as any);
+        t.addEventListener('click', handleInteraction, { once: true, passive: true } as any);
+      }
+    });
 
     return () => {
-      document.removeEventListener('touchstart', handleInteraction);
-      document.removeEventListener('click', handleInteraction);
-      document.removeEventListener('scroll', handleInteraction);
+      observer.disconnect();
+      targets.forEach(t => {
+        if (t) {
+          t.removeEventListener('touchstart', handleInteraction);
+          t.removeEventListener('scroll', handleInteraction);
+          t.removeEventListener('click', handleInteraction);
+        }
+      });
     };
   }, []);
 
@@ -152,7 +175,7 @@ const Navbar = () => {
     const handleScroll = () => {
       const currentScrollY = container?.scrollTop ?? 0;
       setScrolled(currentScrollY > 20);
-      
+
       // Hide navbar when scrolling down, show when scrolling up
       if (currentScrollY > lastScrollY && currentScrollY > 100) {
         setIsVisible(false);
@@ -161,9 +184,9 @@ const Navbar = () => {
       }
       setLastScrollY(currentScrollY);
     };
-    
+
     container?.addEventListener('scroll', handleScroll, { passive: true });
-    
+
     // Intersection Observer for Navbar Active State
     const observer = new IntersectionObserver((entries) => {
       entries.forEach((entry) => {
@@ -208,7 +231,7 @@ const Navbar = () => {
       <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${isVisible ? 'translate-y-0' : '-translate-y-full'} ${scrolled ? 'bg-[#0a1614]/90 backdrop-blur-md border-b border-white/5 py-4 lg:py-3 shadow-2xl' : 'bg-transparent py-6'}`}>
         <div className="container mx-auto px-6 flex justify-between items-center">
           <a href="#hero" onClick={(e) => { e.preventDefault(); scrollToSection('#hero'); }} className="z-50 group">
-            <h1 className={`text-2xl font-bold tracking-[-0.062em] transition-colors duration-300 ${scrolled || isOpen ? 'text-[#0a594f]' : 'text-white'}`}>
+            <h1 className={`text-2xl font-bold tracking-[-0.062em] transition-colors duration-300 ${scrolled || isOpen ? 'text-[#0a594f]' : 'text-white'} text-[25px] lg:text-[44px] font-bold`}>
               Bravence<span className="text-[#4daea1] group-hover:animate-pulse">.</span>
             </h1>
           </a>
@@ -282,42 +305,22 @@ const Navbar = () => {
 
 // --- REFACTORED HERO SECTION (COMPACT VERSION) ---
 const Hero = () => {
-  const [videoLoaded, setVideoLoaded] = useState(false);
-  const videoRef = useVideoAutoPlay();
-
   return (
-    <section id="hero" className="relative flex flex-col justify-center pt-24 pb-16 md:pt-40 md:pb-28 overflow-hidden bg-[#0a594f] min-h-[100svh]">
-      {/* Background Video + Fallback */}
-      <div className={`absolute inset-0 w-full h-full pointer-events-none transition-opacity duration-1000 ${videoLoaded ? 'opacity-90' : 'opacity-100'} bg-[#0a594f]`}>
-        {/* Subtle Gradient Fallback while video loads or if blocked */}
-        <div className="absolute inset-0 bg-gradient-to-br from-[#0a594f] via-[#063c35] to-[#0a1614] z-0" />
-        
-        <video
-          ref={videoRef}
-          autoPlay
-          loop
-          muted
-          playsInline
-          preload="auto"
-          poster="/poster-marketing-optimized.jpg"
-          onPlaying={() => setVideoLoaded(true)}
-          className={`w-full h-full object-cover pointer-events-none relative z-10 transition-opacity duration-1000 ${videoLoaded ? 'opacity-100' : 'opacity-0'}`}
-        >
-          <source src="/landing_bg.webm" type="video/webm" />
-          <source src="/landing_bg.mp4" type="video/mp4" />
-        </video>
-      </div>
-      {/* Darker overlay for better text contrast */}
-      <div className="absolute inset-0 bg-[#061e1b]/80 mix-blend-multiply"></div>
-      <div className="absolute inset-0 bg-gradient-to-b from-[#061e1b]/60 via-transparent to-[#061e1b]"></div>
+    <section id="hero" className="relative flex flex-col justify-center pt-16 pb-12 md:pt-24 md:pb-16 overflow-hidden bg-[#0a1f1a] min-h-[100svh]">
+      {/* Background Canvas: Particle Constellation */}
+      <FunnelCanvasBackground />
 
+      {/* Soft gradient overlay for text readability */}
+      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-[#06100e]/80 pointer-events-none z-[1]"></div>
+
+      {/* Decorative ambient glow */}
       <motion.div
-        animate={{ scale: [1, 1.2, 1], opacity: [0.3, 0.5, 0.3] }}
+        animate={{ scale: [1, 1.2, 1], opacity: [0.2, 0.4, 0.2] }}
         transition={{ duration: 8, repeat: Infinity }}
-        className="absolute top-0 right-0 w-[800px] h-[800px] bg-[#4daea1]/20 rounded-full blur-[120px] -translate-y-1/4 translate-x-1/4 pointer-events-none mix-blend-screen"
+        className="absolute top-0 right-0 w-[800px] h-[800px] bg-[#4daea1]/8 rounded-full blur-[120px] -translate-y-1/4 translate-x-1/4 pointer-events-none mix-blend-screen z-[2]"
       />
-      <div className="absolute inset-0 opacity-[0.15] mix-blend-soft-light" style={{ backgroundImage: 'url("data:image/svg+xml,%3Csvg viewBox=%270 0 200 200%27 xmlns=%27http://www.w3.org/2000/svg%27%3E%3Cfilter id=%27noise%27%3E%3CfeTurbulence type=%27fractalNoise%27 baseFrequency=%270.65%27 numOctaves=%273%27 stitchTiles=%27stitch%27/%3E%3C/filter%3E%3Crect width=%27100%25%27 height=%27100%25%27 filter=%27url(%23noise)%27/%3E%3C/svg%3E")' }}></div>
 
+      {/* Main Content */}
       <div className="container mx-auto px-5 relative z-10">
         <motion.div
           initial={{ opacity: 0, y: 40 }}
@@ -340,7 +343,7 @@ const Hero = () => {
             </span>
           </motion.div>
 
-          <h1 className="text-[10vw] sm:text-[8vw] md:text-[7.5vw] lg:text-[6.5vw] font-black text-white tracking-[-0.05em] leading-[0.95] drop-shadow-2xl mb-4 md:mb-8 max-w-none">
+          <h1 className="text-[10vw] sm:text-[8vw] md:text-[7.5vw] lg:text-[6.5vw] font-black text-white tracking-[-0.05em] leading-[0.95] drop-shadow-2xl mb-4 md:mb-6 max-w-none text-[48px] sm:text-[64px] md:text-[80px] lg:text-[96px]">
             Estrategia Digital y <br />
             <span className="bg-clip-text text-transparent bg-gradient-to-r from-[#ffffff] via-[#c6fff7] to-[#4daea1] pr-2 pb-1 inline-block">
               Optimización de Ventas
@@ -348,18 +351,18 @@ const Hero = () => {
             para tu empresa
           </h1>
 
-          <div className="flex flex-col gap-3 md:gap-4 mb-6 md:mb-8 text-gray-300 font-light border-l border-white/20 pl-4 py-1">
+          <div className="flex flex-col gap-2 md:gap-3 mb-5 md:mb-6 text-gray-300 font-light border-l border-white/20 pl-4 py-1">
             <div className="flex items-center gap-3">
-               <CheckCircle2 className="w-5 h-5 text-[#4daea1] shrink-0" />
-               <p className="text-sm md:text-lg lg:text-xl leading-snug">Páginas web enfocadas en <strong className="text-white font-medium">conversión.</strong></p>
+              <CheckCircle2 className="w-5 h-5 text-[#4daea1] shrink-0" />
+              <p className="text-sm md:text-lg lg:text-xl leading-snug text-[16px] lg:text-[18px] font-normal mb-6">Páginas web enfocadas en <strong className="text-white font-medium">conversión.</strong></p>
             </div>
             <div className="flex items-center gap-3">
-               <CheckCircle2 className="w-5 h-5 text-[#4daea1] shrink-0" />
-               <p className="text-sm md:text-lg lg:text-xl leading-snug">Embudos de venta <strong className="text-white font-medium">estructurados.</strong></p>
+              <CheckCircle2 className="w-5 h-5 text-[#4daea1] shrink-0" />
+              <p className="text-sm md:text-lg lg:text-xl leading-snug text-[16px] lg:text-[18px] font-normal mb-6">Embudos de venta <strong className="text-white font-medium">estructurados.</strong></p>
             </div>
             <div className="flex items-center gap-3">
-               <CheckCircle2 className="w-5 h-5 text-[#4daea1] shrink-0" />
-               <p className="text-sm md:text-lg lg:text-xl leading-snug">Análisis detallado de tu <strong className="text-white font-medium">cliente ideal.</strong></p>
+              <CheckCircle2 className="w-5 h-5 text-[#4daea1] shrink-0" />
+              <p className="text-sm md:text-lg lg:text-xl leading-snug text-[16px] lg:text-[18px] font-normal mb-6">Análisis detallado de tu <strong className="text-white font-medium">cliente ideal.</strong></p>
             </div>
           </div>
 
@@ -392,7 +395,7 @@ const Hero = () => {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 2.5, duration: 1 }}
-        className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 cursor-pointer opacity-70 hover:opacity-100 transition-opacity z-20"
+        className="absolute bottom-6 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 cursor-pointer opacity-70 hover:opacity-100 transition-opacity z-20"
         onClick={() => {
           const aboutSection = document.getElementById('about');
           if (aboutSection) {
@@ -415,6 +418,7 @@ const Hero = () => {
 };
 
 const About = () => {
+  const [videoPlaying, setVideoPlaying] = useState(false);
   const videoRef = useVideoAutoPlay();
 
   return (
@@ -431,10 +435,10 @@ const About = () => {
             transition={{ duration: 0.8 }}
             className="order-2 md:order-1"
           >
-            <h3 className="text-[#4daea1] font-bold tracking-widest uppercase text-sm mb-3 flex items-center gap-2">
+            <h3 className="text-[#4daea1] font-bold tracking-widest uppercase text-sm mb-3 flex items-center gap-2 text-[18px] lg:text-[23px] font-semibold">
               <span className="w-8 h-[2px] bg-[#4daea1]"></span> Sobre Nosotros
             </h3>
-            <h2 className="text-2xl md:text-4xl lg:text-5xl font-bold text-white mb-4 md:mb-8 leading-tight max-w-xl">
+            <h2 className="text-2xl md:text-4xl lg:text-5xl font-bold text-white mb-4 md:mb-8 leading-tight max-w-xl text-[22px] lg:text-[28px] font-bold mb-8">
               El marketing sin estructura comercial <br />
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#0a594f] to-[#4daea1]">
                 no sirve.
@@ -457,24 +461,24 @@ const About = () => {
             <div className="mt-6 relative group/quote">
               <div className="absolute -inset-1 bg-gradient-to-r from-[#4daea1]/30 to-[#0a594f]/30 rounded-2xl blur opacity-0 group-hover/quote:opacity-100 transition duration-700"></div>
               <div className="relative p-5 bg-white/[0.03] backdrop-blur-md border border-white/10 hover:border-[#4daea1]/30 rounded-2xl transition-all duration-300">
-                <p className="text-[#c6fff7] font-medium italic text-sm md:text-base leading-relaxed relative z-10">
+                <p className="text-[#c6fff7] font-medium italic text-sm md:text-base leading-relaxed relative z-10 text-[16px] lg:text-[18px] font-normal mb-6">
                   &quot;No somos una agencia de publicidad tradicional. Somos una consultora de negocios desarrollando las herramientas digitales que tu empresa necesita para vender mejor.&quot;
                 </p>
               </div>
             </div>
             {/* CTA 1: About Us Soft CTA */}
             <div className="mt-8 md:mt-10">
-               <button
-                 onClick={() => {
-                    const scrollContainer = document.getElementById('scroll-container');
-                    const contactSection = document.getElementById('contact');
-                    if (scrollContainer && contactSection) { scrollContainer.scrollTo({ top: contactSection.offsetTop, behavior: 'smooth' }); }
-                 }}
-                 className="group inline-flex items-center gap-2 text-white font-medium hover:text-[#4daea1] transition-colors"
-               >
-                 <span className="border-b border-[#4daea1]/40 group-hover:border-[#4daea1] pb-0.5 transition-colors">Hablar con un consultor</span>
-                 <ArrowRight className="w-4 h-4 text-[#4daea1] group-hover:translate-x-1 transition-transform" />
-               </button>
+              <button
+                onClick={() => {
+                  const scrollContainer = document.getElementById('scroll-container');
+                  const contactSection = document.getElementById('contact');
+                  if (scrollContainer && contactSection) { scrollContainer.scrollTo({ top: contactSection.offsetTop, behavior: 'smooth' }); }
+                }}
+                className="group inline-flex items-center gap-2 text-white font-medium hover:text-[#4daea1] transition-colors"
+              >
+                <span className="border-b border-[#4daea1]/40 group-hover:border-[#4daea1] pb-0.5 transition-colors">Hablar con un consultor</span>
+                <ArrowRight className="w-4 h-4 text-[#4daea1] group-hover:translate-x-1 transition-transform" />
+              </button>
             </div>
           </motion.div>
 
@@ -489,6 +493,14 @@ const About = () => {
             <div className="absolute inset-0 bg-[#0a594f] rounded-3xl transform rotate-3 transition-transform group-hover:rotate-6 duration-500 opacity-10" />
             <div className="absolute inset-0 bg-[#4daea1] rounded-3xl transform -rotate-3 transition-transform group-hover:-rotate-6 duration-500 opacity-10" />
             <div className="relative rounded-3xl overflow-hidden shadow-2xl bg-[#0a594f]/5 aspect-[4/3] group-hover:scale-105 transition-transform duration-1000 ease-out">
+              {/* Poster: always visible until video is actually playing */}
+              <img
+                src="/poster-about.jpg"
+                alt=""
+                aria-hidden="true"
+                className={`absolute inset-0 w-full h-full object-cover pointer-events-none z-20 transition-opacity duration-700 ${videoPlaying ? 'opacity-0' : 'opacity-100'}`}
+              />
+              {/* Video: opacity-0 until onPlaying — hides the native iOS play button */}
               <video
                 ref={videoRef}
                 autoPlay
@@ -496,13 +508,15 @@ const About = () => {
                 muted
                 playsInline
                 preload="auto"
-                className="w-full h-full object-cover absolute inset-0 pointer-events-none"
+                poster="/poster-about.jpg"
+                onPlaying={() => setVideoPlaying(true)}
+                className={`w-full h-full object-cover absolute inset-0 pointer-events-none z-10 transition-opacity duration-700 ${videoPlaying ? 'opacity-100' : 'opacity-0'}`}
               >
                 <source src="/pantallabravence.webm" type="video/webm" />
               </video>
-              <div className="absolute bottom-4 right-4 md:bottom-8 md:right-8 bg-white/95 backdrop-blur shadow-lg p-4 md:p-6 rounded-xl md:rounded-2xl max-w-[160px] border border-gray-100 z-10">
-                <p className="text-3xl md:text-4xl font-bold text-[#0a594f] mb-1">100%</p>
-                <p className="text-[10px] md:text-xs text-gray-500 font-medium uppercase tracking-wider">Enfoque en Resultados Medibles</p>
+              <div className="absolute bottom-4 right-4 md:bottom-8 md:right-8 bg-white/95 backdrop-blur shadow-lg p-4 md:p-6 rounded-xl md:rounded-2xl max-w-[160px] border border-gray-100 z-30">
+                <p className="text-3xl md:text-4xl font-bold text-[#0a594f] mb-1 text-[16px] lg:text-[18px] font-normal mb-6">100%</p>
+                <p className="text-[10px] md:text-xs text-gray-500 font-medium uppercase tracking-wider text-[16px] lg:text-[18px] font-normal mb-6">Enfoque en Resultados Medibles</p>
               </div>
             </div>
           </motion.div>
@@ -751,8 +765,8 @@ const Services = () => {
           <span className="inline-block text-[#4daea1] font-bold tracking-widest uppercase text-xs mb-3 flex items-center justify-center gap-2">
             <span className="w-8 h-[2px] bg-[#4daea1]"></span> Nuestros Pilares <span className="w-8 h-[2px] bg-[#4daea1]"></span>
           </span>
-          <h2 className="text-2xl md:text-4xl lg:text-5xl font-bold text-white mb-2 md:mb-4">Herramientas para el <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#0a594f] to-[#4daea1]">crecimiento comercial.</span></h2>
-          <p className="text-gray-400 text-base md:text-lg leading-relaxed font-light">Qué hacemos concretamente para mejorar tu facturación.</p>
+          <h2 className="text-2xl md:text-4xl lg:text-5xl font-bold text-white mb-2 md:mb-4 text-[22px] lg:text-[28px] font-bold mb-8">Herramientas para el <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#0a594f] to-[#4daea1]">crecimiento comercial.</span></h2>
+          <p className="text-gray-400 text-base md:text-lg leading-relaxed font-light text-[16px] lg:text-[18px] font-normal mb-6">Qué hacemos concretamente para mejorar tu facturación.</p>
         </div>
 
         {/* Swipe Hint */}
@@ -871,11 +885,11 @@ const Services = () => {
                         </div>
                         <div>
                           <span className="text-[#4daea1] text-[9px] font-bold tracking-widest uppercase">Pilar {String(idx + 1).padStart(2, '0')} / 04</span>
-                          <h3 className="text-lg md:text-2xl font-bold text-white leading-tight">{pillar.title}</h3>
+                          <h3 className="text-lg md:text-2xl font-bold text-white leading-tight text-[18px] lg:text-[23px] font-semibold">{pillar.title}</h3>
                         </div>
                       </div>
 
-                      <p className="hidden sm:block text-gray-400 text-sm leading-relaxed mb-6">
+                      <p className="hidden sm:block text-gray-400 text-sm leading-relaxed mb-6 text-[16px] lg:text-[18px] font-normal mb-6">
                         {pillar.desc}
                       </p>
                       <div className="block sm:hidden h-px w-full bg-white/10 my-4" />
@@ -950,8 +964,8 @@ const Process = () => {
       <div className="container mx-auto px-4 md:px-6 relative z-10">
         <div className="text-center mb-6 md:mb-10 max-w-4xl mx-auto">
           <span className="inline-block text-[#0a594f] font-bold tracking-widest uppercase text-xs mb-3 bg-[#4daea1]/10 px-4 py-1.5 rounded-full border border-[#4daea1]/20">Nuestro Método</span>
-          <h2 className="text-2xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-2 md:mb-4">Cómo <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#0a594f] to-[#4daea1]">trabajamos.</span></h2>
-          <p className="hidden md:block text-gray-600 text-base md:text-lg leading-relaxed">Un proceso lógico y ordenado para profesionalizar tus ventas.</p>
+          <h2 className="text-2xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-2 md:mb-4 text-[22px] lg:text-[28px] font-bold mb-8">Cómo <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#0a594f] to-[#4daea1]">trabajamos.</span></h2>
+          <p className="hidden md:block text-gray-600 text-base md:text-lg leading-relaxed text-[16px] lg:text-[18px] font-normal mb-6">Un proceso lógico y ordenado para profesionalizar tus ventas.</p>
         </div>
 
 
@@ -963,22 +977,22 @@ const Process = () => {
             <div className="col-span-4 md:col-span-5 relative">
               <div className="absolute left-[15px] md:left-[23px] top-0 bottom-0 w-px bg-gray-200" />
 
-            <div className="space-y-4 md:space-y-8 relative py-8">
-              {/* Navigation Arrows indicators - Desktop */}
-              <div className="absolute -top-2 left-[15px] md:left-[23px] -translate-x-1/2 z-20">
-                <button 
-                  onClick={() => {
-                    setActive((prev) => (prev - 1 + steps.length) % steps.length);
-                    setIsAutoPlay(false);
-                  }}
-                  className="w-10 h-10 md:w-12 md:h-12 flex items-center justify-center bg-white border border-[#4daea1]/20 shadow-[0_4px_12px_rgba(77,174,161,0.15)] rounded-full text-[#4daea1] hover:scale-110 active:scale-95 transition-all"
-                  aria-label="Paso anterior"
-                >
-                  <ChevronUp className="w-5 h-5 md:w-6 md:h-6" />
-                </button>
-              </div>
+              <div className="space-y-4 md:space-y-8 relative py-8">
+                {/* Navigation Arrows indicators - Desktop */}
+                <div className="absolute -top-2 left-[15px] md:left-[23px] -translate-x-1/2 z-20">
+                  <button
+                    onClick={() => {
+                      setActive((prev) => (prev - 1 + steps.length) % steps.length);
+                      setIsAutoPlay(false);
+                    }}
+                    className="w-10 h-10 md:w-12 md:h-12 flex items-center justify-center bg-white border border-[#4daea1]/20 shadow-[0_4px_12px_rgba(77,174,161,0.15)] rounded-full text-[#4daea1] hover:scale-110 active:scale-95 transition-all"
+                    aria-label="Paso anterior"
+                  >
+                    <ChevronUp className="w-5 h-5 md:w-6 md:h-6" />
+                  </button>
+                </div>
 
-              {steps.map((step, index) => {
+                {steps.map((step, index) => {
                   const isActive = active === index;
                   return (
                     <button
@@ -1011,7 +1025,7 @@ const Process = () => {
                         <h4 className={`text-sm sm:text-base md:text-xl font-bold transition-colors duration-300 leading-tight ${isActive ? 'text-gray-900' : 'text-gray-400 group-hover:text-gray-600'}`}>
                           {step.title}
                         </h4>
-                        <p className={`text-[9px] md:text-sm uppercase tracking-widest font-bold mt-0.5 md:mt-1 transition-colors duration-300 ${isActive ? 'text-[#0a594f]' : 'text-gray-400'}`}>
+                        <p className={`text-[9px] md:text-sm uppercase tracking-widest font-bold mt-0.5 md:mt-1 transition-colors duration-300 ${isActive ? 'text-[#0a594f]' : 'text-gray-400'} text-[16px] lg:text-[18px] font-normal mb-6`}>
                           {step.phase}
                         </p>
                       </div>
@@ -1019,20 +1033,20 @@ const Process = () => {
                   );
                 })}
 
-              <div className="absolute -bottom-2 left-[15px] md:left-[23px] -translate-x-1/2 z-20">
-                <button 
-                  onClick={() => {
-                    setActive((prev) => (prev + 1) % steps.length);
-                    setIsAutoPlay(false);
-                  }}
-                  className="w-10 h-10 md:w-12 md:h-12 flex items-center justify-center bg-white border border-[#4daea1]/20 shadow-[0_4px_12px_rgba(77,174,161,0.15)] rounded-full text-[#4daea1] hover:scale-110 active:scale-95 transition-all"
-                  aria-label="Siguiente paso"
-                >
-                  <ChevronDown className="w-5 h-5 md:w-6 md:h-6" />
-                </button>
+                <div className="absolute -bottom-2 left-[15px] md:left-[23px] -translate-x-1/2 z-20">
+                  <button
+                    onClick={() => {
+                      setActive((prev) => (prev + 1) % steps.length);
+                      setIsAutoPlay(false);
+                    }}
+                    className="w-10 h-10 md:w-12 md:h-12 flex items-center justify-center bg-white border border-[#4daea1]/20 shadow-[0_4px_12px_rgba(77,174,161,0.15)] rounded-full text-[#4daea1] hover:scale-110 active:scale-95 transition-all"
+                    aria-label="Siguiente paso"
+                  >
+                    <ChevronDown className="w-5 h-5 md:w-6 md:h-6" />
+                  </button>
+                </div>
               </div>
             </div>
-          </div>
 
             {/* Right Column: Active Content Viewer */}
             <div className="col-span-8 md:col-span-7 relative h-full flex flex-col justify-center">
@@ -1053,11 +1067,11 @@ const Process = () => {
                       {steps[active].icon}
                     </div>
 
-                    <h3 className="text-xl md:text-3xl lg:text-4xl font-bold text-gray-900 mb-2 md:mb-6 leading-tight">
+                    <h3 className="text-xl md:text-3xl lg:text-4xl font-bold text-gray-900 mb-2 md:mb-6 leading-tight text-[18px] lg:text-[23px] font-semibold">
                       {steps[active].title}
                     </h3>
 
-                    <p className="text-gray-600 leading-relaxed text-xs md:text-base lg:text-lg mb-6 md:mb-10 font-light">
+                    <p className="text-gray-600 leading-relaxed text-xs md:text-base lg:text-lg mb-6 md:mb-10 font-light text-[16px] lg:text-[18px] font-normal mb-6">
                       {steps[active].desc}
                     </p>
 
@@ -1066,8 +1080,8 @@ const Process = () => {
                         <Briefcase className="w-5 h-5 text-[#4daea1]" />
                       </div>
                       <div>
-                        <p className="text-xs uppercase tracking-widest font-bold text-[#4daea1] mb-1">Entregable Concreto</p>
-                        <p className="text-base md:text-lg font-bold text-gray-900">{steps[active].deliverable}</p>
+                        <p className="text-xs uppercase tracking-widest font-bold text-[#4daea1] mb-1 text-[16px] lg:text-[18px] font-normal mb-6">Entregable Concreto</p>
+                        <p className="text-base md:text-lg font-bold text-gray-900 text-[16px] lg:text-[18px] font-normal mb-6">{steps[active].deliverable}</p>
                       </div>
                     </div>
                   </div>
@@ -1080,16 +1094,16 @@ const Process = () => {
           <div className="md:hidden">
             <div className="relative mb-6">
               <div className="absolute left-[15px] top-0 bottom-0 w-px bg-gray-200" />
-              
+
               {/* Mobile Arrows: Placed to the right of the timeline steps */}
               <div className="absolute -right-2 top-1/2 -translate-y-1/2 flex flex-col gap-3 z-20">
-                <button 
+                <button
                   onClick={() => { setActive((prev) => (prev - 1 + steps.length) % steps.length); setIsAutoPlay(false); }}
                   className="w-10 h-10 flex items-center justify-center bg-white border border-[#4daea1]/20 shadow-lg rounded-full text-[#4daea1] active:scale-90 transition-all"
                 >
                   <ChevronUp className="w-5 h-5" />
                 </button>
-                <button 
+                <button
                   onClick={() => { setActive((prev) => (prev + 1) % steps.length); setIsAutoPlay(false); }}
                   className="w-10 h-10 flex items-center justify-center bg-white border border-[#4daea1]/20 shadow-lg rounded-full text-[#4daea1] active:scale-90 transition-all"
                 >
@@ -1150,15 +1164,15 @@ const Process = () => {
                   <div className={`w-10 h-10 rounded-xl flex items-center justify-center text-white mb-3 bg-gradient-to-br ${steps[active].color}`}>
                     {steps[active].icon}
                   </div>
-                  <h3 className="text-lg font-bold text-gray-900 mb-2">{steps[active].title}</h3>
-                  <p className="text-gray-600 leading-relaxed text-sm mb-4">{steps[active].desc}</p>
+                  <h3 className="text-lg font-bold text-gray-900 mb-2 text-[18px] lg:text-[23px] font-semibold">{steps[active].title}</h3>
+                  <p className="text-gray-600 leading-relaxed text-sm mb-4 text-[16px] lg:text-[18px] font-normal mb-6">{steps[active].desc}</p>
                   <div className="bg-[#f8fafc] border border-[#4daea1]/20 shadow-sm rounded-xl p-3 flex items-center gap-3">
                     <div className="w-8 h-8 rounded-full bg-white shadow-sm border border-[#4daea1]/20 flex items-center justify-center flex-shrink-0">
                       <Briefcase className="w-3.5 h-3.5 text-[#4daea1]" />
                     </div>
                     <div>
-                      <p className="text-[11px] uppercase tracking-widest font-bold text-[#4daea1] mb-0.5">Entregable Concreto</p>
-                      <p className="text-xs font-bold text-gray-900">{steps[active].deliverable}</p>
+                      <p className="text-[11px] uppercase tracking-widest font-bold text-[#4daea1] mb-0.5 text-[16px] lg:text-[18px] font-normal mb-6">Entregable Concreto</p>
+                      <p className="text-xs font-bold text-gray-900 text-[16px] lg:text-[18px] font-normal mb-6">{steps[active].deliverable}</p>
                     </div>
                   </div>
                 </div>
@@ -1170,14 +1184,14 @@ const Process = () => {
         {/* CTA 2: Process Section Firm CTA */}
         <div className="mt-12 md:mt-16 flex justify-center w-full relative z-10">
           <button
-             onClick={() => {
-                const scrollContainer = document.getElementById('scroll-container');
-                const contactSection = document.getElementById('contact');
-                if (scrollContainer && contactSection) { scrollContainer.scrollTo({ top: contactSection.offsetTop, behavior: 'smooth' }); }
-             }}
-             className="bg-[#0a594f] hover:bg-[#0d7a6e] text-white border border-transparent font-bold py-3.5 px-8 rounded-xl shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all flex items-center gap-3"
+            onClick={() => {
+              const scrollContainer = document.getElementById('scroll-container');
+              const contactSection = document.getElementById('contact');
+              if (scrollContainer && contactSection) { scrollContainer.scrollTo({ top: contactSection.offsetTop, behavior: 'smooth' }); }
+            }}
+            className="bg-[#0a594f] hover:bg-[#0d7a6e] text-white border border-transparent font-bold py-3.5 px-8 rounded-xl shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all flex items-center gap-3"
           >
-             Agendar mi Diagnóstico Comercial <ArrowRight className="w-4 h-4" />
+            Agendar mi Diagnóstico Comercial <ArrowRight className="w-4 h-4" />
           </button>
         </div>
 
@@ -1195,8 +1209,8 @@ const Examples = () => {
     <section id="examples" className="py-16 md:py-24 lg:py-32 bg-[#06100e] relative overflow-hidden flex flex-col justify-center min-h-[100svh]">
       {/* Subtle Background Pattern matching dark theme */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-         <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-[#4daea1]/5 rounded-full blur-[100px] transform translate-x-1/2 -translate-y-1/2" />
-         <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-[#0a594f]/10 rounded-full blur-[100px] transform -translate-x-1/2 translate-y-1/2" />
+        <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-[#4daea1]/5 rounded-full blur-[100px] transform translate-x-1/2 -translate-y-1/2" />
+        <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-[#0a594f]/10 rounded-full blur-[100px] transform -translate-x-1/2 translate-y-1/2" />
       </div>
 
       <div className="container mx-auto px-5 md:px-6 relative z-10">
@@ -1204,92 +1218,92 @@ const Examples = () => {
           <span className="inline-block text-[#4daea1] font-bold tracking-widest uppercase text-xs mb-3 flex items-center justify-center gap-2">
             <span className="w-8 h-[2px] bg-[#4daea1]"></span> Casos de Éxito <span className="w-8 h-[2px] bg-[#4daea1]"></span>
           </span>
-          <h2 className="text-2xl md:text-4xl lg:text-5xl font-bold text-white mb-4 leading-tight">
-            Ejemplos en acción. Así se ve una <br className="hidden md:block"/> estructura <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#4daea1] to-[#0a594f]">lista para vender.</span>
+          <h2 className="text-2xl md:text-4xl lg:text-5xl font-bold text-white mb-4 leading-tight text-[22px] lg:text-[28px] font-bold mb-8">
+            Ejemplos en acción. Así se ve una <br className="hidden md:block" /> estructura <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#4daea1] to-[#0a594f]">lista para vender.</span>
           </h2>
-          <p className="text-gray-400 text-sm md:text-base leading-relaxed max-w-2xl mx-auto">
-            Explorá estas páginas interactivas. Diseño veloz, botones de acción claros y estructuras diseñadas exclusivamente para que el cliente compre. 
+          <p className="text-gray-400 text-sm md:text-base leading-relaxed max-w-2xl mx-auto text-[16px] lg:text-[18px] font-normal mb-6">
+            Explorá estas páginas interactivas. Diseño veloz, botones de acción claros y estructuras diseñadas exclusivamente para que el cliente compre.
           </p>
         </div>
 
         <div className="grid grid-cols-1 xl:grid-cols-2 gap-10 lg:gap-14">
-          
+
           {/* Example 1 */}
-          <motion.div 
-             initial={{ opacity: 0, y: 20 }}
-             whileInView={{ opacity: 1, y: 0 }}
-             viewport={{ once: true }}
-             transition={{ duration: 0.6 }}
-             className="flex flex-col gap-4"
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+            className="flex flex-col gap-4"
           >
-             <div className="flex items-center justify-between px-2">
-                <h3 className="text-white font-bold text-lg md:text-xl flex items-center gap-2">
-                   <div className="w-2 h-2 rounded-full bg-[#4daea1] shadow-[0_0_10px_#4daea1]"></div>
-                   Centinel GPS
-                </h3>
-             </div>
-             {/* Browser Mockup */}
-             <div className="rounded-xl overflow-hidden bg-[#1a1a1a] shadow-2xl border border-white/10 flex flex-col h-[500px] md:h-[600px]">
-                {/* Browser Header */}
-                <div className="bg-[#2d2d2d] px-4 py-3 flex items-center gap-3 border-b border-white/5">
-                   <div className="flex gap-2">
-                      <div className="w-3 h-3 rounded-full bg-[#ff5f56]"></div>
-                      <div className="w-3 h-3 rounded-full bg-[#ffbd2e]"></div>
-                      <div className="w-3 h-3 rounded-full bg-[#27c93f]"></div>
-                   </div>
-                   <div className="mx-auto bg-[#1a1a1a] rounded-md px-4 py-1 flex items-center gap-2 text-[10px] md:text-xs text-gray-400 font-mono w-4/5 max-w-sm overflow-hidden">
-                      <Lock className="w-3 h-3 text-green-400 shrink-0" /> https://centinelmotos.com
-                   </div>
+            <div className="flex items-center justify-between px-2">
+              <h3 className="text-white font-bold text-lg md:text-xl flex items-center gap-2 text-[18px] lg:text-[23px] font-semibold">
+                <div className="w-2 h-2 rounded-full bg-[#4daea1] shadow-[0_0_10px_#4daea1]"></div>
+                Centinel GPS
+              </h3>
+            </div>
+            {/* Browser Mockup */}
+            <div className="rounded-xl overflow-hidden bg-[#1a1a1a] shadow-2xl border border-white/10 flex flex-col h-[500px] md:h-[600px]">
+              {/* Browser Header */}
+              <div className="bg-[#2d2d2d] px-4 py-3 flex items-center gap-3 border-b border-white/5">
+                <div className="flex gap-2">
+                  <div className="w-3 h-3 rounded-full bg-[#ff5f56]"></div>
+                  <div className="w-3 h-3 rounded-full bg-[#ffbd2e]"></div>
+                  <div className="w-3 h-3 rounded-full bg-[#27c93f]"></div>
                 </div>
-                {/* Iframe content */}
-                <div className="flex-1 bg-white relative">
-                   <iframe 
-                      src="https://centinelmotos.com" 
-                      className="absolute inset-0 w-full h-full border-0"
-                      title="Centinel Motos Preview"
-                      loading="lazy"
-                   />
+                <div className="mx-auto bg-[#1a1a1a] rounded-md px-4 py-1 flex items-center gap-2 text-[10px] md:text-xs text-gray-400 font-mono w-4/5 max-w-sm overflow-hidden">
+                  <Lock className="w-3 h-3 text-green-400 shrink-0" /> https://centinelmotos.com
                 </div>
-             </div>
+              </div>
+              {/* Iframe content */}
+              <div className="flex-1 bg-white relative">
+                <iframe
+                  src="https://centinelmotos.com"
+                  className="absolute inset-0 w-full h-full border-0"
+                  title="Centinel Motos Preview"
+                  loading="lazy"
+                />
+              </div>
+            </div>
           </motion.div>
 
           {/* Example 2 */}
-          <motion.div 
-             initial={{ opacity: 0, y: 20 }}
-             whileInView={{ opacity: 1, y: 0 }}
-             viewport={{ once: true }}
-             transition={{ duration: 0.6, delay: 0.2 }}
-             className="flex flex-col gap-4"
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+            className="flex flex-col gap-4"
           >
-             <div className="flex items-center justify-between px-2">
-                <h3 className="text-white font-bold text-lg md:text-xl flex items-center gap-2">
-                   <div className="w-2 h-2 rounded-full bg-[#4daea1] shadow-[0_0_10px_#4daea1]"></div>
-                   CMC alarmas y seguridad
-                </h3>
-             </div>
-             {/* Browser Mockup */}
-             <div className="rounded-xl overflow-hidden bg-[#1a1a1a] shadow-2xl border border-white/10 flex flex-col h-[500px] md:h-[600px]">
-                {/* Browser Header */}
-                <div className="bg-[#2d2d2d] px-4 py-3 flex items-center gap-3 border-b border-white/5">
-                   <div className="flex gap-2">
-                      <div className="w-3 h-3 rounded-full bg-[#ff5f56]"></div>
-                      <div className="w-3 h-3 rounded-full bg-[#ffbd2e]"></div>
-                      <div className="w-3 h-3 rounded-full bg-[#27c93f]"></div>
-                   </div>
-                   <div className="mx-auto bg-[#1a1a1a] rounded-md px-4 py-1 flex items-center gap-2 text-[10px] md:text-xs text-gray-400 font-mono w-4/5 max-w-sm overflow-hidden">
-                      <Lock className="w-3 h-3 text-green-400 shrink-0" /> https://cmcseguridad.com.ar/promo
-                   </div>
+            <div className="flex items-center justify-between px-2">
+              <h3 className="text-white font-bold text-lg md:text-xl flex items-center gap-2 text-[18px] lg:text-[23px] font-semibold">
+                <div className="w-2 h-2 rounded-full bg-[#4daea1] shadow-[0_0_10px_#4daea1]"></div>
+                CMC alarmas y seguridad
+              </h3>
+            </div>
+            {/* Browser Mockup */}
+            <div className="rounded-xl overflow-hidden bg-[#1a1a1a] shadow-2xl border border-white/10 flex flex-col h-[500px] md:h-[600px]">
+              {/* Browser Header */}
+              <div className="bg-[#2d2d2d] px-4 py-3 flex items-center gap-3 border-b border-white/5">
+                <div className="flex gap-2">
+                  <div className="w-3 h-3 rounded-full bg-[#ff5f56]"></div>
+                  <div className="w-3 h-3 rounded-full bg-[#ffbd2e]"></div>
+                  <div className="w-3 h-3 rounded-full bg-[#27c93f]"></div>
                 </div>
-                {/* Iframe content */}
-                <div className="flex-1 bg-white relative">
-                   <iframe 
-                      src="https://cmcseguridad.com.ar/promo" 
-                      className="absolute inset-0 w-full h-full border-0"
-                      title="CMC Seguridad Preview"
-                      loading="lazy"
-                   />
+                <div className="mx-auto bg-[#1a1a1a] rounded-md px-4 py-1 flex items-center gap-2 text-[10px] md:text-xs text-gray-400 font-mono w-4/5 max-w-sm overflow-hidden">
+                  <Lock className="w-3 h-3 text-green-400 shrink-0" /> https://cmcseguridad.com.ar/promo
                 </div>
-             </div>
+              </div>
+              {/* Iframe content */}
+              <div className="flex-1 bg-white relative">
+                <iframe
+                  src="https://cmcseguridad.com.ar/promo"
+                  className="absolute inset-0 w-full h-full border-0"
+                  title="CMC Seguridad Preview"
+                  loading="lazy"
+                />
+              </div>
+            </div>
           </motion.div>
 
         </div>
@@ -1297,15 +1311,15 @@ const Examples = () => {
         {/* CTA 3: Examples Section Action CTA */}
         <div className="mt-14 md:mt-20 flex justify-center relative z-10">
           <button
-             onClick={() => {
-                const scrollContainer = document.getElementById('scroll-container');
-                const contactSection = document.getElementById('contact');
-                if (scrollContainer && contactSection) { scrollContainer.scrollTo({ top: contactSection.offsetTop, behavior: 'smooth' }); }
-             }}
-             className="group bg-white/5 border border-white/10 hover:border-[#4daea1]/50 hover:bg-white/10 text-white font-medium py-3.5 px-8 rounded-xl transition-all duration-300 flex items-center gap-3 backdrop-blur-sm"
+            onClick={() => {
+              const scrollContainer = document.getElementById('scroll-container');
+              const contactSection = document.getElementById('contact');
+              if (scrollContainer && contactSection) { scrollContainer.scrollTo({ top: contactSection.offsetTop, behavior: 'smooth' }); }
+            }}
+            className="group bg-white/5 border border-white/10 hover:border-[#4daea1]/50 hover:bg-white/10 text-white font-medium py-3.5 px-8 rounded-xl transition-all duration-300 flex items-center gap-3 backdrop-blur-sm"
           >
-             Quiero una estructura digital como esta 
-             <ArrowRight className="w-4 h-4 text-gray-400 group-hover:text-[#4daea1] group-hover:translate-x-1 transition-all" />
+            Quiero una estructura digital como esta
+            <ArrowRight className="w-4 h-4 text-gray-400 group-hover:text-[#4daea1] group-hover:translate-x-1 transition-all" />
           </button>
         </div>
 
@@ -1392,23 +1406,23 @@ const Contact = () => {
             <div className="absolute top-0 right-0 w-64 h-64 bg-[#4daea1]/10 rounded-full blur-[80px] pointer-events-none" />
 
             <div className="relative z-10">
-              <h3 className="text-2xl md:text-4xl font-bold tracking-tight mb-3 md:mb-6 text-white leading-tight">Hablemos de tus <br /><span className="text-[#4daea1]">ventas</span></h3>
-              <p className="text-gray-400 mb-6 md:mb-10 leading-relaxed font-light text-sm md:text-base">
+              <h3 className="text-2xl md:text-4xl font-bold tracking-tight mb-3 md:mb-6 text-white leading-tight text-[18px] lg:text-[23px] font-semibold">Hablemos de tus <br /><span className="text-[#4daea1]">ventas</span></h3>
+              <p className="text-gray-400 mb-6 md:mb-10 leading-relaxed font-light text-sm md:text-base text-[16px] lg:text-[18px] font-normal mb-6">
                 Contanos cómo estás comercializando tus productos o servicios hoy para entender si podemos ayudarte a mejorar tus números.
               </p>
 
               <div className="space-y-4 md:space-y-5">
                 <div className="flex items-start gap-3">
                   <CheckCircle2 className="w-5 h-5 text-[#4daea1] shrink-0 mt-0.5" />
-                  <p className="text-sm md:text-base text-gray-300 font-medium">Análisis detallado de tu operativa y sector actual <span className="text-[#4daea1] font-bold">(100% Bonificado)</span>.</p>
+                  <p className="text-sm md:text-base text-gray-300 font-medium text-[16px] lg:text-[18px] font-normal mb-6">Análisis detallado de tu operativa y sector actual <span className="text-[#4daea1] font-bold">(100% Bonificado)</span>.</p>
                 </div>
                 <div className="flex items-start gap-3">
                   <CheckCircle2 className="w-5 h-5 text-[#4daea1] shrink-0 mt-0.5" />
-                  <p className="text-sm md:text-base text-gray-300 font-medium">Evaluación de las fricciones en tu embudo de ventas.</p>
+                  <p className="text-sm md:text-base text-gray-300 font-medium text-[16px] lg:text-[18px] font-normal mb-6">Evaluación de las fricciones en tu embudo de ventas.</p>
                 </div>
                 <div className="flex items-start gap-3">
                   <CheckCircle2 className="w-5 h-5 text-[#4daea1] shrink-0 mt-0.5" />
-                  <p className="text-sm md:text-base text-gray-300 font-medium">30 min de consultoría con un socio estratégico <span className="text-[#4daea1] font-bold">(Sin Costo)</span>.</p>
+                  <p className="text-sm md:text-base text-gray-300 font-medium text-[16px] lg:text-[18px] font-normal mb-6">30 min de consultoría con un socio estratégico <span className="text-[#4daea1] font-bold">(Sin Costo)</span>.</p>
                 </div>
               </div>
             </div>
@@ -1433,8 +1447,8 @@ const Contact = () => {
                 <div className="w-20 h-20 bg-[#4daea1]/10 rounded-full flex items-center justify-center mb-6 ring-8 ring-[#4daea1]/5">
                   <CheckCircle2 className="w-10 h-10 text-[#4daea1]" />
                 </div>
-                <h3 className="text-3xl font-bold text-white mb-4">¡Solicitud Recibida!</h3>
-                <p className="text-gray-400 mb-8 max-w-sm leading-relaxed text-sm md:text-base">
+                <h3 className="text-3xl font-bold text-white mb-4 text-[18px] lg:text-[23px] font-semibold">¡Solicitud Recibida!</h3>
+                <p className="text-gray-400 mb-8 max-w-sm leading-relaxed text-sm md:text-base text-[16px] lg:text-[18px] font-normal mb-6">
                   Nuestro equipo de análisis evaluará tu perfil. Si encontramos sinergias claras, te contactaremos en breve.
                 </p>
                 <Button variant="primary" onClick={() => setIsSuccess(false)} className="!text-sm !py-3 !px-8">
@@ -1545,9 +1559,9 @@ const Footer = () => (
   <footer className="bg-[#050d0b] pt-20 pb-10 border-t border-white/5 relative overflow-hidden">
     <div className="container mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-6">
       <div className="text-center md:text-left">
-        <h2 className="text-2xl font-bold tracking-[-0.062em] mb-2 text-white">Bravence.</h2>
+        <h2 className="text-2xl font-bold tracking-[-0.062em] mb-2 text-white text-[22px] lg:text-[28px] font-bold mb-8">Bravence.</h2>
         <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-white/10 to-transparent"></div>
-        <p className="text-gray-500 text-sm">© {new Date().getFullYear()} Bravence Consulting. Todos los derechos reservados.</p>
+        <p className="text-gray-500 text-sm text-[16px] lg:text-[18px] font-normal mb-6">© {new Date().getFullYear()} Bravence Consulting. Todos los derechos reservados.</p>
       </div>
       <div className="flex gap-8">
         <a href="#" className="text-gray-400 hover:text-[#4daea1] transition-colors text-sm">LinkedIn</a>

@@ -27,7 +27,7 @@ export default function RootLayout({
             __html: `
               (function() {
                 var found = 0;
-                var EXPECTED = 2;
+                var EXPECTED = 1; // Restored for the About Us section video
                 function forcePlay(video) {
                   if (video._bravForced) return;
                   video._bravForced = true;
