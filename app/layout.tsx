@@ -7,6 +7,17 @@ const inter = Inter({ subsets: ["latin"] });
 export const metadata: Metadata = {
   title: "Bravence - Consultora Estratégica",
   description: "Potenciamos tu rentabilidad con datos, tecnología y visión humana.",
+  openGraph: {
+    title: "Bravence - Consultora Estratégica",
+    description: "Potenciamos tu rentabilidad con datos, tecnología y visión humana.",
+    type: "website",
+    siteName: "Bravence",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Bravence - Consultora Estratégica",
+    description: "Potenciamos tu rentabilidad con datos, tecnología y visión humana.",
+  }
 };
 
 export default function RootLayout({
