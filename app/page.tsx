@@ -1407,6 +1407,17 @@ const Contact = () => {
               </p>
 
               <div className="space-y-6">
+                {/* NEW ITEM - Gratis */}
+                <div className="flex items-start gap-4 group cursor-default">
+                  <div className="w-12 h-12 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center shrink-0 text-[#c6fff7] group-hover:bg-[#4daea1]/20 transition-colors duration-300">
+                    <CheckCircle2 size={24} />
+                  </div>
+                  <div className="pt-1">
+                    <h5 className="font-bold text-white text-sm">100% Sin Costo</h5>
+                    <p className="text-xs text-[#c6fff7] mt-1 text-[16px] lg:text-[18px] font-normal mb-6">La primera reunión de diagnóstico es totalmente gratuita.</p>
+                  </div>
+                </div>
+
                 <div className="flex items-start gap-4 group cursor-default">
                   <div className="w-12 h-12 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center shrink-0 text-[#4daea1] group-hover:bg-[#4daea1]/10 transition-colors duration-300">
                     <CheckCircle2 size={24} />
@@ -1545,12 +1556,6 @@ const Contact = () => {
                 {submissionError && <div className="bg-red-50 text-red-600 text-sm p-3 rounded-lg border border-red-100">{submissionError}</div>}
 
                 <div className="pt-4 relative group/btn">
-                  <div className="flex items-center justify-center gap-2 mb-3">
-                    <div className="w-2 h-2 rounded-full bg-[#4daea1] animate-pulse"></div>
-                    <span className="text-[10px] uppercase tracking-widest text-[#c6fff7] font-bold bg-[#4daea1]/10 px-3 py-1 rounded-full border border-[#4daea1]/20 backdrop-blur-md shadow-sm">
-                      Para garantizar calidad, tomamos solo 5 diagnósticos gratuitos por semana.
-                    </span>
-                  </div>
 
                   <div className="absolute inset-x-0 bottom-0 bg-gradient-to-r from-[#4daea1] to-[#0a594f] rounded-xl blur opacity-30 group-hover/btn:opacity-60 transition duration-500 mt-4 h-16 pointer-events-none"></div>
                   <Button type="submit" variant="primary" className="w-full relative !rounded-xl !py-4 bg-gradient-to-r from-[#0a594f] to-[#0d7a6e] hover:from-[#0d7a6e] hover:to-[#4daea1] border border-white/10 shadow-xl overflow-hidden group/submit" disabled={isSubmitting}>

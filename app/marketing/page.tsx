@@ -1412,9 +1412,15 @@ const Contact = () => {
               </p>
 
               <div className="space-y-4 md:space-y-5">
+                {/* NEW ITEM - Gratis */}
+                <div className="flex items-start gap-3">
+                  <CheckCircle2 className="w-5 h-5 text-[#c6fff7] shrink-0 mt-0.5" />
+                  <p className="text-sm md:text-base text-[#c6fff7] font-medium text-[16px] lg:text-[18px] font-normal mb-6">Primera reunión estratégica de diagnóstico <strong className="text-white font-bold">totalmente gratis</strong>.</p>
+                </div>
+
                 <div className="flex items-start gap-3">
                   <CheckCircle2 className="w-5 h-5 text-[#4daea1] shrink-0 mt-0.5" />
-                  <p className="text-sm md:text-base text-gray-300 font-medium text-[16px] lg:text-[18px] font-normal mb-6">Análisis detallado de tu operativa y sector actual <span className="text-[#4daea1] font-bold">(100% Bonificado)</span>.</p>
+                  <p className="text-sm md:text-base text-gray-300 font-medium text-[16px] lg:text-[18px] font-normal mb-6">Análisis detallado de tu operativa y sector actual.</p>
                 </div>
                 <div className="flex items-start gap-3">
                   <CheckCircle2 className="w-5 h-5 text-[#4daea1] shrink-0 mt-0.5" />
@@ -1511,10 +1517,7 @@ const Contact = () => {
                 {submissionError && <div className="bg-red-50 text-red-600 text-sm p-3 rounded-lg border border-red-100">{submissionError}</div>}
 
                 <div className="pt-4 relative group/btn">
-                  <div className="flex items-center gap-2 mb-3 justify-center text-xs md:text-sm text-[#4daea1] font-medium bg-[#4daea1]/10 py-1.5 px-3 rounded-md w-fit mx-auto border border-[#4daea1]/20">
-                    <Clock size={14} className="animate-pulse" />
-                    <span>Para garantizar calidad, tomamos solo 5 diagnósticos gratuitos por semana.</span>
-                  </div>
+
                   <div className="absolute inset-x-0 bottom-0 h-full bg-gradient-to-r from-[#4daea1] to-[#0a594f] rounded-xl blur opacity-30 group-hover/btn:opacity-60 transition duration-500"></div>
                   <Button type="submit" variant="primary" className="w-full relative !rounded-xl !py-4 bg-gradient-to-r from-[#0a594f] to-[#0d7a6e] hover:from-[#0d7a6e] hover:to-[#4daea1] border border-white/10 shadow-xl overflow-hidden" disabled={isSubmitting}>
                     <span className="relative z-10 font-bold tracking-wide">
