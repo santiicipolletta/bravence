@@ -1555,7 +1555,7 @@ const Contact = () => {
                   <div className="absolute inset-x-0 bottom-0 bg-gradient-to-r from-[#4daea1] to-[#0a594f] rounded-xl blur opacity-30 group-hover/btn:opacity-60 transition duration-500 mt-4 h-16 pointer-events-none"></div>
                   <Button type="submit" variant="primary" className="w-full relative !rounded-xl !py-4 bg-gradient-to-r from-[#0a594f] to-[#0d7a6e] hover:from-[#0d7a6e] hover:to-[#4daea1] border border-white/10 shadow-xl overflow-hidden group/submit" disabled={isSubmitting}>
                     <span className="relative z-10 font-bold tracking-wide flex justify-center items-center gap-2">
-                      {isSubmitting ? 'Procesando...' : 'Solicitar Diagnóstico Gratuito'}
+                      {isSubmitting ? 'Procesando...' : 'Agendar una reunión'}
                       {!isSubmitting && <ArrowRight className="w-4 h-4 group-hover/submit:translate-x-1 transition-transform" />}
                     </span>
                   </Button>
